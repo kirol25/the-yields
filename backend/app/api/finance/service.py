@@ -1,6 +1,6 @@
 from typing import Any
 
-from app.repository import YieldRepository
+from app.api.repository import YieldRepository
 
 
 class YieldService:

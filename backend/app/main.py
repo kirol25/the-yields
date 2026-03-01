@@ -4,7 +4,10 @@ from app.version import __version__
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import router
+
 app = FastAPI(title="The Yield API", version=__version__)
+app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,12 +15,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    """Health check endpoint."""
-    return {"status": "healthy"}
 
 
 def main():
