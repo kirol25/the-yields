@@ -1,14 +1,13 @@
 from typing import Any, Literal
 
+from backend.app.api.finance.dependencies import YieldRepositoryType
 from fastapi import HTTPException, status
-
-from app.api.finance.repository import YieldRepository
 
 
 class YieldService:
     """Business logic layer between the HTTP router and the data repository."""
 
-    def __init__(self, repository: YieldRepository) -> None:
+    def __init__(self, repository: YieldRepositoryType) -> None:
         """Initialise the service with a repository instance.
 
         Args:

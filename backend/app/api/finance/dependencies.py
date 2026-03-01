@@ -2,19 +2,24 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from app import settings
 from app.api.finance.repository import YieldRepository
+from app.api.finance.s3_repository import S3YieldRepository
 from app.api.finance.service import YieldService
 
+YieldRepositoryType = YieldRepository | S3YieldRepository
 # ── dependency factories ──────────────────────────────────────────────────────
 
 
-def get_repository() -> YieldRepository:
-    """Instantiate a ``YieldRepository`` for the current request."""
+def get_repository() -> YieldRepositoryType:
+    """Return the appropriate repository based on the STORAGE_BACKEND env var."""
+    if settings.STORAGE_BACKEND == "s3":
+        return S3YieldRepository()
     return YieldRepository()
 
 
 def get_service(
-    repo: Annotated[YieldRepository, Depends(get_repository)],
+    repo: Annotated[object, Depends(get_repository)],
 ) -> YieldService:
     """Instantiate a ``YieldService`` backed by the injected repository."""
     return YieldService(repo)
