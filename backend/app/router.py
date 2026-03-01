@@ -2,13 +2,14 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 
-from backend.app.repository import YieldRepository
-from backend.app.service import YieldService
+from app.repository import YieldRepository
+from app.service import YieldService
 
 router = APIRouter(prefix="/api", tags=["data"])
 
 
 # ── dependency factories ──────────────────────────────────────────────────────
+
 
 def get_repository() -> YieldRepository:
     """Instantiate a ``YieldRepository`` for the current request."""
@@ -26,6 +27,7 @@ ServiceDep = Annotated[YieldService, Depends(get_service)]
 
 
 # ── routes ────────────────────────────────────────────────────────────────────
+
 
 @router.get(
     "/years",

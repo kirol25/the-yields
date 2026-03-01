@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from backend.app.utils import DATA_DIR
+from app.utils import DATA_DIR
 
 
 class YieldRepository:

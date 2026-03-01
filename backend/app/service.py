@@ -1,6 +1,6 @@
 from typing import Any
 
-from backend.app.repository import YieldRepository
+from app.repository import YieldRepository
 
 
 class YieldService:
