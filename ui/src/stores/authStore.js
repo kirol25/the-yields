@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 
 const REGION = import.meta.env.VITE_COGNITO_REGION
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
@@ -110,8 +109,6 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('id_token')
     localStorage.removeItem('refresh_token')
 
-    const router = useRouter()
-    router.push('/login')
   }
 
   return {
