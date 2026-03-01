@@ -57,7 +57,7 @@
       <!-- Sign out -->
       <div class="px-5 py-4 border-t border-gray-800">
         <button
-          @click="auth.logout()"
+          @click="signOut"
           class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-colors"
         >
           <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -72,6 +72,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 
@@ -80,6 +81,12 @@ defineEmits(['close'])
 
 const settings = useSettingsStore()
 const auth = useAuthStore()
+const router = useRouter()
+
+async function signOut() {
+  await auth.logout()
+  router.push('/login')
+}
 
 const initials = computed(() => {
   const name = settings.profile.name.trim()
