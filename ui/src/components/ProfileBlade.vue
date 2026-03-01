@@ -6,10 +6,11 @@
   <Transition name="slide">
     <div
       v-if="open"
-      class="fixed top-0 right-0 z-50 h-full w-80 bg-gray-900 border-l border-gray-800 flex flex-col shadow-2xl"
+      class="fixed top-0 right-0 z-50 h-full w-72 bg-gray-900 border-l border-gray-800 flex flex-col shadow-2xl"
     >
+      <!-- Header -->
       <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800">
-        <h2 class="font-semibold text-gray-100">Profile & Settings</h2>
+        <h2 class="font-semibold text-gray-100">Account</h2>
         <button
           @click="$emit('close')"
           class="text-gray-400 hover:text-white transition-colors"
@@ -21,95 +22,47 @@
         </button>
       </div>
 
-      <div class="flex-1 overflow-y-auto px-5 py-6 space-y-6">
-        <!-- Avatar -->
-        <div class="flex justify-center">
-          <div
-            class="w-16 h-16 rounded-full bg-emerald-600/20 border-2 border-emerald-500 flex items-center justify-center text-2xl font-bold text-emerald-400 select-none"
-          >
-            {{ initials }}
-          </div>
+      <!-- User identity -->
+      <div class="px-5 py-5 border-b border-gray-800 flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-emerald-600/20 border-2 border-emerald-500 flex items-center justify-center text-sm font-bold text-emerald-400 select-none shrink-0"
+        >
+          {{ initials }}
         </div>
-
-        <!-- Profile -->
-        <div class="space-y-3">
-          <h3 class="text-xs uppercase tracking-wider text-gray-500 font-medium">Profile</h3>
-          <div>
-            <label class="block text-xs text-gray-400 mb-1">Name</label>
-            <input
-              v-model="settings.profile.name"
-              type="text"
-              placeholder="Your name"
-              class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-100"
-            />
-          </div>
-          <div>
-            <label class="block text-xs text-gray-400 mb-1">Email</label>
-            <div class="w-full bg-gray-800/50 border border-gray-700/50 rounded-md px-3 py-2 text-sm text-gray-500 flex items-center gap-2 select-none">
-              <svg class="w-3 h-3 shrink-0 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              {{ auth.user?.email || settings.profile.email || '—' }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Preferences -->
-        <div class="space-y-3">
-          <h3 class="text-xs uppercase tracking-wider text-gray-500 font-medium">Preferences</h3>
-          <div>
-            <label class="block text-xs text-gray-400 mb-1">Currency</label>
-            <div ref="currencyContainer" class="relative">
-              <button
-                type="button"
-                @click="toggleCurrency"
-                class="w-full flex items-center justify-between bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
-              >
-                <span>{{ settings.currency }} — {{ settings.CURRENCIES.find(c => c.code === settings.currency)?.label }}</span>
-                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              <Teleport to="body">
-                <div v-if="currencyOpen" class="fixed inset-0 z-40" @click="currencyOpen = false" />
-                <div
-                  v-if="currencyOpen"
-                  :style="currencyStyle"
-                  class="fixed z-50 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-1 min-w-[200px]"
-                >
-                  <button
-                    v-for="c in settings.CURRENCIES"
-                    :key="c.code"
-                    type="button"
-                    @click="selectCurrency(c.code)"
-                    :class="[
-                      'w-full px-4 py-1.5 text-sm text-left transition-colors',
-                      c.code === settings.currency
-                        ? 'text-emerald-400 font-medium bg-emerald-500/10'
-                        : 'text-gray-300 hover:bg-gray-800',
-                    ]"
-                  >
-                    {{ c.code }} — {{ c.label }}
-                  </button>
-                </div>
-              </Teleport>
-            </div>
-          </div>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-gray-100 truncate">
+            {{ settings.profile.name || 'No name set' }}
+          </p>
+          <p class="text-xs text-gray-500 truncate">
+            {{ auth.user?.email || settings.profile.email || '—' }}
+          </p>
         </div>
       </div>
 
-      <div class="px-5 py-4 border-t border-gray-800 space-y-2">
-        <button
-          @click="saveProfile"
-          class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-md transition-colors"
+      <!-- Nav items -->
+      <nav class="flex-1 px-3 py-3 space-y-0.5">
+        <RouterLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          @click="$emit('close')"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors group"
+          active-class="bg-gray-800 text-gray-100"
         >
-          Save Profile
-        </button>
+          <span class="w-4 h-4 text-gray-500 group-hover:text-gray-400 shrink-0" v-html="item.icon" />
+          {{ item.label }}
+        </RouterLink>
+      </nav>
+
+      <!-- Sign out -->
+      <div class="px-5 py-4 border-t border-gray-800">
         <button
           @click="auth.logout()"
-          class="w-full py-2 bg-gray-800 hover:bg-gray-700 text-sm font-medium rounded-md text-gray-400 hover:text-red-400 transition-colors"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-400 hover:bg-gray-800 hover:text-red-400 transition-colors"
         >
+          <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
           Sign out
         </button>
       </div>
@@ -118,7 +71,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 
@@ -127,17 +80,6 @@ defineEmits(['close'])
 
 const settings = useSettingsStore()
 const auth = useAuthStore()
-
-// Pre-fill profile from Cognito on first open if fields are empty
-watch(
-  () => auth.user,
-  (u) => {
-    if (!u) return
-    if (!settings.profile.name && u.name) settings.profile.name = u.name
-    if (!settings.profile.email && u.email) settings.profile.email = u.email
-  },
-  { immediate: true },
-)
 
 const initials = computed(() => {
   const name = settings.profile.name.trim()
@@ -150,34 +92,18 @@ const initials = computed(() => {
     .toUpperCase()
 })
 
-function saveProfile() {
-  settings.save()
-}
-
-// Currency dropdown
-const currencyContainer = ref(null)
-const currencyOpen = ref(false)
-const currencyStyle = ref({})
-
-function toggleCurrency() {
-  if (!currencyOpen.value) {
-    const rect = currencyContainer.value?.getBoundingClientRect()
-    if (rect) {
-      currencyStyle.value = {
-        top: `${rect.bottom + 4}px`,
-        left: `${rect.left}px`,
-        width: `${rect.width}px`,
-      }
-    }
-  }
-  currencyOpen.value = !currencyOpen.value
-}
-
-function selectCurrency(code) {
-  settings.currency = code
-  settings.save()
-  currencyOpen.value = false
-}
+const navItems = [
+  {
+    label: 'Profile',
+    to: '/profile',
+    icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+  },
+  {
+    label: 'Settings',
+    to: '/settings',
+    icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  },
+]
 </script>
 
 <style scoped>

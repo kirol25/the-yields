@@ -6,6 +6,8 @@ import Yields from '../views/Yields.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Confirm from '../views/Confirm.vue'
+import Profile from '../views/Profile.vue'
+import Settings from '../views/Settings.vue'
 
 const routes = [
   { path: '/login', component: Login, meta: { public: true } },
@@ -14,6 +16,8 @@ const routes = [
   { path: '/', component: Dashboard },
   { path: '/dividends', component: Dividends },
   { path: '/yields', component: Yields },
+  { path: '/profile', component: Profile },
+  { path: '/settings', component: Settings },
 ]
 
 const router = createRouter({
