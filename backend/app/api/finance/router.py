@@ -1,29 +1,11 @@
-from typing import Annotated, Any
+from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
-from app.repository import YieldRepository
-from app.service import YieldService
-
-router = APIRouter(prefix="/api", tags=["data"])
+from app.api.finance.dependencies import ServiceDep
 
 
-# ── dependency factories ──────────────────────────────────────────────────────
-
-
-def get_repository() -> YieldRepository:
-    """Instantiate a ``YieldRepository`` for the current request."""
-    return YieldRepository()
-
-
-def get_service(
-    repo: Annotated[YieldRepository, Depends(get_repository)],
-) -> YieldService:
-    """Instantiate a ``YieldService`` backed by the injected repository."""
-    return YieldService(repo)
-
-
-ServiceDep = Annotated[YieldService, Depends(get_service)]
+router = APIRouter(prefix="/api", tags=["finance"])
 
 
 # ── routes ────────────────────────────────────────────────────────────────────
