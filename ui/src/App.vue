@@ -67,7 +67,7 @@ const auth = useAuthStore()
 const bladeOpen = ref(false)
 
 const initials = computed(() => {
-  const name = (auth.user?.name || settings.profile.name).trim()
+  const name = (settings.profile.name || auth.user?.name || '').trim()
   if (!name) return '?'
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 })
