@@ -10,7 +10,7 @@
             :key="m.value"
             class="py-2 px-2 text-gray-400 font-medium text-center min-w-[56px]"
           >
-            {{ m.label }}
+            {{ m.short }}
           </th>
           <th class="py-2 px-2 text-gray-400 font-medium text-right">Total</th>
         </tr>
@@ -70,24 +70,10 @@
 import { computed } from 'vue'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { MONTHS } from '../config.js'
 
 const store = useDataStore()
 const settings = useSettingsStore()
-
-const MONTHS = [
-  { value: '01', label: 'Jan' },
-  { value: '02', label: 'Feb' },
-  { value: '03', label: 'Mar' },
-  { value: '04', label: 'Apr' },
-  { value: '05', label: 'May' },
-  { value: '06', label: 'Jun' },
-  { value: '07', label: 'Jul' },
-  { value: '08', label: 'Aug' },
-  { value: '09', label: 'Sep' },
-  { value: '10', label: 'Oct' },
-  { value: '11', label: 'Nov' },
-  { value: '12', label: 'Dec' },
-]
 
 const dividends = computed(() => store.yearData.dividends || {})
 const tickers = computed(() => Object.keys(dividends.value))
