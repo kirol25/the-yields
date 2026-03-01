@@ -1,14 +1,22 @@
 version: '3'
+vars:
+  BACKEND_PORT: 9002
 
 tasks:
-  frontend:
+  ui:
     desc: Start the Vite dev server on :5173
-    cmd: npm run dev
+    cmd: |
+      cd ui
+      npm run dev
 
-  backend:
-    desc: Start the FastAPI server on :8000
-    cmd: npm run backend
+  api:
+    desc: Start the FastAPI server
+    env:
+      PYTHONPATH: backend
+    cmd: |
+      cd backend
+      uv run uvicorn app.main:app --reload --host 0.0.0.0 --port {{.BACKEND_PORT}}
 
   dev:
-    desc: Start both frontend and backend concurrently
-    deps: [frontend, backend]
+    desc: Start both ui and api concurrently
+    deps: [ui, api]
