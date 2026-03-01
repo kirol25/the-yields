@@ -1,15 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '../stores/authStore.js'
 import Dashboard from '../views/Dashboard.vue'
 import Dividends from '../views/Dividends.vue'
 import Yields from '../views/Yields.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
+import Confirm from '../views/Confirm.vue'
 
 const routes = [
+  { path: '/login', component: Login, meta: { public: true } },
+  { path: '/register', component: Register, meta: { public: true } },
+  { path: '/confirm', component: Confirm, meta: { public: true } },
   { path: '/', component: Dashboard },
   { path: '/dividends', component: Dividends },
   { path: '/yields', component: Yields },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.beforeEach((to) => {
+  if (to.meta.public) return true
+  const auth = useAuthStore()
+  if (!auth.isAuthenticated) return '/login'
+})
+
+export default router

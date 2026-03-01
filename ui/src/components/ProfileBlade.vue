@@ -72,12 +72,18 @@
         </div>
       </div>
 
-      <div class="px-5 py-4 border-t border-gray-800">
+      <div class="px-5 py-4 border-t border-gray-800 space-y-2">
         <button
           @click="saveProfile"
           class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-md transition-colors"
         >
           Save Profile
+        </button>
+        <button
+          @click="auth.logout()"
+          class="w-full py-2 bg-gray-800 hover:bg-gray-700 text-sm font-medium rounded-md text-gray-400 hover:text-red-400 transition-colors"
+        >
+          Sign out
         </button>
       </div>
     </div>
@@ -85,13 +91,26 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { useAuthStore } from '../stores/authStore.js'
 
 defineProps({ open: { type: Boolean, required: true } })
 defineEmits(['close'])
 
 const settings = useSettingsStore()
+const auth = useAuthStore()
+
+// Pre-fill profile from Cognito on first open if fields are empty
+watch(
+  () => auth.user,
+  (u) => {
+    if (!u) return
+    if (!settings.profile.name && u.name) settings.profile.name = u.name
+    if (!settings.profile.email && u.email) settings.profile.email = u.email
+  },
+  { immediate: true },
+)
 
 const initials = computed(() => {
   const name = settings.profile.name.trim()
