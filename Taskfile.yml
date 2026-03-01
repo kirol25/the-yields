@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  frontend:
+    desc: Start the Vite dev server on :5173
+    cmd: npm run dev
+
+  backend:
+    desc: Start the FastAPI server on :8000
+    cmd: npm run backend
+
+  dev:
+    desc: Start both frontend and backend concurrently
+    deps: [frontend, backend]
