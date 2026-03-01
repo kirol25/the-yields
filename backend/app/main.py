@@ -1,10 +1,9 @@
 import uvicorn
-
-from app.version import __version__
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import router
+from app.version import __version__
 
 app = FastAPI(title="The Yield API", version=__version__)
 app.include_router(router)
