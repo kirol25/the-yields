@@ -49,9 +49,10 @@
       <!-- Chart body -->
       <div class="p-6">
         <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">
-          {{ activeTab === 'monthly' ? `Monthly breakdown — ${store.currentYear}` : 'Income by year' }}
+          {{ activeTab === 'monthly' ? `Monthly breakdown — ${store.currentYear}` : activeTab === 'quarterly' ? `Quarterly breakdown — ${store.currentYear}` : 'Income by year' }}
         </p>
         <MonthlyChart v-if="activeTab === 'monthly'" />
+        <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
         <YearlyChart v-else />
       </div>
     </div>
@@ -64,6 +65,7 @@ import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import YearSelector from '../components/YearSelector.vue'
 import MonthlyChart from '../components/MonthlyChart.vue'
+import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
 
 const store = useDataStore()
@@ -71,6 +73,7 @@ const settings = useSettingsStore()
 
 const tabs = [
   { value: 'monthly', label: 'Monthly' },
+  { value: 'quarterly', label: 'Quarterly' },
   { value: 'yearly', label: 'Yearly' },
 ]
 const activeTab = ref('monthly')
