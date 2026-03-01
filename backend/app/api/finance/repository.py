@@ -56,6 +56,24 @@ class YieldRepository:
         with open(path) as f:
             return json.load(f)  # type: ignore[no-any-return]
 
+    def delete_entry(self, year: int, section: str, key: str) -> bool:
+        """Remove a single entry from a section of the given year's data.
+
+        Args:
+            year: The four-digit year to modify.
+            section: Either ``"dividends"`` or ``"yields"``.
+            key: The ticker symbol or account name to remove.
+
+        Returns:
+            ``True`` if the entry was found and removed, ``False`` otherwise.
+        """
+        data = self.read_year(year)
+        if key not in data.get(section, {}):
+            return False
+        del data[section][key]
+        self.write_year(year, data)
+        return True
+
     def write_year(self, year: int, data: dict[str, Any]) -> None:
         """Persist data for the given year, creating the file if needed.
 

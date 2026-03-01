@@ -1,4 +1,6 @@
-from typing import Any
+from typing import Any, Literal
+
+from fastapi import HTTPException, status
 
 from app.api.finance.repository import YieldRepository
 
@@ -44,4 +46,27 @@ class YieldService:
             A status confirmation dict.
         """
         self.repository.write_year(year, payload)
+        return {"status": "ok"}
+
+    def delete_entry(
+        self, year: int, section: Literal["dividends", "yields"], key: str
+    ) -> dict[str, str]:  # noqa: E501
+        """Delete a single entry from a section of the given year's data.
+
+        Args:
+            year: The four-digit year to modify.
+            section: Either ``"dividends"`` or ``"yields"``.
+            key: The ticker symbol or account name to remove.
+
+        Returns:
+            A status confirmation dict.
+
+        Raises:
+            HTTPException: 404 if the entry does not exist.
+        """
+        if not self.repository.delete_entry(year, section, key):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Entry '{key}' not found in {section} for {year}",
+            )
         return {"status": "ok"}
