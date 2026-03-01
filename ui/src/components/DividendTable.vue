@@ -167,10 +167,8 @@ function cancelDelete() {
 }
 
 async function confirmDelete() {
-  for (const key of selected.value) {
-    delete store.yearData.dividends[key]
-  }
+  const keys = [...selected.value]
   cancelDelete()
-  await store.saveData()
+  await store.deleteEntries('dividends', keys)
 }
 </script>

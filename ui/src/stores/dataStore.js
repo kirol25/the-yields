@@ -43,5 +43,13 @@ export const useDataStore = defineStore('data', () => {
     await loadAllYears()
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, fetchYears, loadYear, loadAllYears, saveData }
+  async function deleteEntries(section, keys) {
+    for (const key of keys) {
+      await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`)
+      delete yearData.value[section][key]
+    }
+    await loadAllYears()
+  }
+
+  return { currentYear, years, yearData, allYearsData, loading, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
 })
