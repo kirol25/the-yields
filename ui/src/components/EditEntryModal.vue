@@ -13,7 +13,7 @@
             v-model="entryName"
             type="text"
             placeholder="Company name"
-            class="bg-transparent text-sm text-gray-400 placeholder-gray-600 focus:outline-none border-b border-transparent focus:border-gray-600 transition-colors w-48"
+            class="bg-transparent text-sm text-gray-200 placeholder-gray-600 focus:outline-none border-b border-gray-700 focus:border-gray-400 transition-colors w-48"
           />
         </div>
       </div>
@@ -28,7 +28,7 @@
             min="0"
             step="0.01"
             placeholder="–"
-            class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-gray-600"
+            class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-center text-gray-100 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-gray-600"
           />
         </div>
       </div>
