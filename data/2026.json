@@ -1,0 +1,23 @@
+{
+  "dividends": {
+    "AAPL": {
+      "name": "Apple",
+      "months": {
+        "03": 20
+      }
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "months": {
+        "03": 20
+      }
+    }
+  },
+  "yields": {
+    "Trade": {
+      "months": {
+        "03": 20
+      }
+    }
+  }
+}
