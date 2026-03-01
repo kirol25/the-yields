@@ -2,8 +2,10 @@
   <div class="min-h-screen bg-gray-950 text-gray-100">
     <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <span class="text-xl font-bold text-emerald-400 tracking-tight">the-yield</span>
-        <div class="flex gap-6">
+        <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
+          the-yield
+        </RouterLink>
+        <div class="flex items-center gap-6">
           <RouterLink
             to="/"
             class="text-sm font-medium transition-colors hover:text-emerald-400"
@@ -25,20 +27,47 @@
           >
             Yields
           </RouterLink>
+
+          <!-- Profile button -->
+          <button
+            @click="bladeOpen = true"
+            class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
+            aria-label="Open profile"
+          >
+            {{ initials }}
+          </button>
         </div>
       </div>
     </nav>
+
     <main class="max-w-7xl mx-auto px-6 py-8">
       <RouterView />
     </main>
+
+    <ProfileBlade :open="bladeOpen" @close="bladeOpen = false" />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useDataStore } from './stores/dataStore.js'
+import { useSettingsStore } from './stores/settingsStore.js'
+import ProfileBlade from './components/ProfileBlade.vue'
 
 const store = useDataStore()
+const settings = useSettingsStore()
+const bladeOpen = ref(false)
+
+const initials = computed(() => {
+  const name = settings.profile.name.trim()
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+})
 
 onMounted(async () => {
   await store.fetchYears()
