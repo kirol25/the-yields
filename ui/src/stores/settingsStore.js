@@ -8,10 +8,6 @@ export const useSettingsStore = defineStore('settings', () => {
     { code: 'USD', label: 'US Dollar' },
     { code: 'EUR', label: 'Euro' },
     { code: 'GBP', label: 'British Pound' },
-    { code: 'CHF', label: 'Swiss Franc' },
-    { code: 'CAD', label: 'Canadian Dollar' },
-    { code: 'AUD', label: 'Australian Dollar' },
-    { code: 'JPY', label: 'Japanese Yen' },
   ]
 
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
