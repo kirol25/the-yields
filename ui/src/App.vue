@@ -5,7 +5,8 @@
         <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
           the-yield
         </RouterLink>
-        <div class="flex items-center gap-6">
+
+        <div v-if="auth.isAuthenticated" class="flex items-center gap-6">
           <RouterLink
             to="/"
             class="text-sm font-medium transition-colors hover:text-emerald-400"
@@ -28,7 +29,6 @@
             Yields
           </RouterLink>
 
-          <!-- Profile button -->
           <button
             @click="bladeOpen = true"
             class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
@@ -50,33 +50,37 @@
       </div>
     </footer>
 
-    <ProfileBlade :open="bladeOpen" @close="bladeOpen = false" />
+    <ProfileBlade v-if="auth.isAuthenticated" :open="bladeOpen" @close="bladeOpen = false" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
+import { useAuthStore } from './stores/authStore.js'
 import ProfileBlade from './components/ProfileBlade.vue'
 
 const store = useDataStore()
 const settings = useSettingsStore()
+const auth = useAuthStore()
 const bladeOpen = ref(false)
 
 const initials = computed(() => {
-  const name = settings.profile.name.trim()
+  const name = (auth.user?.name || settings.profile.name).trim()
   if (!name) return '?'
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
+  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 })
 
-onMounted(async () => {
-  await store.fetchYears()
-  await store.loadYear(store.currentYear)
-})
+// Only load data once authenticated
+watch(
+  () => auth.isAuthenticated,
+  async (authed) => {
+    if (authed) {
+      await store.fetchYears()
+      await store.loadYear(store.currentYear)
+    }
+  },
+  { immediate: true },
+)
 </script>
