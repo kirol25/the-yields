@@ -13,20 +13,21 @@
         <button
           v-if="tickers.length"
           @click="deleteMode = true"
-          class="text-xs text-red-400 hover:text-red-300 transition-colors"
+          class="text-gray-500 hover:text-red-400 transition-colors"
+          title="Delete entries"
         >
-          Delete entries
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
         </button>
       </template>
       <template v-else>
         <div class="flex items-center gap-3">
           <span class="text-xs text-gray-500">{{ selected.size }} selected</span>
-          <button
-            @click="cancelDelete"
-            class="text-xs text-gray-400 hover:text-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
+          <button @click="cancelDelete" class="text-xs text-gray-400 hover:text-gray-300 transition-colors">Cancel</button>
           <button
             @click="confirmDelete"
             :disabled="!selected.size"
