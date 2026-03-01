@@ -1,0 +1,8 @@
+from fastapi import APIRouter
+
+from .finance.router import router as finance_router
+from .monitoring.router import router as monitoring_router
+
+router = APIRouter()
+router.include_router(finance_router)
+router.include_router(monitoring_router)
