@@ -90,6 +90,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useDataStore } from '../stores/dataStore.js'
+import { MONTHS } from '../config.js'
 
 const props = defineProps({
   type: { type: String, required: true }, // 'dividend' | 'yield'
@@ -98,21 +99,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'saved'])
 
 const store = useDataStore()
-
-const MONTHS = [
-  { value: '01', label: 'January' },
-  { value: '02', label: 'February' },
-  { value: '03', label: 'March' },
-  { value: '04', label: 'April' },
-  { value: '05', label: 'May' },
-  { value: '06', label: 'June' },
-  { value: '07', label: 'July' },
-  { value: '08', label: 'August' },
-  { value: '09', label: 'September' },
-  { value: '10', label: 'October' },
-  { value: '11', label: 'November' },
-  { value: '12', label: 'December' },
-]
 
 const selectedKey = ref(props.existingKeys[0] ?? '__new__')
 const newKey = ref('')

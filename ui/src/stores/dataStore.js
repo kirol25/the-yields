@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
+import { API_BASE } from '../config.js'
 
 export const useDataStore = defineStore('data', () => {
   const currentYear = ref(new Date().getFullYear())
@@ -10,7 +11,7 @@ export const useDataStore = defineStore('data', () => {
   const loading = ref(false)
 
   async function fetchYears() {
-    const { data } = await axios.get('/api/years')
+    const { data } = await axios.get(`${API_BASE}/api/years`)
     years.value = data.length ? data : [currentYear.value]
     if (!years.value.includes(currentYear.value)) {
       years.value = [...years.value, currentYear.value].sort((a, b) => a - b)
@@ -20,7 +21,7 @@ export const useDataStore = defineStore('data', () => {
   async function loadYear(year) {
     loading.value = true
     try {
-      const { data } = await axios.get(`/api/data/${year}`)
+      const { data } = await axios.get(`${API_BASE}/api/data/${year}`)
       yearData.value = data
       currentYear.value = year
       allYearsData.value[year] = data

@@ -36,6 +36,7 @@ import {
 } from 'chart.js'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { MONTHS as MONTHS_CONFIG } from '../config.js'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -49,15 +50,12 @@ const filterOptions = [
   { value: 'yields', label: 'Yields only' },
 ]
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const MONTH_KEYS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
-
 function sumByMonth(section) {
   const totals = Array(12).fill(0)
   for (const entry of Object.values(section)) {
     const months = entry.months || {}
-    MONTH_KEYS.forEach((key, i) => {
-      totals[i] += months[key] || 0
+    MONTHS_CONFIG.forEach(({ value }, i) => {
+      totals[i] += months[value] || 0
     })
   }
   return totals
@@ -92,7 +90,7 @@ const chartData = computed(() => {
       borderRadius: 4,
     })
   }
-  return { labels: MONTHS, datasets }
+  return { labels: MONTHS_CONFIG.map((m) => m.short), datasets }
 })
 
 const chartOptions = computed(() => ({
