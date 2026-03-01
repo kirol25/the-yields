@@ -3,7 +3,8 @@ import re
 from pathlib import Path
 from typing import Any
 
-from app.utils import DATA_DIR
+PROJECT_ROOT: Path = Path(__file__).resolve().parents[4]
+DATA_DIR: Path = PROJECT_ROOT / "data"
 
 
 class YieldRepository:
