@@ -18,6 +18,7 @@ __pycache__/
 venv/
 env/
 ENV/
+uv.lock/
 
 # Distribution / packaging
 *.egg-info/
