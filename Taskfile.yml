@@ -20,3 +20,8 @@ tasks:
   dev:
     desc: Start both ui and api concurrently
     deps: [ui, api]
+
+  format:
+    desc: Format code with Ruff and Prettier
+    cmd: |
+      pre-commit run --all-files
