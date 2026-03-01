@@ -1,4 +1,5 @@
 <template>
+  <Teleport to="body">
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" @click.self="$emit('close')">
     <div class="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
       <h2 class="text-lg font-semibold mb-4">
@@ -85,6 +86,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup>
