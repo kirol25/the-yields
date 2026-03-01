@@ -9,35 +9,50 @@
   <div class="overflow-x-auto">
     <!-- Toolbar -->
     <div class="flex justify-end mb-3 min-h-[28px]">
-      <template v-if="!deleteMode">
-        <button
-          v-if="tickers.length"
-          @click="deleteMode = true"
-          class="text-gray-500 hover:text-red-400 transition-colors"
-          title="Delete entries"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-            <path d="M10 11v6M14 11v6"/>
-            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-          </svg>
-        </button>
-      </template>
-      <template v-else>
-        <div class="flex items-center gap-3">
-          <span class="text-xs text-gray-500">{{ selected.size }} selected</span>
-          <button @click="cancelDelete" class="text-xs text-gray-400 hover:text-gray-300 transition-colors">Cancel</button>
+      <button
+        v-if="tickers.length && !deleteMode"
+        @click="deleteMode = true"
+        class="text-gray-500 hover:text-red-400 transition-colors"
+        title="Delete entries"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Delete action bar -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-1"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-to-class="opacity-0 -translate-y-1"
+    >
+      <div v-if="deleteMode" class="flex items-center justify-between px-4 py-2.5 mb-3 bg-red-950/40 border border-red-900/50 rounded-lg">
+        <p class="text-sm text-gray-400">
+          <span class="font-semibold text-white">{{ selected.size }}</span>
+          {{ selected.size === 1 ? 'entry' : 'entries' }} selected
+        </p>
+        <div class="flex items-center gap-2">
+          <button
+            @click="cancelDelete"
+            class="px-3 py-1.5 text-xs rounded-md text-gray-400 hover:text-gray-200 hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
           <button
             @click="confirmDelete"
             :disabled="!selected.size"
-            class="text-xs text-red-400 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+            class="px-3 py-1.5 text-xs rounded-md bg-red-600 hover:bg-red-500 text-white font-medium disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            Delete ({{ selected.size }})
+            Delete{{ selected.size ? ` (${selected.size})` : '' }}
           </button>
         </div>
-      </template>
-    </div>
+      </div>
+    </Transition>
 
     <table v-if="tickers.length" class="w-full text-sm">
       <thead>
