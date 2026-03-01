@@ -1,8 +1,54 @@
 <template>
+  <EditEntryModal
+    v-if="editingKey"
+    type="yield"
+    :entry-key="editingKey"
+    @close="editingKey = null"
+  />
+
   <div class="overflow-x-auto">
+    <!-- Toolbar -->
+    <div class="flex justify-end mb-3 min-h-[28px]">
+      <template v-if="!deleteMode">
+        <button
+          v-if="banks.length"
+          @click="deleteMode = true"
+          class="text-xs text-red-400 hover:text-red-300 transition-colors"
+        >
+          Delete entries
+        </button>
+      </template>
+      <template v-else>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-gray-500">{{ selected.size }} selected</span>
+          <button
+            @click="cancelDelete"
+            class="text-xs text-gray-400 hover:text-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmDelete"
+            :disabled="!selected.size"
+            class="text-xs text-red-400 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium"
+          >
+            Delete ({{ selected.size }})
+          </button>
+        </div>
+      </template>
+    </div>
+
     <table v-if="banks.length" class="w-full text-sm">
       <thead>
         <tr class="border-b border-gray-800">
+          <th v-if="deleteMode" class="w-8 py-2 pr-2">
+            <input
+              type="checkbox"
+              :checked="selected.size === banks.length"
+              @change="toggleAll"
+              class="accent-red-500 cursor-pointer"
+            />
+          </th>
           <th class="text-left py-2 pr-4 text-gray-400 font-medium w-48">Account</th>
           <th
             v-for="m in MONTHS"
@@ -18,8 +64,18 @@
         <tr
           v-for="bank in banks"
           :key="bank"
-          class="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
+          class="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors cursor-pointer"
+          :class="{ 'opacity-50': deleteMode && selected.has(bank) }"
+          @click="deleteMode ? toggleSelect(bank) : (editingKey = bank)"
         >
+          <td v-if="deleteMode" class="w-8 py-2 pr-2" @click.stop="toggleSelect(bank)">
+            <input
+              type="checkbox"
+              :checked="selected.has(bank)"
+              class="accent-red-500 cursor-pointer"
+              readonly
+            />
+          </td>
           <td class="py-2 pr-4 font-medium text-blue-400">{{ bank }}</td>
           <td
             v-for="m in MONTHS"
@@ -35,6 +91,7 @@
       </tbody>
       <tfoot>
         <tr class="border-t border-gray-700">
+          <td v-if="deleteMode" />
           <td class="py-2 pr-4 text-gray-400 font-medium">Monthly Total</td>
           <td
             v-for="m in MONTHS"
@@ -56,13 +113,18 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { MONTHS } from '../config.js'
+import EditEntryModal from './EditEntryModal.vue'
 
 const store = useDataStore()
 const settings = useSettingsStore()
+
+const editingKey = ref(null)
+const deleteMode = ref(false)
+const selected = ref(new Set())
 
 const yields = computed(() => store.yearData.yields || {})
 const banks = computed(() => Object.keys(yields.value))
@@ -83,4 +145,27 @@ const grandTotal = computed(() =>
     .flatMap((e) => Object.values(e.months || {}))
     .reduce((a, b) => a + b, 0),
 )
+
+function toggleSelect(bank) {
+  const s = new Set(selected.value)
+  s.has(bank) ? s.delete(bank) : s.add(bank)
+  selected.value = s
+}
+
+function toggleAll(e) {
+  selected.value = e.target.checked ? new Set(banks.value) : new Set()
+}
+
+function cancelDelete() {
+  deleteMode.value = false
+  selected.value = new Set()
+}
+
+async function confirmDelete() {
+  for (const key of selected.value) {
+    delete store.yearData.yields[key]
+  }
+  cancelDelete()
+  await store.saveData()
+}
 </script>
