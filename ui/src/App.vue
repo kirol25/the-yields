@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-950 text-gray-100">
+  <div class="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
     <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
@@ -40,9 +40,15 @@
       </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-8">
+    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
       <RouterView />
     </main>
+
+    <footer class="mt-auto">
+      <div class="max-w-7xl mx-auto px-6 py-4 border-t border-gray-800 text-center">
+        <span class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. All rights reserved.</span>
+      </div>
+    </footer>
 
     <ProfileBlade :open="bladeOpen" @close="bladeOpen = false" />
   </div>
