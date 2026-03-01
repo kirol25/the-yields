@@ -30,32 +30,23 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js'
 import { useDataStore } from '../stores/dataStore.js'
+import { useSettingsStore } from '../stores/settingsStore.js'
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-)
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const store = useDataStore()
+const settings = useSettingsStore()
 const filter = ref('all')
 
 const filterOptions = [
   { value: 'all', label: 'All' },
-  { value: 'dividends', label: 'Dividends' },
-  { value: 'yields', label: 'Yields' },
+  { value: 'dividends', label: 'Dividends only' },
+  { value: 'yields', label: 'Yields only' },
 ]
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -75,11 +66,9 @@ function sumByMonth(section) {
 const dividendTotals = computed(() => sumByMonth(store.yearData.dividends || {}))
 const yieldTotals = computed(() => sumByMonth(store.yearData.yields || {}))
 
-const hasData = computed(() => {
-  return (
-    dividendTotals.value.some((v) => v > 0) || yieldTotals.value.some((v) => v > 0)
-  )
-})
+const hasData = computed(
+  () => dividendTotals.value.some((v) => v > 0) || yieldTotals.value.some((v) => v > 0),
+)
 
 const chartData = computed(() => {
   const datasets = []
@@ -90,7 +79,7 @@ const chartData = computed(() => {
       backgroundColor: 'rgba(52, 211, 153, 0.8)',
       borderColor: 'rgb(52, 211, 153)',
       borderWidth: 1,
-      stack: 'combined',
+      borderRadius: 4,
     })
   }
   if (filter.value !== 'dividends') {
@@ -100,39 +89,32 @@ const chartData = computed(() => {
       backgroundColor: 'rgba(96, 165, 250, 0.8)',
       borderColor: 'rgb(96, 165, 250)',
       borderWidth: 1,
-      stack: 'combined',
+      borderRadius: 4,
     })
   }
   return { labels: MONTHS, datasets }
 })
 
-const chartOptions = {
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: {
-      labels: { color: '#d1d5db' },
-    },
+    legend: { labels: { color: '#d1d5db' } },
     tooltip: {
       callbacks: {
-        label: (ctx) => ` ${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}`,
+        label: (ctx) => ` ${ctx.dataset.label}: ${settings.fmt(ctx.parsed.y)}`,
       },
     },
   },
   scales: {
     x: {
-      stacked: true,
       ticks: { color: '#9ca3af' },
       grid: { color: 'rgba(75,85,99,0.3)' },
     },
     y: {
-      stacked: true,
-      ticks: {
-        color: '#9ca3af',
-        callback: (v) => `$${v}`,
-      },
+      ticks: { color: '#9ca3af', callback: (v) => settings.fmt(v) },
       grid: { color: 'rgba(75,85,99,0.3)' },
     },
   },
-}
+}))
 </script>

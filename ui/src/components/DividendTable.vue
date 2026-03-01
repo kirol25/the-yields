@@ -21,17 +21,26 @@
           :key="ticker"
           class="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
         >
-          <td class="py-2 pr-4 font-mono font-medium text-emerald-400">{{ ticker }}</td>
+          <td class="py-2 pr-4">
+            <a
+              :href="`https://finance.yahoo.com/quote/${ticker}/`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-mono font-medium text-emerald-400 hover:text-emerald-300 hover:underline transition-colors"
+            >
+              {{ ticker }}
+            </a>
+          </td>
           <td class="py-2 pr-4 text-gray-300">{{ dividends[ticker].name || '' }}</td>
           <td
             v-for="m in MONTHS"
             :key="m.value"
             class="py-2 px-2 text-center text-gray-300"
           >
-            {{ dividends[ticker].months?.[m.value] != null ? `$${dividends[ticker].months[m.value].toFixed(2)}` : '–' }}
+            {{ dividends[ticker].months?.[m.value] != null ? settings.fmt(dividends[ticker].months[m.value]) : '–' }}
           </td>
           <td class="py-2 px-2 text-right font-medium text-emerald-400">
-            ${{ rowTotal(ticker) }}
+            {{ settings.fmt(rowTotal(ticker)) }}
           </td>
         </tr>
       </tbody>
@@ -43,10 +52,10 @@
             :key="m.value"
             class="py-2 px-2 text-center font-medium text-gray-200"
           >
-            ${{ colTotal(m.value) }}
+            {{ settings.fmt(colTotal(m.value)) }}
           </td>
           <td class="py-2 px-2 text-right font-medium text-emerald-300">
-            ${{ grandTotal }}
+            {{ settings.fmt(grandTotal) }}
           </td>
         </tr>
       </tfoot>
@@ -60,8 +69,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useDataStore } from '../stores/dataStore.js'
+import { useSettingsStore } from '../stores/settingsStore.js'
 
 const store = useDataStore()
+const settings = useSettingsStore()
 
 const MONTHS = [
   { value: '01', label: 'Jan' },
@@ -82,21 +93,19 @@ const dividends = computed(() => store.yearData.dividends || {})
 const tickers = computed(() => Object.keys(dividends.value))
 
 function rowTotal(ticker) {
-  return Object.values(dividends.value[ticker]?.months || {})
-    .reduce((a, b) => a + b, 0)
-    .toFixed(2)
+  return Object.values(dividends.value[ticker]?.months || {}).reduce((a, b) => a + b, 0)
 }
 
 function colTotal(monthKey) {
-  return Object.values(dividends.value)
-    .reduce((sum, entry) => sum + (entry.months?.[monthKey] || 0), 0)
-    .toFixed(2)
+  return Object.values(dividends.value).reduce(
+    (sum, entry) => sum + (entry.months?.[monthKey] || 0),
+    0,
+  )
 }
 
 const grandTotal = computed(() =>
   Object.values(dividends.value)
     .flatMap((e) => Object.values(e.months || {}))
-    .reduce((a, b) => a + b, 0)
-    .toFixed(2),
+    .reduce((a, b) => a + b, 0),
 )
 </script>

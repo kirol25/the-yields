@@ -6,6 +6,7 @@ export const useDataStore = defineStore('data', () => {
   const currentYear = ref(new Date().getFullYear())
   const years = ref([])
   const yearData = ref({ dividends: {}, yields: {} })
+  const allYearsData = ref({}) // { 2024: { dividends: {}, yields: {} }, ... }
   const loading = ref(false)
 
   async function fetchYears() {
@@ -22,15 +23,24 @@ export const useDataStore = defineStore('data', () => {
       const { data } = await axios.get(`/api/data/${year}`)
       yearData.value = data
       currentYear.value = year
+      allYearsData.value[year] = data
     } finally {
       loading.value = false
     }
   }
 
+  async function loadAllYears() {
+    const results = await Promise.all(
+      years.value.map((year) => axios.get(`/api/data/${year}`).then((r) => [year, r.data])),
+    )
+    allYearsData.value = Object.fromEntries(results)
+  }
+
   async function saveData() {
     await axios.put(`/api/data/${currentYear.value}`, yearData.value)
     await fetchYears()
+    await loadAllYears()
   }
 
-  return { currentYear, years, yearData, loading, fetchYears, loadYear, saveData }
+  return { currentYear, years, yearData, allYearsData, loading, fetchYears, loadYear, loadAllYears, saveData }
 })
