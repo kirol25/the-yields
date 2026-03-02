@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Bar v-if="hasData" :data="chartData" :options="chartOptions" class="max-h-80" />
+    <Bar v-if="hasData" :data="chartData" :options="chartOptions" class="h-80" />
     <div v-else class="flex items-center justify-center h-64 text-gray-500 text-sm">
       No yearly data available yet. Add entries across multiple years to see trends.
     </div>
