@@ -4,6 +4,22 @@
     <div v-else class="flex items-center justify-center h-64 text-gray-500 text-sm">
       No yearly data available yet. Add entries across multiple years to see trends.
     </div>
+
+    <!-- Yearly summary table -->
+    <div v-if="hasData" class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div
+        v-for="(year, i) in store.years"
+        :key="year"
+        class="bg-gray-800/50 rounded-lg p-3 text-center"
+      >
+        <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">{{ year }}</p>
+        <p class="text-sm font-medium text-emerald-400">{{ settings.fmt(dividendsByYear[i]) }}</p>
+        <p class="text-sm font-medium text-blue-400">{{ settings.fmt(yieldsByYear[i]) }}</p>
+        <p class="text-xs text-gray-500 mt-1 border-t border-gray-700 pt-1">
+          {{ settings.fmt(dividendsByYear[i] + yieldsByYear[i]) }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
