@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">{{ t('dashboard.title') }}</h1>
-      <YearSelector />
+      <YearSelector v-if="activeTab !== 'yearly'" />
     </div>
 
     <!-- Summary cards -->
