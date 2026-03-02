@@ -12,21 +12,21 @@
             class="text-sm font-medium transition-colors hover:text-emerald-400"
             :class="$route.path === '/' ? 'text-emerald-400' : 'text-gray-400'"
           >
-            Dashboard
+            {{ t('nav.dashboard') }}
           </RouterLink>
           <RouterLink
             to="/dividends"
             class="text-sm font-medium transition-colors hover:text-emerald-400"
             :class="$route.path === '/dividends' ? 'text-emerald-400' : 'text-gray-400'"
           >
-            Dividends
+            {{ t('nav.dividends') }}
           </RouterLink>
           <RouterLink
             to="/yields"
             class="text-sm font-medium transition-colors hover:text-emerald-400"
             :class="$route.path === '/yields' ? 'text-emerald-400' : 'text-gray-400'"
           >
-            Yields
+            {{ t('nav.yields') }}
           </RouterLink>
 
           <button
@@ -46,7 +46,7 @@
 
     <footer class="mt-auto">
       <div class="max-w-7xl mx-auto px-6 py-4 border-t border-gray-800 text-center">
-        <span class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. All rights reserved.</span>
+        <span class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}</span>
       </div>
     </footer>
 
@@ -56,11 +56,13 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
 import ProfileBlade from './components/ProfileBlade.vue'
 
+const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()

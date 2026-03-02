@@ -5,16 +5,16 @@
       <!-- Logo -->
       <div class="text-center mb-8">
         <span class="text-3xl font-bold text-emerald-400 tracking-tight">the-yield</span>
-        <p class="mt-2 text-sm text-gray-500">Track your dividends and savings yields</p>
+        <p class="mt-2 text-sm text-gray-500">{{ t('login.tagline') }}</p>
       </div>
 
       <!-- Card -->
       <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h1 class="text-lg font-semibold text-white mb-6">Sign in</h1>
+        <h1 class="text-lg font-semibold text-white mb-6">{{ t('login.title') }}</h1>
 
         <form @submit.prevent="submit" class="space-y-4">
           <div>
-            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">Email</label>
+            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">{{ t('login.email') }}</label>
             <input
               id="email"
               v-model="email"
@@ -27,7 +27,7 @@
           </div>
 
           <div>
-            <label for="password" class="block text-xs font-medium text-gray-400 mb-1">Password</label>
+            <label for="password" class="block text-xs font-medium text-gray-400 mb-1">{{ t('login.password') }}</label>
             <input
               id="password"
               v-model="password"
@@ -47,19 +47,19 @@
             class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm transition-colors mt-2"
           >
             <Spinner v-if="loading" />
-            {{ loading ? 'Signing in…' : 'Sign in' }}
+            {{ loading ? t('login.signingIn') : t('login.submit') }}
           </button>
         </form>
 
         <p class="mt-5 text-center text-xs text-gray-500">
-          Don't have an account?
-          <RouterLink to="/register" class="text-emerald-400 hover:text-emerald-300">Create one</RouterLink>
+          {{ t('login.noAccount') }}
+          <RouterLink to="/register" class="text-emerald-400 hover:text-emerald-300">{{ t('login.createOne') }}</RouterLink>
         </p>
       </div>
 
       <!-- Footer -->
       <p class="text-center text-xs text-gray-700 mt-6">
-        © {{ new Date().getFullYear() }} Lorik Bajrami. All rights reserved.
+        © {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}
       </p>
     </div>
   </div>
@@ -67,9 +67,11 @@
 
 <script setup>
 import { ref, defineComponent, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 
+const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
 

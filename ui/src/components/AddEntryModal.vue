@@ -3,28 +3,28 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" @click.self="$emit('close')">
     <div class="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md shadow-2xl">
       <h2 class="text-lg font-semibold mb-4">
-        Add {{ props.type === 'dividend' ? 'Dividend' : 'Yield' }}
+        {{ props.type === 'dividend' ? t('modal.addDividend') : t('modal.addYield') }}
       </h2>
 
       <div class="space-y-4">
         <!-- Ticker / Bank selector -->
         <div>
           <label class="block text-sm text-gray-400 mb-1">
-            {{ props.type === 'dividend' ? 'Ticker' : 'Bank / Account' }}
+            {{ props.type === 'dividend' ? t('modal.ticker') : t('modal.bankAccount') }}
           </label>
           <select
             v-model="selectedKey"
             class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option v-for="key in props.existingKeys" :key="key" :value="key">{{ key }}</option>
-            <option value="__new__">+ Add new</option>
+            <option value="__new__">{{ t('modal.addNew') }}</option>
           </select>
         </div>
 
         <!-- New name input -->
         <div v-if="selectedKey === '__new__'">
           <label class="block text-sm text-gray-400 mb-1">
-            {{ props.type === 'dividend' ? 'Ticker symbol' : 'Name' }}
+            {{ props.type === 'dividend' ? t('modal.tickerSymbol') : t('modal.name') }}
           </label>
           <input
             v-model="newKey"
@@ -34,11 +34,11 @@
           />
           <!-- Name field for dividends -->
           <div v-if="props.type === 'dividend'" class="mt-2">
-            <label class="block text-sm text-gray-400 mb-1">Company name (optional)</label>
+            <label class="block text-sm text-gray-400 mb-1">{{ t('modal.companyNameOptional') }}</label>
             <input
               v-model="newName"
               type="text"
-              placeholder="e.g. Apple Inc."
+              :placeholder="t('modal.companyNamePlaceholder')"
               class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
@@ -46,18 +46,18 @@
 
         <!-- Month selector -->
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Month</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ t('modal.month') }}</label>
           <select
             v-model="selectedMonth"
             class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            <option v-for="m in MONTHS" :key="m.value" :value="m.value">{{ m.label }}</option>
+            <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
           </select>
         </div>
 
         <!-- Amount -->
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Amount ($)</label>
+          <label class="block text-sm text-gray-400 mb-1">{{ t('modal.amount') }}</label>
           <input
             v-model.number="amount"
             type="number"
@@ -74,14 +74,14 @@
           @click="$emit('close')"
           class="px-4 py-2 text-sm rounded-md bg-gray-800 hover:bg-gray-700 transition-colors"
         >
-          Cancel
+          {{ t('common.cancel') }}
         </button>
         <button
           @click="submit"
           :disabled="!canSubmit"
           class="px-4 py-2 text-sm rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         >
-          Save
+          {{ t('common.save') }}
         </button>
       </div>
     </div>
@@ -91,8 +91,12 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
-import { MONTHS } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
+
+const { t } = useI18n()
+const { months } = useMonths()
 
 const props = defineProps({
   type: { type: String, required: true }, // 'dividend' | 'yield'
