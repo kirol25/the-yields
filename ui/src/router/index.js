@@ -8,12 +8,16 @@ import Register from '../views/Register.vue'
 import Confirm from '../views/Confirm.vue'
 import Profile from '../views/Profile.vue'
 import Settings from '../views/Settings.vue'
+import Impressum from '../views/Impressum.vue'
+import Datenschutz from '../views/Datenschutz.vue'
 
 const routes = [
   { path: '/login', component: Login, meta: { public: true } },
   { path: '/register', component: Register, meta: { public: true } },
   { path: '/confirm', component: Confirm, meta: { public: true } },
   { path: '/', component: Dashboard },
+  { path: '/impressum', component: Impressum, meta: { public: true } },
+  { path: '/datenschutz', component: Datenschutz, meta: { public: true } },
   { path: '/dividends', component: Dividends },
   { path: '/yields', component: Yields },
   { path: '/profile', component: Profile },
