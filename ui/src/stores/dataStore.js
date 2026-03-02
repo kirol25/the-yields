@@ -31,13 +31,13 @@ export const useDataStore = defineStore('data', () => {
 
   async function loadAllYears() {
     const results = await Promise.all(
-      years.value.map((year) => axios.get(`/api/data/${year}`).then((r) => [year, r.data])),
+      years.value.map((year) => axios.get(`${API_BASE}/api/data/${year}`).then((r) => [year, r.data])),
     )
     allYearsData.value = Object.fromEntries(results)
   }
 
   async function saveData() {
-    await axios.put(`/api/data/${currentYear.value}`, yearData.value)
+    await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value)
     await fetchYears()
     await loadAllYears()
   }

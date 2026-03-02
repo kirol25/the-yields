@@ -9,21 +9,24 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.dividends') }} {{ store.currentYear }}
+          {{ t('dashboard.dividends') }}
+          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
         </p>
-        <p class="text-2xl font-bold text-emerald-400">{{ settings.fmt(totalDividends) }}</p>
+        <p class="text-2xl font-bold text-emerald-400">{{ settings.fmt(cardDividends) }}</p>
       </div>
       <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.yields') }} {{ store.currentYear }}
+          {{ t('dashboard.yields') }}
+          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
         </p>
-        <p class="text-2xl font-bold text-blue-400">{{ settings.fmt(totalYields) }}</p>
+        <p class="text-2xl font-bold text-blue-400">{{ settings.fmt(cardYields) }}</p>
       </div>
       <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
         <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.combined') }} {{ store.currentYear }}
+          {{ t('dashboard.combined') }}
+          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
         </p>
-        <p class="text-2xl font-bold text-white">{{ settings.fmt(totalDividends + totalYields) }}</p>
+        <p class="text-2xl font-bold text-white">{{ settings.fmt(cardDividends + cardYields) }}</p>
       </div>
     </div>
 
@@ -66,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
@@ -95,5 +98,13 @@ function sumSection(section) {
 const totalDividends = computed(() => sumSection(store.yearData.dividends || {}))
 const totalYields = computed(() => sumSection(store.yearData.yields || {}))
 
-onMounted(() => store.loadAllYears())
+const allYearsDividends = computed(() =>
+  Object.values(store.allYearsData).reduce((sum, d) => sum + sumSection(d.dividends || {}), 0),
+)
+const allYearsYields = computed(() =>
+  Object.values(store.allYearsData).reduce((sum, d) => sum + sumSection(d.yields || {}), 0),
+)
+
+const cardDividends = computed(() => activeTab.value === 'yearly' ? allYearsDividends.value : totalDividends.value)
+const cardYields = computed(() => activeTab.value === 'yearly' ? allYearsYields.value : totalYields.value)
 </script>
