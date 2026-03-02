@@ -18,3 +18,44 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Load and return the application settings."""
     return Settings()
+
+
+# --- App description for API docs ---
+_description = """
+# The Yield API
+
+## Overview
+
+Enterprise-grade RESTful API for comprehensive dividend and investment yield management.
+This service provides robust financial data tracking capabilities with real-time analytics
+and portfolio performance monitoring.
+
+## Core Capabilities
+
+### Dividend Management
+- Track dividend income across multiple investment instruments
+- Historical dividend data aggregation and analysis
+- Automated dividend calculation and forecasting
+
+### Yield Analytics
+- Real-time yield calculation and tracking
+- Multi-period performance analysis (monthly, quarterly, yearly)
+- Comparative yield metrics and benchmarking
+
+### Portfolio Intelligence
+- Comprehensive investment performance insights
+- Data-driven portfolio optimization recommendations
+- Advanced reporting and visualization support
+
+## Technical Specifications
+
+- **Architecture**: RESTful API design principles
+- **Security**: Industry-standard authentication and authorization
+- **Performance**: Optimized for high-throughput operations
+- **Scalability**: Cloud-native, horizontally scalable infrastructure
+
+## API Documentation
+
+Complete endpoint documentation, request/response schemas, and integration examples
+are available through the interactive documentation below.
+"""  # noqa: E501

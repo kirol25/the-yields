@@ -1,7 +1,8 @@
 from typing import Any, Literal
 
-from backend.app.api.finance.dependencies import YieldRepositoryType
 from fastapi import HTTPException, status
+
+from app.utils import YieldRepositoryType
 
 
 class YieldService:
