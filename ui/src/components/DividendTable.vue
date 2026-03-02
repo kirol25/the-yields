@@ -65,10 +65,20 @@
               class="accent-red-500 cursor-pointer"
             />
           </th>
-          <th class="text-left py-2 pr-4 text-gray-400 font-medium w-32">Ticker</th>
-          <th class="text-left py-2 pr-4 text-gray-400 font-medium">Name</th>
+          <th class="text-left py-2 pr-4 w-32">
+            <button @click="setSort('ticker')" class="flex items-center gap-1 text-gray-400 font-medium hover:text-gray-200 transition-colors">
+              Ticker
+              <SortIcon :active="sortKey === 'ticker'" :asc="sortDir === 'asc'" />
+            </button>
+          </th>
+          <th class="text-left py-2 pr-4">
+            <button @click="setSort('name')" class="flex items-center gap-1 text-gray-400 font-medium hover:text-gray-200 transition-colors">
+              Name
+              <SortIcon :active="sortKey === 'name'" :asc="sortDir === 'asc'" />
+            </button>
+          </th>
           <th
-            v-for="m in MONTHS"
+            v-for="m in months"
             :key="m.value"
             class="py-2 px-2 text-gray-400 font-medium text-center min-w-[56px]"
           >
@@ -98,7 +108,7 @@
           </td>
           <td class="py-2 pr-4 text-gray-300">{{ dividends[ticker].name || '' }}</td>
           <td
-            v-for="m in MONTHS"
+            v-for="m in months"
             :key="m.value"
             class="py-2 px-2 text-center text-gray-300"
           >
@@ -114,7 +124,7 @@
           <td v-if="deleteMode" />
           <td colspan="2" class="py-2 pr-4 text-gray-400 font-medium">Monthly Total</td>
           <td
-            v-for="m in MONTHS"
+            v-for="m in months"
             :key="m.value"
             class="py-2 px-2 text-center font-medium text-gray-200"
           >
@@ -133,21 +143,41 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineComponent, h } from 'vue'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
-import { MONTHS } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
 import EditEntryModal from './EditEntryModal.vue'
 
 const store = useDataStore()
 const settings = useSettingsStore()
+const { months } = useMonths()
 
 const editingKey = ref(null)
 const deleteMode = ref(false)
 const selected = ref(new Set())
+const sortKey = ref('ticker')
+const sortDir = ref('asc')
+
+function setSort(key) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = 'asc'
+  }
+}
 
 const dividends = computed(() => store.yearData.dividends || {})
-const tickers = computed(() => Object.keys(dividends.value))
+
+const tickers = computed(() => {
+  return Object.keys(dividends.value).slice().sort((a, b) => {
+    const valA = sortKey.value === 'ticker' ? a : (dividends.value[a].name || '').toLowerCase()
+    const valB = sortKey.value === 'ticker' ? b : (dividends.value[b].name || '').toLowerCase()
+    const cmp = valA < valB ? -1 : valA > valB ? 1 : 0
+    return sortDir.value === 'asc' ? cmp : -cmp
+  })
+})
 
 function rowTotal(ticker) {
   return Object.values(dividends.value[ticker]?.months || {}).reduce((a, b) => a + b, 0)
@@ -186,4 +216,19 @@ async function confirmDelete() {
   cancelDelete()
   await store.deleteEntries('dividends', keys)
 }
+
+const SortIcon = defineComponent({
+  props: { active: Boolean, asc: Boolean },
+  render({ active, asc }) {
+    return h('svg', {
+      class: ['w-3 h-3 transition-colors', active ? 'text-emerald-400' : 'text-gray-600'],
+      viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2.5',
+      'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+    }, [
+      active && !asc
+        ? h('path', { d: 'M12 5l-7 7h14l-7-7z M12 5v14' })
+        : h('path', { d: 'M12 19l7-7H5l7 7z M12 19V5' }),
+    ])
+  },
+})
 </script>
