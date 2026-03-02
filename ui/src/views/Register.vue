@@ -5,16 +5,16 @@
       <!-- Logo -->
       <div class="text-center mb-8">
         <span class="text-3xl font-bold text-emerald-400 tracking-tight">the-yield</span>
-        <p class="mt-2 text-sm text-gray-500">Track your dividends and savings yields</p>
+        <p class="mt-2 text-sm text-gray-500">{{ t('login.tagline') }}</p>
       </div>
 
       <!-- Card -->
       <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h1 class="text-lg font-semibold text-white mb-6">Create an account</h1>
+        <h1 class="text-lg font-semibold text-white mb-6">{{ t('register.title') }}</h1>
 
         <form @submit.prevent="submit" class="space-y-4">
           <div>
-            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">Email</label>
+            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">{{ t('register.email') }}</label>
             <input
               id="email"
               v-model="email"
@@ -27,7 +27,7 @@
           </div>
 
           <div>
-            <label for="password" class="block text-xs font-medium text-gray-400 mb-1">Password</label>
+            <label for="password" class="block text-xs font-medium text-gray-400 mb-1">{{ t('register.password') }}</label>
             <input
               id="password"
               v-model="password"
@@ -40,7 +40,7 @@
           </div>
 
           <div>
-            <label for="confirm" class="block text-xs font-medium text-gray-400 mb-1">Confirm password</label>
+            <label for="confirm" class="block text-xs font-medium text-gray-400 mb-1">{{ t('register.confirmPassword') }}</label>
             <input
               id="confirm"
               v-model="confirmPassword"
@@ -60,19 +60,19 @@
             class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm transition-colors mt-2"
           >
             <Spinner v-if="loading" />
-            {{ loading ? 'Creating account…' : 'Create account' }}
+            {{ loading ? t('register.creating') : t('register.submit') }}
           </button>
         </form>
 
         <p class="mt-5 text-center text-xs text-gray-500">
-          Already have an account?
-          <RouterLink to="/login" class="text-emerald-400 hover:text-emerald-300">Sign in</RouterLink>
+          {{ t('register.alreadyAccount') }}
+          <RouterLink to="/login" class="text-emerald-400 hover:text-emerald-300">{{ t('register.signIn') }}</RouterLink>
         </p>
       </div>
 
       <!-- Footer -->
       <p class="text-center text-xs text-gray-700 mt-6">
-        © {{ new Date().getFullYear() }} [Project Maintainer]. All rights reserved.
+        © {{ new Date().getFullYear() }} [Project Maintainer]. {{ t('common.allRightsReserved') }}
       </p>
     </div>
   </div>
@@ -80,9 +80,11 @@
 
 <script setup>
 import { ref, defineComponent, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 
+const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
 
@@ -107,7 +109,7 @@ const Spinner = defineComponent({
 async function submit() {
   error.value = ''
   if (password.value !== confirmPassword.value) {
-    error.value = 'Passwords do not match.'
+    error.value = t('register.passwordMismatch')
     return
   }
   loading.value = true
