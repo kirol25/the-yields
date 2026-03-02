@@ -1,24 +1,10 @@
 <template>
   <div>
-    <Bar v-if="hasData" :data="chartData" :options="chartOptions" class="h-80" />
+    <div v-if="hasData" class="relative h-80">
+      <Bar :data="chartData" :options="chartOptions" :plugins="plugins" />
+    </div>
     <div v-else class="flex items-center justify-center h-64 text-gray-500 text-sm">
       No yearly data available yet. Add entries across multiple years to see trends.
-    </div>
-
-    <!-- Yearly summary table -->
-    <div v-if="hasData" class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div
-        v-for="(year, i) in store.years"
-        :key="year"
-        class="bg-gray-800/50 rounded-lg p-3 text-center"
-      >
-        <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">{{ year }}</p>
-        <p class="text-sm font-medium text-emerald-400">{{ settings.fmt(dividendsByYear[i]) }}</p>
-        <p class="text-sm font-medium text-blue-400">{{ settings.fmt(yieldsByYear[i]) }}</p>
-        <p class="text-xs text-gray-500 mt-1 border-t border-gray-700 pt-1">
-          {{ settings.fmt(dividendsByYear[i] + yieldsByYear[i]) }}
-        </p>
-      </div>
     </div>
   </div>
 </template>
@@ -35,6 +21,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 
@@ -43,30 +30,34 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const store = useDataStore()
 const settings = useSettingsStore()
 
+const plugins = [ChartDataLabels]
+
 function sectionTotal(data, section) {
   return Object.values(data[section] || {})
     .flatMap((e) => Object.values(e.months || {}))
     .reduce((a, b) => a + b, 0)
 }
 
-const dividendsByYear = computed(() =>
-  store.years.map((y) => sectionTotal(store.allYearsData[y] || {}, 'dividends')),
+const ascYears = computed(() => store.years.slice().reverse())
+
+const ascDividends = computed(() =>
+  ascYears.value.map((y) => sectionTotal(store.allYearsData[y] || {}, 'dividends')),
 )
 
-const yieldsByYear = computed(() =>
-  store.years.map((y) => sectionTotal(store.allYearsData[y] || {}, 'yields')),
+const ascYields = computed(() =>
+  ascYears.value.map((y) => sectionTotal(store.allYearsData[y] || {}, 'yields')),
 )
 
 const hasData = computed(
-  () => dividendsByYear.value.some((v) => v > 0) || yieldsByYear.value.some((v) => v > 0),
+  () => ascDividends.value.some((v) => v > 0) || ascYields.value.some((v) => v > 0),
 )
 
 const chartData = computed(() => ({
-  labels: store.years.map(String),
+  labels: ascYears.value.map(String),
   datasets: [
     {
       label: 'Dividends',
-      data: dividendsByYear.value,
+      data: ascDividends.value,
       backgroundColor: 'rgba(52, 211, 153, 0.8)',
       borderColor: 'rgb(52, 211, 153)',
       borderWidth: 1,
@@ -74,7 +65,7 @@ const chartData = computed(() => ({
     },
     {
       label: 'Yields',
-      data: yieldsByYear.value,
+      data: ascYields.value,
       backgroundColor: 'rgba(96, 165, 250, 0.8)',
       borderColor: 'rgb(96, 165, 250)',
       borderWidth: 1,
@@ -96,6 +87,14 @@ const chartOptions = computed(() => ({
           return `Total: ${settings.fmt(total)}`
         },
       },
+    },
+    datalabels: {
+      anchor: 'end',
+      align: 'end',
+      offset: 2,
+      color: '#9ca3af',
+      font: { size: 10, weight: '500' },
+      formatter: (value) => value > 0 ? settings.fmt(value) : '',
     },
   },
   scales: {
