@@ -45,8 +45,17 @@
     </main>
 
     <footer class="mt-auto">
-      <div class="max-w-7xl mx-auto px-6 py-4 border-t border-gray-800 text-center">
-        <span class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}</span>
+      <div class="max-w-7xl mx-auto px-6 py-6 border-t border-gray-800 flex flex-col items-center gap-3">
+        <nav class="flex items-center gap-3">
+          <RouterLink to="/impressum" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+            {{ t('footer.impressum') }}
+          </RouterLink>
+          <span class="w-1 h-1 rounded-full bg-gray-700" />
+          <RouterLink to="/datenschutz" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+            {{ t('footer.datenschutz') }}
+          </RouterLink>
+        </nav>
+        <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}</p>
       </div>
     </footer>
 
