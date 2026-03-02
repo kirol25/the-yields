@@ -110,5 +110,9 @@
   "languages": {
     "en": "English",
     "de": "Deutsch"
+  },
+  "footer": {
+    "impressum": "Legal Notice",
+    "datenschutz": "Privacy Policy"
   }
 }
