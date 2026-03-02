@@ -5,17 +5,17 @@
       <!-- Logo -->
       <div class="text-center mb-8">
         <span class="text-3xl font-bold text-emerald-400 tracking-tight">the-yield</span>
-        <p class="mt-2 text-sm text-gray-500">Track your dividends and savings yields</p>
+        <p class="mt-2 text-sm text-gray-500">{{ t('login.tagline') }}</p>
       </div>
 
       <!-- Card -->
       <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h1 class="text-lg font-semibold text-white mb-2">Confirm your email</h1>
-        <p class="text-xs text-gray-500 mb-6">We sent a 6-digit code to your email address.</p>
+        <h1 class="text-lg font-semibold text-white mb-2">{{ t('confirm.title') }}</h1>
+        <p class="text-xs text-gray-500 mb-6">{{ t('confirm.subtitle') }}</p>
 
         <form @submit.prevent="submit" class="space-y-4">
           <div>
-            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">Email</label>
+            <label for="email" class="block text-xs font-medium text-gray-400 mb-1">{{ t('confirm.email') }}</label>
             <input
               id="email"
               v-model="email"
@@ -28,7 +28,7 @@
           </div>
 
           <div>
-            <label for="code" class="block text-xs font-medium text-gray-400 mb-1">Confirmation code</label>
+            <label for="code" class="block text-xs font-medium text-gray-400 mb-1">{{ t('confirm.code') }}</label>
             <input
               id="code"
               v-model="code"
@@ -51,26 +51,26 @@
             class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm transition-colors mt-2"
           >
             <Spinner v-if="loading" />
-            {{ loading ? 'Confirming…' : 'Confirm' }}
+            {{ loading ? t('confirm.confirming') : t('confirm.submit') }}
           </button>
         </form>
 
         <p class="mt-5 text-center text-xs text-gray-500">
-          Didn't receive a code?
+          {{ t('confirm.noCode') }}
           <button
             type="button"
             :disabled="resending"
             @click="resend"
             class="text-emerald-400 hover:text-emerald-300 disabled:opacity-50"
           >
-            Resend
+            {{ t('confirm.resend') }}
           </button>
         </p>
       </div>
 
       <!-- Footer -->
       <p class="text-center text-xs text-gray-700 mt-6">
-        © {{ new Date().getFullYear() }} [Project Maintainer]. All rights reserved.
+        © {{ new Date().getFullYear() }} [Project Maintainer]. {{ t('common.allRightsReserved') }}
       </p>
     </div>
   </div>
@@ -78,9 +78,11 @@
 
 <script setup>
 import { ref, defineComponent, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 
+const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
 
@@ -123,7 +125,7 @@ async function resend() {
   resending.value = true
   try {
     await auth.resendCode(email.value)
-    resendMsg.value = 'Code resent — check your inbox.'
+    resendMsg.value = t('confirm.codeSent')
   } catch (err) {
     error.value = err.message ?? 'Could not resend code.'
   } finally {

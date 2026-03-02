@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "dividends": "Dividenden",
+    "yields": "Zinsen"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "addEntry": "+ Eintrag hinzuf\u00fcgen",
+    "allRightsReserved": "Alle Rechte vorbehalten."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "dividends": "Dividenden",
+    "yields": "Zinsen",
+    "combined": "Gesamt",
+    "monthly": "Monatlich",
+    "quarterly": "Quartalsweise",
+    "yearly": "J\u00e4hrlich",
+    "monthlyBreakdown": "Monatliche Aufschl\u00fcsselung \u2014 {year}",
+    "quarterlyBreakdown": "Quartalsweise Aufschl\u00fcsselung \u2014 {year}",
+    "incomeByYear": "Einkommen nach Jahr"
+  },
+  "dividends": {
+    "title": "Dividenden"
+  },
+  "yields": {
+    "title": "Zinsen"
+  },
+  "profile": {
+    "title": "Profil",
+    "noName": "Kein Name angegeben",
+    "name": "Name",
+    "namePlaceholder": "Ihr Name",
+    "email": "E-Mail",
+    "emailManaged": "Die E-Mail-Adresse wird von Ihrem Kontoanbieter verwaltet."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "preferences": "Einstellungen",
+    "currency": "W\u00e4hrung",
+    "language": "Sprache"
+  },
+  "blade": {
+    "account": "Konto",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden"
+  },
+  "modal": {
+    "addDividend": "Dividende hinzuf\u00fcgen",
+    "addYield": "Zinsen hinzuf\u00fcgen",
+    "ticker": "Ticker",
+    "bankAccount": "Bank / Konto",
+    "addNew": "+ Neu hinzuf\u00fcgen",
+    "tickerSymbol": "Ticker-Symbol",
+    "name": "Name",
+    "companyNameOptional": "Unternehmensname (optional)",
+    "month": "Monat",
+    "amount": "Betrag ($)",
+    "companyNamePlaceholder": "Unternehmensname"
+  },
+  "months": {
+    "01": { "short": "Jan", "label": "Januar" },
+    "02": { "short": "Feb", "label": "Februar" },
+    "03": { "short": "M\u00e4r", "label": "M\u00e4rz" },
+    "04": { "short": "Apr", "label": "April" },
+    "05": { "short": "Mai", "label": "Mai" },
+    "06": { "short": "Jun", "label": "Juni" },
+    "07": { "short": "Jul", "label": "Juli" },
+    "08": { "short": "Aug", "label": "August" },
+    "09": { "short": "Sep", "label": "September" },
+    "10": { "short": "Okt", "label": "Oktober" },
+    "11": { "short": "Nov", "label": "November" },
+    "12": { "short": "Dez", "label": "Dezember" }
+  },
+  "login": {
+    "tagline": "Verfolge deine Dividenden und SparZinsen",
+    "title": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signingIn": "Anmeldung l\u00e4uft\u2026",
+    "submit": "Anmelden",
+    "noAccount": "Noch kein Konto?",
+    "createOne": "Jetzt registrieren"
+  },
+  "register": {
+    "title": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort best\u00e4tigen",
+    "creating": "Konto wird erstellt\u2026",
+    "submit": "Konto erstellen",
+    "passwordMismatch": "Passw\u00f6rter stimmen nicht \u00fcberein.",
+    "alreadyAccount": "Bereits ein Konto?",
+    "signIn": "Anmelden"
+  },
+  "confirm": {
+    "title": "E-Mail best\u00e4tigen",
+    "subtitle": "Wir haben einen 6-stelligen Code an Ihre E-Mail-Adresse gesendet.",
+    "email": "E-Mail",
+    "code": "Best\u00e4tigungscode",
+    "confirming": "Best\u00e4tigung l\u00e4uft\u2026",
+    "submit": "Best\u00e4tigen",
+    "noCode": "Keinen Code erhalten?",
+    "resend": "Erneut senden",
+    "codeSent": "Code erneut gesendet \u2014 bitte pr\u00fcfen Sie Ihren Posteingang."
+  },
+  "languages": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}

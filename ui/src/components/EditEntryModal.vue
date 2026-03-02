@@ -12,7 +12,7 @@
           <input
             v-model="entryName"
             type="text"
-            placeholder="Company name"
+            :placeholder="t('modal.companyNamePlaceholder')"
             class="bg-transparent text-sm text-gray-200 placeholder-gray-600 focus:outline-none border-b border-gray-700 focus:border-gray-400 transition-colors w-48"
           />
         </div>
@@ -20,7 +20,7 @@
 
       <!-- Month grid -->
       <div class="grid grid-cols-4 gap-2">
-        <div v-for="m in MONTHS" :key="m.value">
+        <div v-for="m in months" :key="m.value">
           <label class="block text-xs text-gray-500 mb-1 text-center">{{ m.short }}</label>
           <input
             v-model.number="monthValues[m.value]"
@@ -39,13 +39,13 @@
           @click="$emit('close')"
           class="px-4 py-2 text-sm rounded-md bg-gray-800 hover:bg-gray-700 transition-colors"
         >
-          Cancel
+          {{ t('common.cancel') }}
         </button>
         <button
           @click="save"
           class="px-4 py-2 text-sm rounded-md bg-emerald-600 hover:bg-emerald-500 transition-colors font-medium"
         >
-          Save
+          {{ t('common.save') }}
         </button>
       </div>
     </div>
@@ -55,8 +55,12 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
-import { MONTHS } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
+
+const { t } = useI18n()
+const { months } = useMonths()
 
 const props = defineProps({
   type: { type: String, required: true }, // 'dividend' | 'yield'
@@ -69,7 +73,9 @@ const section = props.type === 'dividend' ? 'dividends' : 'yields'
 const entry = store.yearData[section][props.entryKey]
 
 const entryName = ref(entry?.name ?? '')
-const monthValues = ref(Object.fromEntries(MONTHS.map((m) => [m.value, entry?.months?.[m.value] ?? null])))
+const monthValues = ref(
+  Object.fromEntries(['01','02','03','04','05','06','07','08','09','10','11','12'].map((v) => [v, entry?.months?.[v] ?? null]))
+)
 
 function save() {
   const months = {}

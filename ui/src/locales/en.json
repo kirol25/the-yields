@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "dividends": "Dividends",
+    "yields": "Yields"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "addEntry": "+ Add Entry",
+    "allRightsReserved": "All rights reserved."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "dividends": "Dividends",
+    "yields": "Yields",
+    "combined": "Combined",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "yearly": "Yearly",
+    "monthlyBreakdown": "Monthly breakdown — {year}",
+    "quarterlyBreakdown": "Quarterly breakdown — {year}",
+    "incomeByYear": "Income by year"
+  },
+  "dividends": {
+    "title": "Dividends"
+  },
+  "yields": {
+    "title": "Yields"
+  },
+  "profile": {
+    "title": "Profile",
+    "noName": "No name set",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailManaged": "Email is managed by your account provider."
+  },
+  "settings": {
+    "title": "Settings",
+    "preferences": "Preferences",
+    "currency": "Currency",
+    "language": "Language"
+  },
+  "blade": {
+    "account": "Account",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "modal": {
+    "addDividend": "Add Dividend",
+    "addYield": "Add Yield",
+    "ticker": "Ticker",
+    "bankAccount": "Bank / Account",
+    "addNew": "+ Add new",
+    "tickerSymbol": "Ticker symbol",
+    "name": "Name",
+    "companyNameOptional": "Company name (optional)",
+    "month": "Month",
+    "amount": "Amount ($)",
+    "companyNamePlaceholder": "Company name"
+  },
+  "months": {
+    "01": { "short": "Jan", "label": "January" },
+    "02": { "short": "Feb", "label": "February" },
+    "03": { "short": "Mar", "label": "March" },
+    "04": { "short": "Apr", "label": "April" },
+    "05": { "short": "May", "label": "May" },
+    "06": { "short": "Jun", "label": "June" },
+    "07": { "short": "Jul", "label": "July" },
+    "08": { "short": "Aug", "label": "August" },
+    "09": { "short": "Sep", "label": "September" },
+    "10": { "short": "Oct", "label": "October" },
+    "11": { "short": "Nov", "label": "November" },
+    "12": { "short": "Dec", "label": "December" }
+  },
+  "login": {
+    "tagline": "Track your dividends and savings yields",
+    "title": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "signingIn": "Signing in\u2026",
+    "submit": "Sign in",
+    "noAccount": "Don't have an account?",
+    "createOne": "Create one"
+  },
+  "register": {
+    "title": "Create an account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "creating": "Creating account\u2026",
+    "submit": "Create account",
+    "passwordMismatch": "Passwords do not match.",
+    "alreadyAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "confirm": {
+    "title": "Confirm your email",
+    "subtitle": "We sent a 6-digit code to your email address.",
+    "email": "Email",
+    "code": "Confirmation code",
+    "confirming": "Confirming\u2026",
+    "submit": "Confirm",
+    "noCode": "Didn't receive a code?",
+    "resend": "Resend",
+    "codeSent": "Code resent \u2014 check your inbox."
+  },
+  "languages": {
+    "en": "English",
+    "de": "Deutsch"
+  }
+}
