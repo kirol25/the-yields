@@ -12,10 +12,9 @@ export const useDataStore = defineStore('data', () => {
 
   async function fetchYears() {
     const { data } = await axios.get(`${API_BASE}/api/years`)
-    years.value = data.length ? data : [currentYear.value]
-    if (!years.value.includes(currentYear.value)) {
-      years.value = [...years.value, currentYear.value].sort((a, b) => a - b)
-    }
+    const base = data.length ? data : [currentYear.value]
+    const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
+    years.value = withCurrent.slice().sort((a, b) => b - a)
   }
 
   async function loadYear(year) {
