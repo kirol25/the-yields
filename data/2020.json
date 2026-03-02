@@ -1,0 +1,138 @@
+{
+  "dividends": {
+    "ABBV": {
+      "name": "AbbVie",
+      "months": {
+        "12": 0.4
+      }
+    },
+    "MO": {
+      "name": "Altria Group",
+      "months": {
+        "12": 1.22
+      }
+    },
+    "AAPL": {
+      "name": "Apple",
+      "months": {
+        "08": 0.26,
+        "11": 0.45
+      }
+    },
+    "T": {
+      "name": "AT & T",
+      "months": {
+        "12": 12.73
+      }
+    },
+    "BMY": {
+      "name": "Bristol Myers Squibb",
+      "months": {
+        "12": 0.18
+      }
+    },
+    "CSCO": {
+      "name": "Cisco Systems",
+      "months": {
+        "12": 1.62
+      }
+    },
+    "KO": {
+      "name": "Coca-Cola",
+      "months": {
+        "07": 1.85,
+        "10": 5.08,
+        "12": 5.5
+      }
+    },
+    "MSCIWORLD": {
+      "name": "Comstage MSCI World",
+      "months": {
+        "09": 17.69
+      }
+    },
+    "JNJ": {
+      "name": "Johnson & Johnson",
+      "months": {
+        "08": 0.65,
+        "11": 1.85
+      }
+    },
+    "KHC": {
+      "name": "Kraft Heinz",
+      "months": {
+        "12": 1.56
+      }
+    },
+    "LTC": {
+      "name": "LTC Properties",
+      "months": {
+        "08": 0.36,
+        "10": 0.63,
+        "12": 0.82
+      }
+    },
+    "MCD": {
+      "name": "McDonalds",
+      "months": {
+        "12": 0.92
+      }
+    },
+    "MSFT": {
+      "name": "Microsoft",
+      "months": {
+        "08": 0.17,
+        "11": 0.59
+      }
+    },
+    "OHI": {
+      "name": "Omega Healthcare Investors",
+      "months": {
+        "12": 2.8
+      }
+    },
+    "PG": {
+      "name": "Procter & Gamble",
+      "months": {
+        "12": 0.99
+      }
+    },
+    "O": {
+      "name": "Realty Income Corp.",
+      "months": {
+        "08": 0.22,
+        "09": 0.22,
+        "10": 0.48,
+        "12": 0.66
+      }
+    },
+    "SHEL": {
+      "name": "Royal Dutch Shell (A)",
+      "months": {
+        "08": 3.45,
+        "11": 3.54
+      }
+    },
+    "TXN": {
+      "name": "Texas Instruments",
+      "months": {
+        "12": 0.78
+      }
+    },
+    "UL": {
+      "name": "Unilever N.V.",
+      "months": {
+        "08": 0.26,
+        "10": 1.13
+      }
+    },
+    "V": {
+      "name": "Visa Inc.",
+      "months": {
+        "08": 0.42,
+        "11": 0.64
+      }
+    }
+  },
+  "yields": {}
+}
