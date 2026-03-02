@@ -89,7 +89,7 @@ watch(
   async (authed) => {
     if (authed) {
       await store.fetchYears()
-      await store.loadYear(store.currentYear)
+      await Promise.all([store.loadYear(store.currentYear), store.loadAllYears()])
     }
   },
   { immediate: true },
