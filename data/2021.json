@@ -224,5 +224,11 @@
       }
     }
   },
-  "yields": {}
+  "yields": {
+    "Sparkasse": {
+      "months": {
+        "12": 300
+      }
+    }
+  }
 }
