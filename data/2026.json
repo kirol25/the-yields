@@ -1,15 +1,94 @@
 {
   "dividends": {
+    "ABBV": {
+      "name": "AbbVie",
+      "months": {
+        "02": 14.98
+      }
+    },
     "AAPL": {
       "name": "Apple",
       "months": {
-        "03": 20
+        "02": 2.04
       }
     },
-    "JNJ": {
-      "name": "Johnson & Johnson",
+    "ASML": {
+      "name": "ASML",
       "months": {
-        "03": 20
+        "02": 6.8
+      }
+    },
+    "BMY": {
+      "name": "Bristol Myers Squibb",
+      "months": {
+        "02": 24.39
+      }
+    },
+    "BTI": {
+      "name": "British American Tobacco",
+      "months": {
+        "02": 37.99
+      }
+    },
+    "AVGO": {
+      "name": "Broadcom",
+      "months": {
+        "01": 6.61
+      }
+    },
+    "CSCO": {
+      "name": "Cisco Systems",
+      "months": {
+        "01": 10.06
+      }
+    },
+    "CVS": {
+      "name": "CVS Health",
+      "months": {
+        "02": 20.03
+      }
+    },
+    "DHR": {
+      "name": "Danaher",
+      "months": {
+        "02": 2.99
+      }
+    },
+    "NVDA": {
+      "name": "NVIDIA",
+      "months": {
+        "01": 0.22
+      }
+    },
+    "PEP": {
+      "name": "PepsiCo",
+      "months": {
+        "01": 18.59
+      }
+    },
+    "PG": {
+      "name": "Procter & Gamble",
+      "months": {
+        "02": 9.15
+      }
+    },
+    "O": {
+      "name": "Realty Income Corp.",
+      "months": {
+        "01": 11.68,
+        "02": 11.47
+      }
+    },
+    "TXN": {
+      "name": "Texas Instruments",
+      "months": {
+        "02": 22.27
+      }
+    },
+    "UL": {
+      "name": "Unilever N.V.",
+      "months": {
+        "01": 5.23
       }
     }
   },
