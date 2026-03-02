@@ -6,8 +6,8 @@ from app import settings
 from app.api.finance.repository import YieldRepository
 from app.api.finance.s3_repository import S3YieldRepository
 from app.api.finance.service import YieldService
+from app.utils import YieldRepositoryType
 
-YieldRepositoryType = YieldRepository | S3YieldRepository
 # ── dependency factories ──────────────────────────────────────────────────────
 
 
