@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     )
     S3_BUCKET: str = Field("the-yield-data", description="S3 bucket name")
     S3_PREFIX: str = Field("test-user", description="S3 prefix for storing data")
+    CORS_ORIGINS: str = Field(
+        "http://localhost:5173",
+        description="Comma-separated list of allowed CORS origins",
+    )
 
 
 @lru_cache
