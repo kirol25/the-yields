@@ -54,7 +54,12 @@
     "title": "Settings",
     "preferences": "Preferences",
     "currency": "Currency",
-    "language": "Language"
+    "language": "Language",
+    "data": "Data",
+    "exportCsv": "Export as CSV",
+    "exportCsvDesc": "Download all your dividend and yield data across all years as a CSV file.",
+    "exporting": "Exporting\u2026",
+    "noData": "No data to export yet."
   },
   "blade": {
     "account": "Account",
