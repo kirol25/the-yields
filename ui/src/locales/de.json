@@ -100,7 +100,7 @@
     "12": { "short": "Dez", "label": "Dezember" }
   },
   "login": {
-    "tagline": "Verfolge deine Dividenden und SparZinsen",
+    "tagline": "Verfolge deine Dividenden und Zinsertr\u00e4ge",
     "title": "Anmelden",
     "email": "E-Mail",
     "password": "Passwort",
@@ -148,7 +148,7 @@
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",
-    "heroTitle": "Behalte im Blick, was dein Geld verdient",
+    "heroTitle": "Behalte im Blick, was dein Geld verdient.",
     "heroSub": "Verfolge Dividenden aus Aktien und Zinsen aus Sparkonten — alles an einem Ort, übersichtlich und klar.",
     "cta": "Loslegen",
     "signIn": "Anmelden",
