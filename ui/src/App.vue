@@ -121,7 +121,7 @@ const bladeOpen = ref(false)
 // Apply persisted theme immediately (also wires up system listener if needed)
 settings.setTheme(settings.theme)
 
-const isLanding = computed(() => route.path === '/')
+const isLanding = computed(() => ['/', '/login', '/register', '/confirm'].includes(route.path))
 
 const initials = computed(() => {
   const name = (settings.profile.name || auth.user?.name || '').trim()
