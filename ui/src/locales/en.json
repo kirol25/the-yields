@@ -137,5 +137,27 @@
   "footer": {
     "impressum": "Legal Notice",
     "datenschutz": "Privacy Policy"
+  },
+  "landing": {
+    "badge": "Personal Finance Tracker",
+    "heroTitle": "Know exactly what your money earns",
+    "heroSub": "Track dividends from stocks and savings yields from any bank — all in one place, beautifully organized.",
+    "cta": "Get started",
+    "signIn": "Sign in",
+    "feature1Title": "Dividend Tracking",
+    "feature1Desc": "Log dividend income by ticker, see monthly breakdowns across every stock in your portfolio.",
+    "feature2Title": "Yield Monitoring",
+    "feature2Desc": "Track savings account interest from any bank, organized month by month.",
+    "feature3Title": "Visual Analytics",
+    "feature3Desc": "Monthly, quarterly, and yearly charts so you can spot trends in your passive income at a glance.",
+    "howTitle": "Simple by design",
+    "step1Title": "Add your tickers",
+    "step1Desc": "Enter your stock tickers and savings accounts once.",
+    "step2Title": "Log each month",
+    "step2Desc": "Record amounts as dividends and yields arrive.",
+    "step3Title": "Watch it grow",
+    "step3Desc": "Charts and tables update instantly to show your progress.",
+    "ctaTitle": "Ready to track your income?",
+    "ctaSub": "Sign in and start building your dividend and yield history today."
   }
 }

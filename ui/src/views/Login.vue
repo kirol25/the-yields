@@ -99,7 +99,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.signIn(email.value, password.value)
-    router.push('/')
+    router.push('/dashboard')
   } catch (err) {
     if (err.type === 'UserNotConfirmedException') {
       router.push('/confirm')
