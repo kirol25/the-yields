@@ -57,10 +57,6 @@
         </p>
       </div>
 
-      <!-- Footer -->
-      <p class="text-center text-xs text-gray-700 mt-6">
-        © {{ new Date().getFullYear() }} [Project Maintainer]. {{ t('common.allRightsReserved') }}
-      </p>
     </div>
   </div>
 </template>
