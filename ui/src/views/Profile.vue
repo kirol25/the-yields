@@ -100,8 +100,8 @@
         <p v-if="pw.error" class="text-xs text-red-400">{{ pw.error }}</p>
         <button
           @click="submitPasswordChange"
-          :disabled="pw.loading"
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
+          :disabled="pw.loading || !pw.current || !pw.next || !pw.confirm"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
         >
           {{ pw.loading ? t('profile.saving') : t('profile.changePassword') }}
         </button>
