@@ -51,7 +51,7 @@
           </button>
         </form>
 
-        <p class="mt-5 text-center text-xs text-gray-500">
+        <p v-if="registrationEnabled" class="mt-5 text-center text-xs text-gray-500">
           {{ t('login.noAccount') }}
           <RouterLink to="/register" class="text-emerald-400 hover:text-emerald-300">{{ t('login.createOne') }}</RouterLink>
         </p>
@@ -67,6 +67,8 @@
 
 <script setup>
 import { ref, defineComponent, h } from 'vue'
+
+const registrationEnabled = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
