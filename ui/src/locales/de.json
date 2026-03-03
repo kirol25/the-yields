@@ -40,6 +40,7 @@
     "currentPassword": "Aktuelles Passwort",
     "newPassword": "Neues Passwort",
     "confirmNewPassword": "Neues Passwort best\u00e4tigen",
+    "saved": "Profil gespeichert.",
     "passwordChanged": "Passwort erfolgreich ge\u00e4ndert.",
     "passwordMismatch": "Die neuen Passw\u00f6rter stimmen nicht \u00fcberein.",
     "saving": "Wird gespeichert\u2026",
