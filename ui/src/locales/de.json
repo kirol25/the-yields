@@ -137,7 +137,14 @@
   },
   "footer": {
     "impressum": "Impressum",
-    "datenschutz": "Datenschutz"
+    "datenschutz": "Datenschutz",
+    "tagline": "Dividenden aus Aktien und Zinsen von jeder Bank im Blick — alles an einem Ort.",
+    "app": "App",
+    "legal": "Rechtliches",
+    "disclaimer": "Hinweis",
+    "disclaimerText": "Diese App dient ausschließlich der persönlichen Finanzverfolgung. Nichts hier stellt eine Finanz- oder Anlageberatung dar.",
+    "privacyFirst": "Datenschutzkonform",
+    "selfHosted": "Self-hostbar"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",
