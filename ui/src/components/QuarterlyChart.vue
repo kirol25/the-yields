@@ -117,7 +117,9 @@ const chartData = computed(() => {
   return { labels: QUARTERS.map((q) => q.label), datasets }
 })
 
-const chartOptions = computed(() => ({
+const chartOptions = computed(() => {
+  void settings.currency // track as reactive dependency
+  return {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -138,5 +140,6 @@ const chartOptions = computed(() => ({
       grid: { color: 'rgba(75,85,99,0.3)' },
     },
   },
-}))
+  }
+})
 </script>
