@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./data:/data
+    environment:
+      STORAGE_BACKEND: local
+      CORS_ORIGINS: http://localhost
+    ports:
+      - "8000:8000"
+
+  ui:
+    build: ./ui
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
