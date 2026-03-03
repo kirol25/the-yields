@@ -54,6 +54,27 @@
         </RouterLink>
       </nav>
 
+      <!-- Theme toggle -->
+      <div class="px-5 py-3 border-t border-gray-800 flex items-center justify-between">
+        <span class="text-xs text-gray-500">{{ t('settings.theme') }}</span>
+        <div class="flex items-center gap-1">
+          <button
+            v-for="opt in themeOptions"
+            :key="opt.value"
+            type="button"
+            @click="settings.setTheme(opt.value)"
+            :title="opt.title"
+            :class="[
+              'p-1.5 rounded-md transition-colors',
+              settings.theme === opt.value
+                ? 'bg-gray-700 text-gray-100'
+                : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800',
+            ]"
+            v-html="opt.icon"
+          />
+        </div>
+      </div>
+
       <!-- Sign out -->
       <div class="px-5 py-4 border-t border-gray-800">
         <button
@@ -101,6 +122,24 @@ const initials = computed(() => {
     .join('')
     .toUpperCase()
 })
+
+const themeOptions = [
+  {
+    value: 'dark',
+    title: t('settings.themeDark'),
+    icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>',
+  },
+  {
+    value: 'light',
+    title: t('settings.themeLight'),
+    icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+  },
+  {
+    value: 'system',
+    title: t('settings.themeSystem'),
+    icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 17v4"/></svg>',
+  },
+]
 
 const navItems = computed(() => [
   {
