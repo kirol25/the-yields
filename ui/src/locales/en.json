@@ -8,7 +8,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "addEntry": "+ Add Entry",
-    "allRightsReserved": "All rights reserved."
+    "allRightsReserved": "All rights reserved.",
+    "sessionExpired": "Your session has expired. Please sign in again."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -34,7 +35,20 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "email": "Email",
-    "emailManaged": "Email is managed by your account provider."
+    "emailManaged": "Email is managed by your account provider.",
+    "changePassword": "Change Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "passwordChanged": "Password updated successfully.",
+    "passwordMismatch": "New passwords do not match.",
+    "saving": "Saving\u2026",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete account",
+    "deleteAccountDesc": "Permanently delete your account and all associated data. This action cannot be undone.",
+    "confirmDelete": "Are you sure? This cannot be undone.",
+    "confirmDeleteBtn": "Yes, delete my account",
+    "deleting": "Deleting\u2026"
   },
   "settings": {
     "title": "Settings",

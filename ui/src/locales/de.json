@@ -8,7 +8,8 @@
     "cancel": "Abbrechen",
     "save": "Speichern",
     "addEntry": "+ Eintrag hinzuf\u00fcgen",
-    "allRightsReserved": "Alle Rechte vorbehalten."
+    "allRightsReserved": "Alle Rechte vorbehalten.",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -34,7 +35,20 @@
     "name": "Name",
     "namePlaceholder": "Ihr Name",
     "email": "E-Mail",
-    "emailManaged": "Die E-Mail-Adresse wird von Ihrem Kontoanbieter verwaltet."
+    "emailManaged": "Die E-Mail-Adresse wird von Ihrem Kontoanbieter verwaltet.",
+    "changePassword": "Passwort \u00e4ndern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmNewPassword": "Neues Passwort best\u00e4tigen",
+    "passwordChanged": "Passwort erfolgreich ge\u00e4ndert.",
+    "passwordMismatch": "Die neuen Passw\u00f6rter stimmen nicht \u00fcberein.",
+    "saving": "Wird gespeichert\u2026",
+    "dangerZone": "Gefahrenzone",
+    "deleteAccount": "Konto l\u00f6schen",
+    "deleteAccountDesc": "L\u00f6scht Ihr Konto und alle zugeh\u00f6rigen Daten dauerhaft. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+    "confirmDelete": "Sind Sie sicher? Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+    "confirmDeleteBtn": "Ja, Konto l\u00f6schen",
+    "deleting": "Wird gel\u00f6scht\u2026"
   },
   "settings": {
     "title": "Einstellungen",
@@ -58,7 +72,7 @@
     "name": "Name",
     "companyNameOptional": "Unternehmensname (optional)",
     "month": "Monat",
-    "amount": "Betrag ($)",
+    "amount": "Betrag (€)",
     "companyNamePlaceholder": "Unternehmensname"
   },
   "months": {

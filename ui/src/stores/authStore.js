@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { i18n } from '../i18n.js'
+import { useToastStore } from './toastStore.js'
 
 const REGION = import.meta.env.VITE_COGNITO_REGION
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
@@ -94,6 +96,47 @@ export const useAuthStore = defineStore('auth', () => {
     setTokens(data.AuthenticationResult)
   }
 
+  function isExpiredTokenError(err) {
+    return (
+      err.type === 'NotAuthorizedException' &&
+      err.message?.toLowerCase().includes('expired')
+    )
+  }
+
+  async function handleExpiredSession() {
+    await logout()
+    useToastStore().add(i18n.global.t('common.sessionExpired'), 'error')
+  }
+
+  async function changePassword(oldPassword, newPassword) {
+    try {
+      await cognitoRequest('ChangePassword', {
+        AccessToken: accessToken.value,
+        PreviousPassword: oldPassword,
+        ProposedPassword: newPassword,
+      })
+    } catch (err) {
+      if (isExpiredTokenError(err)) {
+        await handleExpiredSession()
+        return
+      }
+      throw err
+    }
+  }
+
+  async function deleteAccount() {
+    try {
+      await cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
+    } catch (err) {
+      if (isExpiredTokenError(err)) {
+        await handleExpiredSession()
+        return
+      }
+      throw err
+    }
+    await logout()
+  }
+
   async function logout() {
     try {
       if (accessToken.value) {
@@ -120,5 +163,7 @@ export const useAuthStore = defineStore('auth', () => {
     resendCode,
     signIn,
     logout,
+    changePassword,
+    deleteAccount,
   }
 })
