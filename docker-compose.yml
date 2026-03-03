@@ -10,7 +10,10 @@ services:
       - "8000:8000"
 
   ui:
-    build: ./ui
+    build:
+      context: ./ui
+    env_file:
+      - ./ui/.env
     ports:
       - "80:80"
     depends_on:
