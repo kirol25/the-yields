@@ -85,16 +85,40 @@
         </div>
       </div>
     </div>
+
+    <!-- Data -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.data') }}</h2>
+
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium text-gray-200">{{ t('settings.exportCsv') }}</p>
+          <p class="text-xs text-gray-500 mt-0.5">{{ t('settings.exportCsvDesc') }}</p>
+        </div>
+        <button
+          @click="exportCsv"
+          :disabled="exporting || !hasData"
+          class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-700 text-sm text-gray-200 font-medium rounded-md transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          {{ exporting ? t('settings.exporting') : t('settings.exportCsv') }}
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { useDataStore } from '../stores/dataStore.js'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
+const store = useDataStore()
 
 const currencyContainer = ref(null)
 const currencyOpen = ref(false)
@@ -141,5 +165,70 @@ function toggleLang() {
 function selectLang(code) {
   settings.setLocale(code)
   langOpen.value = false
+}
+
+// ── CSV export ────────────────────────────────────────────────────────────────
+
+const MONTH_KEYS = ['01','02','03','04','05','06','07','08','09','10','11','12']
+const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+const exporting = ref(false)
+
+const hasData = computed(() => Object.keys(store.allYearsData).length > 0)
+
+function buildRows() {
+  const rows = [['Year', 'Type', 'Ticker / Account', 'Name', ...MONTH_LABELS, 'Total']]
+  const sortedYears = Object.keys(store.allYearsData).map(Number).sort((a, b) => a - b)
+
+  for (const year of sortedYears) {
+    const { dividends = {}, yields = {} } = store.allYearsData[year]
+
+    for (const [ticker, entry] of Object.entries(dividends)) {
+      const monthly = MONTH_KEYS.map((m) => entry.months?.[m] ?? '')
+      const total = monthly.reduce((s, v) => s + (v || 0), 0)
+      rows.push([year, 'Dividend', ticker, entry.name ?? '', ...monthly, total])
+    }
+
+    for (const [account, entry] of Object.entries(yields)) {
+      const monthly = MONTH_KEYS.map((m) => entry.months?.[m] ?? '')
+      const total = monthly.reduce((s, v) => s + (v || 0), 0)
+      rows.push([year, 'Yield', account, '', ...monthly, total])
+    }
+  }
+
+  return rows
+}
+
+function toCsv(rows) {
+  return rows
+    .map((row) =>
+      row
+        .map((cell) => {
+          const s = String(cell ?? '')
+          return s.includes(';') || s.includes('"') || s.includes('\n')
+            ? `"${s.replace(/"/g, '""')}"`
+            : s
+        })
+        .join(';'),
+    )
+    .join('\n')
+}
+
+async function exportCsv() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    if (!hasData.value) await store.loadAllYears()
+    const csv = toCsv(buildRows())
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `the-yield-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  } finally {
+    exporting.value = false
+  }
 }
 </script>
