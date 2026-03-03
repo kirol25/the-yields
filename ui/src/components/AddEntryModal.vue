@@ -14,7 +14,7 @@
           </label>
           <select
             v-model="selectedKey"
-            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option v-for="key in props.existingKeys" :key="key" :value="key">{{ key }}</option>
             <option value="__new__">{{ t('modal.addNew') }}</option>
@@ -30,7 +30,7 @@
             v-model="newKey"
             type="text"
             :placeholder="props.type === 'dividend' ? 'e.g. AAPL' : 'e.g. Chase HYSA'"
-            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           <!-- Name field for dividends -->
           <div v-if="props.type === 'dividend'" class="mt-2">
@@ -39,7 +39,7 @@
               v-model="newName"
               type="text"
               :placeholder="t('modal.companyNamePlaceholder')"
-              class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -49,7 +49,7 @@
           <label class="block text-sm text-gray-400 mb-1">{{ t('modal.month') }}</label>
           <select
             v-model="selectedMonth"
-            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option v-for="m in months" :key="m.value" :value="m.value">{{ m.label }}</option>
           </select>
@@ -64,7 +64,7 @@
             min="0"
             step="0.01"
             placeholder="0.00"
-            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       </div>

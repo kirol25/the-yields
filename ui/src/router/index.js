@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 
+const REGISTRATION_ENABLED = "false"
+
 const routes = [
   // Public-only routes (redirect to dashboard if already authenticated)
   { path: '/login',    component: () => import('../views/Login.vue'),    meta: { guestOnly: true } },
-  { path: '/register', component: () => import('../views/Register.vue'), meta: { guestOnly: true } },
-  { path: '/confirm',  component: () => import('../views/Confirm.vue'),  meta: { guestOnly: true } },
+  { path: '/register', component: () => import('../views/Register.vue'), meta: { guestOnly: true, registrationOnly: true } },
+  { path: '/confirm',  component: () => import('../views/Confirm.vue'),  meta: { guestOnly: true, registrationOnly: true } },
 
   // Protected routes
   { path: '/',           component: () => import('../views/Dashboard.vue') },
@@ -25,12 +27,12 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
 
+  if (to.meta.registrationOnly && !REGISTRATION_ENABLED) return '/login'
+
   if (to.meta.guestOnly) {
-    // Logged-in users have no business on login/register
     return auth.isAuthenticated ? '/' : true
   }
 
-  // All other routes require authentication
   if (!auth.isAuthenticated) return '/login'
 })
 
