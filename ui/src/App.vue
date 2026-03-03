@@ -79,6 +79,9 @@ const settings = useSettingsStore()
 const auth = useAuthStore()
 const bladeOpen = ref(false)
 
+// Apply persisted theme immediately (also wires up system listener if needed)
+settings.setTheme(settings.theme)
+
 const initials = computed(() => {
   const name = (settings.profile.name || auth.user?.name || '').trim()
   if (!name) return '?'
