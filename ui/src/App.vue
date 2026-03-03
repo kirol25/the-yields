@@ -60,6 +60,7 @@
     </footer>
 
     <ProfileBlade v-if="auth.isAuthenticated" :open="bladeOpen" @close="bladeOpen = false" />
+    <ToastContainer />
   </div>
 </template>
 
@@ -70,6 +71,7 @@ import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
 import ProfileBlade from './components/ProfileBlade.vue'
+import ToastContainer from './components/ToastContainer.vue'
 
 const { t } = useI18n()
 const store = useDataStore()
