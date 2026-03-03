@@ -137,5 +137,27 @@
   "footer": {
     "impressum": "Impressum",
     "datenschutz": "Datenschutz"
+  },
+  "landing": {
+    "badge": "Persönlicher Finanz-Tracker",
+    "heroTitle": "Behalte im Blick, was dein Geld verdient",
+    "heroSub": "Verfolge Dividenden aus Aktien und Zinsen aus Sparkonten — alles an einem Ort, übersichtlich und klar.",
+    "cta": "Loslegen",
+    "signIn": "Anmelden",
+    "feature1Title": "Dividenden-Tracking",
+    "feature1Desc": "Erfasse Dividenden nach Ticker-Symbol mit monatlichen Aufschlüsselungen für jede Aktie.",
+    "feature2Title": "Zinsverfolgung",
+    "feature2Desc": "Behalte Spar-Zinsen von beliebigen Banken im Blick – geordnet nach Monat.",
+    "feature3Title": "Visuelle Analysen",
+    "feature3Desc": "Monatliche, quartals- und jahresweise Diagramme zeigen dir auf einen Blick deine Einkommenstrends.",
+    "howTitle": "Einfach und fokussiert",
+    "step1Title": "Ticker hinzufügen",
+    "step1Desc": "Trage einmalig deine Aktien-Ticker und Sparkonten ein.",
+    "step2Title": "Monatlich eintragen",
+    "step2Desc": "Erfasse Beträge, sobald Dividenden und Zinsen eingehen.",
+    "step3Title": "Wachstum beobachten",
+    "step3Desc": "Diagramme und Tabellen aktualisieren sich sofort und zeigen deinen Fortschritt.",
+    "ctaTitle": "Bereit, deine Einnahmen zu tracken?",
+    "ctaSub": "Meld dich an und beginne noch heute mit deiner Dividenden- und Zinshistorie."
   }
 }

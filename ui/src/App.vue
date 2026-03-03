@@ -6,11 +6,12 @@
           the-yield
         </RouterLink>
 
+        <!-- Authenticated nav -->
         <div v-if="auth.isAuthenticated" class="flex items-center gap-6">
           <RouterLink
-            to="/"
+            to="/dashboard"
             class="text-sm font-medium transition-colors hover:text-emerald-400"
-            :class="$route.path === '/' ? 'text-emerald-400' : 'text-gray-400'"
+            :class="$route.path === '/dashboard' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.dashboard') }}
           </RouterLink>
@@ -37,10 +38,20 @@
             {{ initials }}
           </button>
         </div>
+
+        <!-- Guest nav (landing page) -->
+        <div v-else class="flex items-center gap-3">
+          <RouterLink
+            to="/login"
+            class="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors"
+          >
+            {{ t('landing.signIn') }}
+          </RouterLink>
+        </div>
       </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
+    <main :class="isLanding ? 'flex-1 w-full' : 'max-w-7xl mx-auto px-6 py-8 flex-1 w-full'">
       <RouterView />
     </main>
 
@@ -67,6 +78,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
@@ -74,6 +86,7 @@ import ProfileBlade from './components/ProfileBlade.vue'
 import ToastContainer from './components/ToastContainer.vue'
 
 const { t } = useI18n()
+const route = useRoute()
 const store = useDataStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
@@ -81,6 +94,8 @@ const bladeOpen = ref(false)
 
 // Apply persisted theme immediately (also wires up system listener if needed)
 settings.setTheme(settings.theme)
+
+const isLanding = computed(() => route.path === '/')
 
 const initials = computed(() => {
   const name = (settings.profile.name || auth.user?.name || '').trim()
