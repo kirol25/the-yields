@@ -73,28 +73,48 @@
             </div>
           </div>
 
-          <!-- New key + name inputs -->
-          <div v-if="selectedKey === '__new__'" class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium text-gray-400 mb-1.5">
-                {{ props.type === 'dividend' ? t('modal.tickerSymbol') : t('modal.name') }}
-              </label>
+          <!-- New ticker + name (side by side for dividends) -->
+          <div v-if="selectedKey === '__new__'">
+            <div v-if="props.type === 'dividend'" class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.tickerSymbol') }}</label>
+                <input
+                  v-model="newKey"
+                  type="text"
+                  placeholder="e.g. AAPL"
+                  class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
+                />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
+                <input
+                  v-model="newName"
+                  type="text"
+                  :placeholder="t('modal.companyNamePlaceholder')"
+                  class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
+                />
+              </div>
+            </div>
+            <div v-else>
+              <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
               <input
                 v-model="newKey"
                 type="text"
-                :placeholder="props.type === 'dividend' ? 'e.g. AAPL' : 'e.g. Chase HYSA'"
+                placeholder="e.g. Chase HYSA"
                 class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
               />
             </div>
-            <div v-if="props.type === 'dividend'">
-              <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.companyNameOptional') }}</label>
-              <input
-                v-model="newName"
-                type="text"
-                :placeholder="t('modal.companyNamePlaceholder')"
-                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
-              />
-            </div>
+          </div>
+
+          <!-- Edit company name for existing dividend tickers -->
+          <div v-if="selectedKey !== '__new__' && props.type === 'dividend'">
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
+            <input
+              v-model="existingName"
+              type="text"
+              :placeholder="t('modal.companyNamePlaceholder')"
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
+            />
           </div>
 
           <!-- Month — chip grid -->
@@ -156,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useMonths } from '../composables/useMonths.js'
@@ -176,8 +196,17 @@ const selectedKey = ref(props.existingKeys[0] ?? '__new__')
 const keyOpen = ref(false)
 const newKey = ref('')
 const newName = ref('')
+const existingName = ref(
+  props.existingKeys[0] ? (store.yearData.dividends?.[props.existingKeys[0]]?.name ?? '') : '',
+)
 const selectedMonth = ref(String(new Date().getMonth() + 1).padStart(2, '0'))
 const amount = ref(null)
+
+watch(selectedKey, (key) => {
+  if (key !== '__new__') {
+    existingName.value = store.yearData.dividends?.[key]?.name ?? ''
+  }
+})
 
 const resolvedKey = computed(() =>
   selectedKey.value === '__new__' ? newKey.value.trim() : selectedKey.value,
@@ -197,6 +226,12 @@ async function submit() {
     } else {
       store.yearData[section][key] = { months: {} }
     }
+  }
+
+  // Update company name if changed for existing or new dividend entries
+  if (props.type === 'dividend') {
+    const name = selectedKey.value === '__new__' ? newName.value.trim() : existingName.value.trim()
+    if (name) store.yearData[section][key].name = name
   }
 
   store.yearData[section][key].months[selectedMonth.value] = amount.value
