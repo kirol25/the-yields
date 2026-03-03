@@ -10,20 +10,22 @@ DATA_DIR: Path = PROJECT_ROOT / "data"
 class YieldRepository:
     """Handles all file-system access for year-based JSON data files."""
 
-    def __init__(self, data_dir: Path = DATA_DIR) -> None:
-        """Initialise the repository with the path to the data directory.
+    def __init__(self, user_email: str, data_dir: Path = DATA_DIR) -> None:
+        """Initialise the repository scoped to a specific user.
 
         Args:
-            data_dir: Directory where ``YYYY.json`` files are stored.
-                      Defaults to the project-level ``data/`` folder.
+            user_email: The authenticated user's email address, used as the
+                        subdirectory under ``data_dir``.
+            data_dir: Root data directory. Defaults to the project-level
+                      ``data/`` folder.
         """
-        self.data_dir = data_dir
+        self.data_dir = data_dir / user_email
 
     # ── private ──────────────────────────────────────────────────────────────
 
     def _ensure_dir(self) -> None:
-        """Create the data directory if it does not already exist."""
-        self.data_dir.mkdir(exist_ok=True)
+        """Create the user data directory if it does not already exist."""
+        self.data_dir.mkdir(parents=True, exist_ok=True)
 
     # ── public ───────────────────────────────────────────────────────────────
 
@@ -31,7 +33,7 @@ class YieldRepository:
         """Return a sorted list of years that have a corresponding data file.
 
         Returns:
-            Sorted list of integer years found in the data directory.
+            Sorted list of integer years found in the user's data directory.
         """
         self._ensure_dir()
         return sorted(

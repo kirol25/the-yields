@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 import { API_BASE } from '../config.js'
+import { useAuthStore } from './authStore.js'
 
 export const useDataStore = defineStore('data', () => {
   const currentYear = ref(new Date().getFullYear())
@@ -10,8 +11,13 @@ export const useDataStore = defineStore('data', () => {
   const allYearsData = ref({}) // { 2024: { dividends: {}, yields: {} }, ... }
   const loading = ref(false)
 
+  function userHeaders() {
+    const auth = useAuthStore()
+    return { 'X-User-Email': auth.user?.email ?? '' }
+  }
+
   async function fetchYears() {
-    const { data } = await axios.get(`${API_BASE}/api/years`)
+    const { data } = await axios.get(`${API_BASE}/api/years`, { headers: userHeaders() })
     const base = data.length ? data : [currentYear.value]
     const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
     years.value = withCurrent.slice().sort((a, b) => b - a)
@@ -20,7 +26,7 @@ export const useDataStore = defineStore('data', () => {
   async function loadYear(year) {
     loading.value = true
     try {
-      const { data } = await axios.get(`${API_BASE}/api/data/${year}`)
+      const { data } = await axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() })
       yearData.value = data
       currentYear.value = year
       allYearsData.value[year] = data
@@ -31,20 +37,24 @@ export const useDataStore = defineStore('data', () => {
 
   async function loadAllYears() {
     const results = await Promise.all(
-      years.value.map((year) => axios.get(`${API_BASE}/api/data/${year}`).then((r) => [year, r.data])),
+      years.value.map((year) =>
+        axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() }).then((r) => [year, r.data]),
+      ),
     )
     allYearsData.value = Object.fromEntries(results)
   }
 
   async function saveData() {
-    await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value)
+    await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value, { headers: userHeaders() })
     await fetchYears()
     await loadAllYears()
   }
 
   async function deleteEntries(section, keys) {
     for (const key of keys) {
-      await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`)
+      await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
+        headers: userHeaders(),
+      })
       delete yearData.value[section][key]
     }
     await loadAllYears()
