@@ -54,7 +54,12 @@
     "title": "Einstellungen",
     "preferences": "Einstellungen",
     "currency": "W\u00e4hrung",
-    "language": "Sprache"
+    "language": "Sprache",
+    "data": "Daten",
+    "exportCsv": "Als CSV exportieren",
+    "exportCsvDesc": "Alle Dividenden- und Zinsdaten \u00fcber alle Jahre als CSV-Datei herunterladen.",
+    "exporting": "Wird exportiert\u2026",
+    "noData": "Noch keine Daten zum Exportieren."
   },
   "blade": {
     "account": "Konto",
