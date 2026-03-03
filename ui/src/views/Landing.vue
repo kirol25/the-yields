@@ -38,7 +38,7 @@
             <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-2xl">
               <!-- Mock header -->
               <div class="flex items-center justify-between mb-5">
-                <span class="text-sm font-semibold text-gray-100">Dashboard — 2026</span>
+                <span class="text-sm font-semibold text-gray-100">Dashboard — {{ currentYear }}</span>
                 <div class="flex gap-1.5">
                   <span class="w-2.5 h-2.5 rounded-full bg-gray-700"></span>
                   <span class="w-2.5 h-2.5 rounded-full bg-gray-700"></span>
@@ -130,6 +130,8 @@
 
 <script setup>
 import { computed } from 'vue'
+
+const currentYear = new Date().getFullYear()
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
