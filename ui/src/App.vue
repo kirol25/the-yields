@@ -55,18 +55,44 @@
       <RouterView />
     </main>
 
-    <footer class="mt-auto">
-      <div class="max-w-7xl mx-auto px-6 py-6 border-t border-gray-800 flex flex-col items-center gap-3">
-        <nav class="flex items-center gap-3">
-          <RouterLink to="/impressum" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-            {{ t('footer.impressum') }}
-          </RouterLink>
-          <span class="w-1 h-1 rounded-full bg-gray-700" />
-          <RouterLink to="/datenschutz" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-            {{ t('footer.datenschutz') }}
-          </RouterLink>
-        </nav>
-        <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}</p>
+    <footer class="mt-auto border-t border-gray-800 bg-gray-900/40">
+      <div class="max-w-7xl mx-auto px-6 pt-8 pb-6">
+
+        <!-- Columns -->
+        <div class="grid grid-cols-3 gap-8 mb-8">
+
+          <!-- Brand -->
+          <div class="space-y-2">
+            <span class="text-sm font-bold text-gray-100">the-yield</span>
+            <p class="text-sm text-gray-500 leading-relaxed">{{ t('footer.tagline') }}</p>
+          </div>
+
+          <!-- App links -->
+          <div class="space-y-3 justify-self-center">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.app') }}</h3>
+            <ul class="space-y-2">
+              <li><RouterLink to="/dashboard" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dashboard') }}</RouterLink></li>
+              <li><RouterLink to="/dividends" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dividends') }}</RouterLink></li>
+              <li><RouterLink to="/yields" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.yields') }}</RouterLink></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div class="space-y-3 justify-self-center">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.legal') }}</h3>
+            <ul class="space-y-2">
+              <li><RouterLink to="/impressum" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.impressum') }}</RouterLink></li>
+              <li><RouterLink to="/datenschutz" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.datenschutz') }}</RouterLink></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="border-t border-gray-800 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} Lorik Bajrami. {{ t('common.allRightsReserved') }}</p>
+        </div>
+
       </div>
     </footer>
 

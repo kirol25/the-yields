@@ -137,7 +137,14 @@
   },
   "footer": {
     "impressum": "Legal Notice",
-    "datenschutz": "Privacy Policy"
+    "datenschutz": "Privacy Policy",
+    "tagline": "Track dividends from stocks and savings yields from any bank — all in one place.",
+    "app": "App",
+    "legal": "Legal",
+    "disclaimer": "Notice",
+    "disclaimerText": "This app is for personal finance tracking only. Nothing here constitutes financial or investment advice.",
+    "privacyFirst": "Privacy-first",
+    "selfHosted": "Self-hostable"
   },
   "landing": {
     "badge": "Personal Finance Tracker",
