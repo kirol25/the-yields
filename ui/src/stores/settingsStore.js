@@ -21,10 +21,34 @@ export const useSettingsStore = defineStore('settings', () => {
   const profile = ref({ name: saved.name || '', email: saved.email || '' })
   const currency = ref(saved.currency || 'USD')
   const locale = ref(saved.locale || 'de')
+  const theme = ref(saved.theme || 'dark')
 
   function setLocale(code) {
     locale.value = code
     i18n.global.locale.value = code
+    save()
+  }
+
+  const _mq = window.matchMedia('(prefers-color-scheme: light)')
+  let _mqListener = null
+
+  function _applyTheme(t) {
+    const isLight = t === 'light' || (t === 'system' && _mq.matches)
+    document.documentElement.classList.toggle('light', isLight)
+  }
+
+  function setTheme(t) {
+    theme.value = t
+    // Remove previous system listener if any
+    if (_mqListener) {
+      _mq.removeEventListener('change', _mqListener)
+      _mqListener = null
+    }
+    if (t === 'system') {
+      _mqListener = (e) => document.documentElement.classList.toggle('light', e.matches)
+      _mq.addEventListener('change', _mqListener)
+    }
+    _applyTheme(t)
     save()
   }
 
@@ -36,6 +60,7 @@ export const useSettingsStore = defineStore('settings', () => {
         email: profile.value.email,
         currency: currency.value,
         locale: locale.value,
+        theme: theme.value,
       }),
     )
   }
@@ -50,5 +75,5 @@ export const useSettingsStore = defineStore('settings', () => {
     }).format(amount)
   }
 
-  return { profile, currency, locale, CURRENCIES, LANGUAGES, save, setLocale, fmt }
+  return { profile, currency, locale, theme, CURRENCIES, LANGUAGES, save, setLocale, setTheme, fmt }
 })
