@@ -15,7 +15,7 @@
         {{ opt.label }}
       </button>
     </div>
-    <Bar v-if="hasData" :data="chartData" :options="chartOptions" class="max-h-80" />
+    <Bar v-if="hasData" :data="chartData" :options="chartOptions" :plugins="plugins" class="max-h-80" />
     <div v-else class="flex items-center justify-center h-64 text-gray-500 text-sm">
       No data for {{ store.currentYear }}. Add dividends or yields to get started.
     </div>
@@ -34,6 +34,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { MONTHS as MONTHS_CONFIG } from '../config.js'
@@ -43,6 +44,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const store = useDataStore()
 const settings = useSettingsStore()
 const filter = ref('all')
+const plugins = [ChartDataLabels]
 
 const filterOptions = [
   { value: 'all', label: 'All' },
@@ -102,6 +104,14 @@ const chartOptions = computed(() => ({
       callbacks: {
         label: (ctx) => ` ${ctx.dataset.label}: ${settings.fmt(ctx.parsed.y)}`,
       },
+    },
+    datalabels: {
+      anchor: 'end',
+      align: 'end',
+      offset: 2,
+      color: '#9ca3af',
+      font: { size: 10, weight: '500' },
+      formatter: (value) => value > 0 ? settings.fmt(value) : '',
     },
   },
   scales: {
