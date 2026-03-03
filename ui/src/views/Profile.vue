@@ -186,6 +186,7 @@ const initials = computed(() => {
 
 function save() {
   settings.save()
+  toast.add(t('profile.saved'), 'success')
 }
 
 // Change password
