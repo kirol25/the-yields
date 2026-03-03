@@ -42,6 +42,14 @@
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 
+## 7. Conventional Commits
+
+- Make small, focused commits using conventional commit format
+- Commit early and often — one logical change per commit
+- Use conventional commit types: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+- Example: `fix: resolve null pointer in auth validation` or `feat: add email notification service`
+- Keep commit messages clear and descriptive — future you will thank you
+
 ## Task Management
 
 1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
