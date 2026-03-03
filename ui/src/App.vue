@@ -51,7 +51,7 @@
       </div>
     </nav>
 
-    <main :class="isLanding ? 'flex-1 w-full' : 'max-w-7xl mx-auto px-6 py-8 flex-1 w-full'">
+    <main :class="isLanding ? 'flex-1 w-full' : 'max-w-7xl mx-auto px-6 pt-8 pb-16 flex-1 w-full'">
       <RouterView />
     </main>
 
