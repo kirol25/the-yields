@@ -42,7 +42,14 @@
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 
-## 7. Conventional Commits
+## 7. Forbidden Git Operations
+
+- **NEVER EVER** run `git push --force` or any force push variant (`--force-with-lease`, `-f`)
+- **NEVER EVER** run `git reset --hard` or any destructive reset
+- These are irreversible and can destroy work — no exceptions, no matter the situation
+- If you think you need one of these, STOP and ask the user instead
+
+## 8. Conventional Commits
 
 - Make small, focused commits using conventional commit format
 - Commit early and often — one logical change per commit
