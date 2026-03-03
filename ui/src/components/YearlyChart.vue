@@ -22,11 +22,13 @@ import {
   Legend,
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
+const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 
@@ -56,7 +58,7 @@ const chartData = computed(() => ({
   labels: ascYears.value.map(String),
   datasets: [
     {
-      label: 'Dividends',
+      label: t('dashboard.dividends'),
       data: ascDividends.value,
       backgroundColor: 'rgba(52, 211, 153, 0.8)',
       borderColor: 'rgb(52, 211, 153)',
@@ -64,7 +66,7 @@ const chartData = computed(() => ({
       borderRadius: 4,
     },
     {
-      label: 'Yields',
+      label: t('dashboard.yields'),
       data: ascYields.value,
       backgroundColor: 'rgba(96, 165, 250, 0.8)',
       borderColor: 'rgb(96, 165, 250)',

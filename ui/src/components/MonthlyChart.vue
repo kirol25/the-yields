@@ -35,22 +35,24 @@ import {
   Legend,
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { MONTHS as MONTHS_CONFIG } from '../config.js'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
+const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 const filter = ref('all')
 const plugins = [ChartDataLabels]
 
-const filterOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'dividends', label: 'Dividends only' },
-  { value: 'yields', label: 'Yields only' },
-]
+const filterOptions = computed(() => [
+  { value: 'all', label: t('dashboard.combined') },
+  { value: 'dividends', label: t('dashboard.dividends') },
+  { value: 'yields', label: t('dashboard.yields') },
+])
 
 function sumByMonth(section) {
   const totals = Array(12).fill(0)
@@ -74,7 +76,7 @@ const chartData = computed(() => {
   const datasets = []
   if (filter.value !== 'yields') {
     datasets.push({
-      label: 'Dividends',
+      label: t('dashboard.dividends'),
       data: dividendTotals.value,
       backgroundColor: 'rgba(52, 211, 153, 0.8)',
       borderColor: 'rgb(52, 211, 153)',
@@ -84,7 +86,7 @@ const chartData = computed(() => {
   }
   if (filter.value !== 'dividends') {
     datasets.push({
-      label: 'Yields',
+      label: t('dashboard.yields'),
       data: yieldTotals.value,
       backgroundColor: 'rgba(96, 165, 250, 0.8)',
       borderColor: 'rgb(96, 165, 250)',
