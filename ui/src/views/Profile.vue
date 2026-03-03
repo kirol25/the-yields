@@ -23,7 +23,7 @@
       <div>
         <label class="block text-xs text-gray-400 mb-1.5">{{ t('profile.name') }}</label>
         <input
-          v-model="settings.profile.name"
+          v-model="nameInput"
           type="text"
           :placeholder="t('profile.namePlaceholder')"
           class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-gray-100"
@@ -45,7 +45,8 @@
 
       <button
         @click="save"
-        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-md transition-colors"
+        :disabled="!nameChanged"
+        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
       >
         {{ t('common.save') }}
       </button>
@@ -163,18 +164,26 @@ const auth = useAuthStore()
 const toast = useToastStore()
 const router = useRouter()
 
+const nameInput = ref(settings.profile.name)
+const savedName = ref(settings.profile.name)
+const nameChanged = computed(() => nameInput.value.trim() !== savedName.value.trim())
+
 watch(
   () => auth.user,
   (u) => {
     if (!u) return
-    if (!settings.profile.name && u.name) settings.profile.name = u.name
+    if (!settings.profile.name && u.name) {
+      settings.profile.name = u.name
+      nameInput.value = u.name
+      savedName.value = u.name
+    }
     if (!settings.profile.email && u.email) settings.profile.email = u.email
   },
   { immediate: true },
 )
 
 const initials = computed(() => {
-  const name = settings.profile.name.trim()
+  const name = nameInput.value.trim()
   if (!name) return '?'
   return name
     .split(' ')
@@ -185,6 +194,8 @@ const initials = computed(() => {
 })
 
 function save() {
+  settings.profile.name = nameInput.value.trim()
+  savedName.value = nameInput.value.trim()
   settings.save()
   toast.add(t('profile.saved'), 'success')
 }
