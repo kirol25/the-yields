@@ -103,8 +103,13 @@
               readonly
             />
           </td>
-          <td class="py-2 pr-4">
-            <span class="font-mono font-medium text-emerald-400">{{ ticker }}</span>
+          <td class="py-2 pr-4" @click.stop>
+            <a
+              :href="`https://finance.yahoo.com/quote/${ticker}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-mono font-medium text-emerald-400 hover:text-emerald-300 hover:underline"
+            >{{ ticker }}</a>
           </td>
           <td class="py-2 pr-4 text-gray-300">{{ dividends[ticker].name || '' }}</td>
           <td
