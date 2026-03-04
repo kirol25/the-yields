@@ -148,12 +148,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function deleteAccount() {
+    // Best-effort: wipe backend data. Never block account deletion on this.
     try {
-      // Delete all user data from the backend first, then remove the Cognito account
       await fetch(`${API_BASE}/api/data`, {
         method: 'DELETE',
         headers: { 'X-User-Email': user.value?.email ?? '' },
       })
+    } catch {
+      // network error or backend unreachable — proceed anyway
+    }
+
+    // Delete the Cognito account
+    try {
       await cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
     } catch (err) {
       if (isExpiredTokenError(err)) {
@@ -162,6 +168,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       throw err
     }
+
     // Account is gone — clear tokens directly without GlobalSignOut
     clearTokens()
   }
