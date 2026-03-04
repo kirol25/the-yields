@@ -150,7 +150,7 @@
           <SkeletonBlock cls="h-48 w-full rounded-lg" />
         </template>
         <template v-else>
-          <p v-if="activeTab !== 'breakdown'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
+          <p v-if="activeTab !== 'breakdown' && activeTab !== 'cumulative'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
             {{
               activeTab === 'monthly'
                 ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
@@ -162,6 +162,15 @@
           <MonthlyChart v-if="activeTab === 'monthly'" />
           <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
           <YearlyChart v-else-if="activeTab === 'yearly'" />
+          <template v-else-if="activeTab === 'cumulative'">
+            <CumulativeChart />
+            <template v-if="store.years.length > 1">
+              <div class="border-t border-gray-800 mt-10 pt-8">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeAllYears') }}</p>
+                <YearlyCumulativeChart />
+              </div>
+            </template>
+          </template>
           <template v-else>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div>
@@ -190,6 +199,8 @@ import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
 import PortfolioBreakdown from '../components/PortfolioBreakdown.vue'
+import CumulativeChart from '../components/CumulativeChart.vue'
+import YearlyCumulativeChart from '../components/YearlyCumulativeChart.vue'
 import SkeletonBlock from '../components/SkeletonBlock.vue'
 import GoalDonutChart from '../components/GoalDonutChart.vue'
 
@@ -198,10 +209,11 @@ const store = useDataStore()
 const settings = useSettingsStore()
 
 const tabs = computed(() => [
-  { value: 'monthly', label: t('dashboard.monthly') },
-  { value: 'quarterly', label: t('dashboard.quarterly') },
-  { value: 'yearly', label: t('dashboard.yearly') },
-  { value: 'breakdown', label: t('dashboard.breakdown') },
+  { value: 'monthly',    label: t('dashboard.monthly') },
+  { value: 'quarterly',  label: t('dashboard.quarterly') },
+  { value: 'yearly',     label: t('dashboard.yearly') },
+  { value: 'cumulative', label: t('dashboard.cumulative') },
+  { value: 'breakdown',  label: t('dashboard.breakdown') },
 ])
 const activeTab = ref('monthly')
 
