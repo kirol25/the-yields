@@ -30,7 +30,17 @@ async function cognitoRequest(action, body) {
     body: JSON.stringify(body),
   })
 
-  const data = await res.json()
+  // Some Cognito operations (e.g. DeleteUser) return an empty body on success.
+  // res.json() on an empty body throws SyntaxError in WebKit — treat that as {}
+  // if the status is OK, otherwise surface a generic failure.
+  let data = {}
+  try {
+    data = await res.json()
+  } catch {
+    if (!res.ok) throw new Error('Cognito request failed')
+    return {}
+  }
+
   if (!res.ok) {
     const err = new Error(data.message ?? 'Cognito request failed')
     err.type = data.__type ?? 'UnknownError'
