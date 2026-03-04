@@ -171,6 +171,33 @@
           </button>
         </div>
       </div>
+
+      <hr class="border-gray-800" />
+
+      <!-- Steuerfreibetrag -->
+      <div>
+        <label class="block text-xs text-gray-400 mb-1">
+          {{ t('settings.steuerfreibetrag') }} <span class="text-gray-600">({{ store.currentYear }})</span>
+        </label>
+        <p class="text-xs text-gray-500 mb-2">{{ t('settings.steuerfreibetragDesc') }}</p>
+        <div class="flex gap-2">
+          <input
+            type="number"
+            v-model.number="steuerInput"
+            min="0"
+            max="2000"
+            :placeholder="t('settings.steuerfreibetragPlaceholder')"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+          <button
+            @click="saveSteuer"
+            :disabled="steuerInput === (settings.steuerfreibetrag[store.currentYear] || 0)"
+            class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
+          >
+            {{ t('common.save') }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Data -->
@@ -229,9 +256,17 @@ const { isPremium } = useSubscription()
 
 // Goals
 const goalInput = ref(settings.dividendGoal[store.currentYear] || 0)
-watch(() => store.currentYear, (y) => { goalInput.value = settings.dividendGoal[y] || 0 })
+watch(() => store.currentYear, (y) => {
+  goalInput.value  = settings.dividendGoal[y] || 0
+  steuerInput.value = settings.steuerfreibetrag[y] || 0
+})
 function saveGoal() {
   settings.setDividendGoal(store.currentYear, goalInput.value || 0)
+}
+
+const steuerInput = ref(settings.steuerfreibetrag[store.currentYear] || 0)
+function saveSteuer() {
+  settings.setSteuerfreibetrag(store.currentYear, steuerInput.value || 0)
 }
 
 const currencyContainer = ref(null)

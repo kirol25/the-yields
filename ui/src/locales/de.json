@@ -30,7 +30,10 @@
     "avgPerMonthHint": "basierend auf {n} Monaten mit Daten",
     "goalProgress": "Dividendenziel",
     "goalReached": "Ziel erreicht \u2014 gut gemacht!",
-    "goalRemaining": "noch {amount} verbleibend"
+    "goalRemaining": "noch {amount} verbleibend",
+    "steuerProgress": "Steuerfreibetrag",
+    "steuerRemaining": "noch {amount} steuerfrei",
+    "steuerExceeded": "{amount} \u00fcber dem Freibetrag"
   },
   "dividends": {
     "title": "Dividenden",
@@ -86,6 +89,9 @@
     "dividendGoal": "J\u00e4hrliches Dividendenziel",
     "dividendGoalDesc": "Lege ein Ziel f\u00fcr deine gesamten Dividendeneinnahmen in diesem Jahr fest. Dein Fortschritt wird im Dashboard angezeigt.",
     "dividendGoalPlaceholder": "z.\u202fB. 2400",
+    "steuerfreibetrag": "Steuerfreibetrag",
+    "steuerfreibetragDesc": "Dein pers\u00f6nlicher Sparerpauschbetrag (max. 2.000\u202f\u20ac). Sobald deine Dividenden diesen \u00fcberschreiten, wechselt das Diagramm auf Bernstein.",
+    "steuerfreibetragPlaceholder": "z.\u202fB. 1000",
     "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
     "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
     "upgradeBtn": "Upgraden"
