@@ -212,7 +212,7 @@ const cardYields = computed(() => activeTab.value === 'yearly' ? allYearsYields.
 
 const currentYearGoal      = computed(() => settings.dividendGoal[store.currentYear] || 0)
 const currentYearYieldGoal = computed(() => settings.yieldGoal[store.currentYear] || 0)
-const currentYearSteuer    = computed(() => settings.steuerfreibetrag[store.currentYear] || 0)
+const currentYearSteuer    = computed(() => settings.steuerfreibetrag[store.currentYear] ?? 1000)
 
 function monthsWithData(section) {
   const months = new Set()
