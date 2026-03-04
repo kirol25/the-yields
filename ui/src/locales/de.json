@@ -20,6 +20,8 @@
     "monthly": "Monatlich",
     "quarterly": "Quartalsweise",
     "yearly": "J\u00e4hrlich",
+    "breakdown": "Aufschl\u00fcsselung",
+    "noDataForYear": "Keine Daten f\u00fcr {year} erfasst.",
     "monthlyBreakdown": "Monatliche Aufschl\u00fcsselung \u2014 {year}",
     "quarterlyBreakdown": "Quartalsweise Aufschl\u00fcsselung \u2014 {year}",
     "incomeByYear": "Einkommen nach Jahr",
