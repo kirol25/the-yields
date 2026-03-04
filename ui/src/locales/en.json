@@ -148,6 +148,8 @@
     "de": "Deutsch"
   },
   "footer": {
+    "service": "Service",
+    "contact": "Contact",
     "impressum": "Legal Notice",
     "datenschutz": "Privacy Policy",
     "terms": "Terms of Service",

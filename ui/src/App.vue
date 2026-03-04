@@ -72,7 +72,7 @@
       <div class="max-w-7xl mx-auto px-6 pt-8 pb-6">
 
         <!-- Columns -->
-        <div class="grid grid-cols-3 gap-8 mb-8">
+        <div class="grid grid-cols-4 gap-8 mb-8">
 
           <!-- Brand -->
           <div class="space-y-2">
@@ -87,6 +87,15 @@
               <li><RouterLink to="/dashboard" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dashboard') }}</RouterLink></li>
               <li><RouterLink to="/dividends" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dividends') }}</RouterLink></li>
               <li><RouterLink to="/yields" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.yields') }}</RouterLink></li>
+              <li><RouterLink to="/subscriptions" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.subscriptions') }}</RouterLink></li>
+            </ul>
+          </div>
+
+          <!-- Service -->
+          <div class="space-y-3 justify-self-center">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.service') }}</h3>
+            <ul class="space-y-2">
+              <li><a href="mailto:contact@the-yield.app" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.contact') }}</a></li>
               <li><RouterLink to="/subscriptions" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.subscriptions') }}</RouterLink></li>
             </ul>
           </div>
