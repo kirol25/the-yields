@@ -25,10 +25,14 @@
     "incomeByYear": "Income by year"
   },
   "dividends": {
-    "title": "Dividends"
+    "title": "Dividends",
+    "empty": "No dividends recorded for {year}.",
+    "emptyHint": "Add your first dividend entry to get started."
   },
   "yields": {
-    "title": "Yields"
+    "title": "Yields",
+    "empty": "No yield accounts recorded for {year}.",
+    "emptyHint": "Add your first savings account yield to get started."
   },
   "profile": {
     "title": "Profile",
