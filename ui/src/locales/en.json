@@ -126,6 +126,8 @@
     "creating": "Creating account\u2026",
     "submit": "Create account",
     "passwordMismatch": "Passwords do not match.",
+    "name": "Name",
+    "namePlaceholder": "Your name",
     "alreadyAccount": "Already have an account?",
     "signIn": "Sign in"
   },

@@ -14,6 +14,19 @@
 
         <form @submit.prevent="submit" class="space-y-4">
           <div>
+            <label for="name" class="block text-xs font-medium text-gray-400 mb-1">{{ t('register.name') }}</label>
+            <input
+              id="name"
+              v-model="name"
+              type="text"
+              autocomplete="name"
+              required
+              :placeholder="t('register.namePlaceholder')"
+              class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
             <label for="email" class="block text-xs font-medium text-gray-400 mb-1">{{ t('register.email') }}</label>
             <input
               id="email"
@@ -88,6 +101,7 @@ const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
 
+const name = ref('')
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
@@ -114,7 +128,7 @@ async function submit() {
   }
   loading.value = true
   try {
-    await auth.signUp(email.value, password.value)
+    await auth.signUp(email.value, password.value, name.value.trim())
     router.push('/confirm')
   } catch (err) {
     error.value = err.message ?? 'Registration failed. Please try again.'
