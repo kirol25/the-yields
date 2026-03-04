@@ -13,9 +13,17 @@
     <button
       @click="toggleOpen"
       :disabled="store.loading"
-      class="text-sm font-medium text-gray-100 w-12 text-center tabular-nums hover:text-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      class="relative text-sm font-medium text-gray-100 w-12 text-center tabular-nums hover:text-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
-      {{ store.currentYear }}
+      <span :class="{ 'opacity-0': store.loading && !store.initializing }">{{ store.currentYear }}</span>
+      <svg
+        v-if="store.loading && !store.initializing"
+        class="absolute inset-0 m-auto w-3.5 h-3.5 animate-spin text-emerald-400"
+        viewBox="0 0 24 24" fill="none"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+      </svg>
     </button>
 
     <button
