@@ -124,6 +124,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function forgotPassword(email) {
+    await cognitoRequest('ForgotPassword', { ClientId: CLIENT_ID, Username: email })
+  }
+
+  async function resetPassword(email, code, newPassword) {
+    await cognitoRequest('ConfirmForgotPassword', {
+      ClientId: CLIENT_ID,
+      Username: email,
+      ConfirmationCode: code,
+      Password: newPassword,
+    })
+  }
+
   async function deleteAccount() {
     try {
       await cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
@@ -164,6 +177,8 @@ export const useAuthStore = defineStore('auth', () => {
     signIn,
     logout,
     changePassword,
+    forgotPassword,
+    resetPassword,
     deleteAccount,
   }
 })
