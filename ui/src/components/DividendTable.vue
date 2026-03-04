@@ -150,20 +150,37 @@
         </tr>
       </tfoot>
     </table>
-    <div v-else-if="!store.initializing" class="text-gray-500 text-sm py-6 text-center">
-      No dividends recorded for {{ store.currentYear }}.
+    <div v-else-if="!store.initializing" class="flex flex-col items-center py-16 gap-4 text-center">
+      <svg class="w-10 h-10 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="12" width="4" height="9" rx="1"/>
+        <rect x="9.5" y="7" width="4" height="14" rx="1"/>
+        <rect x="16" y="3" width="4" height="18" rx="1"/>
+      </svg>
+      <div>
+        <p class="text-sm font-medium text-gray-300">{{ t('dividends.empty', { year: store.currentYear }) }}</p>
+        <p class="text-xs text-gray-500 mt-1">{{ t('dividends.emptyHint') }}</p>
+      </div>
+      <button
+        @click="emit('add')"
+        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-md transition-colors"
+      >
+        {{ t('common.addEntry') }}
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, defineComponent, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useMonths } from '../composables/useMonths.js'
 import EditEntryModal from './EditEntryModal.vue'
 import SkeletonBlock from './SkeletonBlock.vue'
 
+const { t } = useI18n()
+const emit = defineEmits(['add'])
 const store = useDataStore()
 const settings = useSettingsStore()
 const { months } = useMonths()
