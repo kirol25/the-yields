@@ -12,7 +12,7 @@ function parseIdToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
     return {
-      name: payload.name ?? payload.email ?? '',
+      name: payload.preferred_username ?? payload.email ?? '',
       email: payload.email ?? '',
       sub: payload.sub ?? '',
     }
@@ -75,7 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
       Password: password,
       UserAttributes: [
         { Name: 'email', Value: email },
-        { Name: 'name', Value: name },
+        { Name: 'preferred_username', Value: name },
       ],
     })
     pendingEmail.value = email
