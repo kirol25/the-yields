@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-lg space-y-6">
+  <div class="max-w-lg mx-auto space-y-6">
     <h1 class="text-2xl font-bold">{{ t('settings.title') }}</h1>
 
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5">
