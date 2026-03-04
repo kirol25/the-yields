@@ -54,7 +54,15 @@
       </div>
     </Transition>
 
-    <table v-if="banks.length" class="w-full text-sm">
+    <!-- Skeleton rows while loading -->
+    <div v-if="store.loading" class="space-y-2 py-2">
+      <div v-for="i in 4" :key="i" class="flex gap-3 items-center">
+        <SkeletonBlock cls="h-4 w-32 shrink-0" />
+        <SkeletonBlock cls="h-4 flex-1" />
+      </div>
+    </div>
+
+    <table v-else-if="banks.length" class="w-full text-sm">
       <thead>
         <tr class="border-b border-gray-800">
           <th v-if="deleteMode" class="w-8 py-2 pr-2">
@@ -122,7 +130,7 @@
         </tr>
       </tfoot>
     </table>
-    <div v-else class="text-gray-500 text-sm py-6 text-center">
+    <div v-else-if="!store.loading" class="text-gray-500 text-sm py-6 text-center">
       No yield accounts recorded for {{ store.currentYear }}.
     </div>
   </div>
@@ -134,6 +142,7 @@ import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { MONTHS } from '../config.js'
 import EditEntryModal from './EditEntryModal.vue'
+import SkeletonBlock from './SkeletonBlock.vue'
 
 const store = useDataStore()
 const settings = useSettingsStore()

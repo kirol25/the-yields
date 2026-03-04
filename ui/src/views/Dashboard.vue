@@ -7,27 +7,35 @@
 
     <!-- Summary cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.dividends') }}
-          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
-        </p>
-        <p class="text-2xl font-bold text-emerald-400">{{ settings.fmt(cardDividends) }}</p>
-      </div>
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.yields') }}
-          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
-        </p>
-        <p class="text-2xl font-bold text-blue-400">{{ settings.fmt(cardYields) }}</p>
-      </div>
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-          {{ t('dashboard.combined') }}
-          <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
-        </p>
-        <p class="text-2xl font-bold text-white">{{ settings.fmt(cardDividends + cardYields) }}</p>
-      </div>
+      <template v-if="store.loading">
+        <div v-for="i in 3" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+          <SkeletonBlock cls="h-3 w-24" />
+          <SkeletonBlock cls="h-7 w-32" />
+        </div>
+      </template>
+      <template v-else>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            {{ t('dashboard.dividends') }}
+            <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
+          </p>
+          <p class="text-2xl font-bold text-emerald-400">{{ settings.fmt(cardDividends) }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            {{ t('dashboard.yields') }}
+            <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
+          </p>
+          <p class="text-2xl font-bold text-blue-400">{{ settings.fmt(cardYields) }}</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            {{ t('dashboard.combined') }}
+            <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
+          </p>
+          <p class="text-2xl font-bold text-white">{{ settings.fmt(cardDividends + cardYields) }}</p>
+        </div>
+      </template>
     </div>
 
     <!-- Chart card with tabs -->
@@ -51,18 +59,24 @@
 
       <!-- Chart body -->
       <div class="p-6">
-        <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">
-          {{
-            activeTab === 'monthly'
-              ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
-              : activeTab === 'quarterly'
-              ? t('dashboard.quarterlyBreakdown', { year: store.currentYear })
-              : t('dashboard.incomeByYear')
-          }}
-        </p>
-        <MonthlyChart v-if="activeTab === 'monthly'" />
-        <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
-        <YearlyChart v-else />
+        <template v-if="store.loading">
+          <SkeletonBlock cls="h-3 w-48 mb-4" />
+          <SkeletonBlock cls="h-48 w-full rounded-lg" />
+        </template>
+        <template v-else>
+          <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">
+            {{
+              activeTab === 'monthly'
+                ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
+                : activeTab === 'quarterly'
+                ? t('dashboard.quarterlyBreakdown', { year: store.currentYear })
+                : t('dashboard.incomeByYear')
+            }}
+          </p>
+          <MonthlyChart v-if="activeTab === 'monthly'" />
+          <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
+          <YearlyChart v-else />
+        </template>
       </div>
     </div>
   </div>
@@ -77,6 +91,7 @@ import YearSelector from '../components/YearSelector.vue'
 import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
+import SkeletonBlock from '../components/SkeletonBlock.vue'
 
 const { t } = useI18n()
 const store = useDataStore()
