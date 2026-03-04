@@ -56,6 +56,20 @@ def put_data(year: int, payload: dict[str, Any], service: ServiceDep) -> dict[st
 
 
 @router.delete(
+    "/data",
+    responses={
+        status.HTTP_200_OK: {"description": "All user data deleted successfully"},
+    },
+    summary="Delete all user data",
+    description="Permanently deletes all data files for the authenticated user."
+    " Called as part of the account deletion flow.",
+)
+def delete_all_data(service: ServiceDep) -> dict[str, str]:
+    """Permanently delete all data for the authenticated user."""
+    return service.delete_all_data()
+
+
+@router.delete(
     "/data/{year}/{section}/{key}",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Entry deleted successfully"},

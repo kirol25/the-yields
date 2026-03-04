@@ -61,6 +61,18 @@ class S3YieldRepository:
             ContentType="application/json",
         )
 
+    def delete_all_data(self) -> None:
+        """Delete all S3 objects for this user.
+
+        This is a destructive, irreversible operation used when a user
+        permanently deletes their account.
+        """
+        paginator = self._s3.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=self.bucket, Prefix=f"{self.prefix}/"):
+            keys = [{"Key": obj["Key"]} for obj in page.get("Contents", [])]
+            if keys:
+                self._s3.delete_objects(Bucket=self.bucket, Delete={"Objects": keys})
+
     def delete_entry(self, year: int, section: str, key: str) -> bool:
         """Remove a single entry from a section of the given year's data."""
         data = self.read_year(year)
