@@ -118,24 +118,64 @@ export const useAuthStore = defineStore('auth', () => {
     )
   }
 
+  function isTokenExpired() {
+    if (!accessToken.value) return true
+    try {
+      const { exp } = JSON.parse(atob(accessToken.value.split('.')[1]))
+      return Date.now() / 1000 >= exp - 30 // 30s buffer
+    } catch {
+      return true
+    }
+  }
+
+  async function refreshSession() {
+    if (!refreshToken.value) throw new Error('No refresh token')
+    const data = await cognitoRequest('InitiateAuth', {
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
+      ClientId: CLIENT_ID,
+      AuthParameters: { REFRESH_TOKEN: refreshToken.value },
+    })
+    setTokens(data.AuthenticationResult)
+  }
+
+  // Returns true if the token is (now) valid, false if the session was terminated.
+  async function ensureValidToken() {
+    if (!isTokenExpired()) return true
+    try {
+      await refreshSession()
+      return true
+    } catch {
+      await logout()
+      useToastStore().add(i18n.global.t('common.sessionExpired'), 'error')
+      return false
+    }
+  }
+
+  // Returns true if refreshed, false if session was terminated.
   async function handleExpiredSession() {
-    await logout()
-    useToastStore().add(i18n.global.t('common.sessionExpired'), 'error')
+    try {
+      await refreshSession()
+      return true
+    } catch {
+      await logout()
+      useToastStore().add(i18n.global.t('common.sessionExpired'), 'error')
+      return false
+    }
   }
 
   async function changePassword(oldPassword, newPassword) {
-    try {
-      await cognitoRequest('ChangePassword', {
+    const doChange = () =>
+      cognitoRequest('ChangePassword', {
         AccessToken: accessToken.value,
         PreviousPassword: oldPassword,
         ProposedPassword: newPassword,
       })
+    try {
+      await doChange()
     } catch (err) {
-      if (isExpiredTokenError(err)) {
-        await handleExpiredSession()
-        return
-      }
-      throw err
+      if (!isExpiredTokenError(err)) throw err
+      const refreshed = await handleExpiredSession()
+      if (refreshed) await doChange()
     }
   }
 
@@ -178,14 +218,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // Delete the Cognito account
+    const doDelete = () => cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
     try {
-      await cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
+      await doDelete()
     } catch (err) {
-      if (isExpiredTokenError(err)) {
-        await handleExpiredSession()
-        return
-      }
-      throw err
+      if (!isExpiredTokenError(err)) throw err
+      const refreshed = await handleExpiredSession()
+      if (!refreshed) return
+      await doDelete()
     }
 
     // Account is gone — clear tokens directly without GlobalSignOut
@@ -216,5 +256,7 @@ export const useAuthStore = defineStore('auth', () => {
     forgotPassword,
     resetPassword,
     deleteAccount,
+    refreshSession,
+    ensureValidToken,
   }
 })
