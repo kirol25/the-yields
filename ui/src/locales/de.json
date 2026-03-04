@@ -2,7 +2,8 @@
   "nav": {
     "dashboard": "Dashboard",
     "dividends": "Dividenden",
-    "yields": "Zinsen"
+    "yields": "Zinsen",
+    "subscriptions": "Preise"
   },
   "common": {
     "cancel": "Abbrechen",
@@ -49,7 +50,10 @@
     "deleteAccountDesc": "L\u00f6scht Ihr Konto und alle zugeh\u00f6rigen Daten dauerhaft. Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
     "confirmDelete": "Sind Sie sicher? Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
     "confirmDeleteBtn": "Ja, Konto l\u00f6schen",
-    "deleting": "Wird gel\u00f6scht\u2026"
+    "deleting": "Wird gel\u00f6scht\u2026",
+    "planFree": "Kostenlos",
+    "planPremium": "Premium",
+    "upgrade": "Upgraden"
   },
   "settings": {
     "title": "Einstellungen",
@@ -145,6 +149,45 @@
     "disclaimerText": "Diese App dient ausschließlich der persönlichen Finanzverfolgung. Nichts hier stellt eine Finanz- oder Anlageberatung dar.",
     "privacyFirst": "Datenschutzkonform",
     "selfHosted": "Self-hostbar"
+  },
+  "subscriptions": {
+    "title": "Einfache, transparente Preise",
+    "badge": "Preise",
+    "free": {
+      "name": "Kostenlos",
+      "price": "€0",
+      "period": "für immer",
+      "features": [
+        "Grundlegendes Dividenden- & Zins-Tracking",
+        "1 Jahr Datenspeicherung",
+        "Bis zu 5 Ticker",
+        "Monatliche Übersicht"
+      ]
+    },
+    "monthly": {
+      "name": "Monatlich",
+      "price": "€4",
+      "period": "Monat",
+      "features": [
+        "Unbegrenzte Ticker & Konten",
+        "Alle Jahre gespeichert",
+        "Export als CSV",
+        "Visuelle Analysen"
+      ]
+    },
+    "yearly": {
+      "name": "Jährlich",
+      "price": "€39",
+      "period": "Jahr",
+      "badge": "Bestes Angebot",
+      "features": [
+        "Alles aus Monatlich",
+        "Prioritäts-Support",
+        "2 Monate gratis ggü. monatlich",
+        "Früher Zugang zu neuen Funktionen"
+      ]
+    },
+    "cta": "Loslegen"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",

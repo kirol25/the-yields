@@ -2,7 +2,8 @@
   "nav": {
     "dashboard": "Dashboard",
     "dividends": "Dividends",
-    "yields": "Yields"
+    "yields": "Yields",
+    "subscriptions": "Pricing"
   },
   "common": {
     "cancel": "Cancel",
@@ -49,7 +50,10 @@
     "deleteAccountDesc": "Permanently delete your account and all associated data. This action cannot be undone.",
     "confirmDelete": "Are you sure? This cannot be undone.",
     "confirmDeleteBtn": "Yes, delete my account",
-    "deleting": "Deleting\u2026"
+    "deleting": "Deleting\u2026",
+    "planFree": "Free plan",
+    "planPremium": "Premium",
+    "upgrade": "Upgrade"
   },
   "settings": {
     "title": "Settings",
@@ -145,6 +149,45 @@
     "disclaimerText": "This app is for personal finance tracking only. Nothing here constitutes financial or investment advice.",
     "privacyFirst": "Privacy-first",
     "selfHosted": "Self-hostable"
+  },
+  "subscriptions": {
+    "title": "Simple, transparent pricing",
+    "badge": "Pricing",
+    "free": {
+      "name": "Free",
+      "price": "€0",
+      "period": "forever",
+      "features": [
+        "Basic dividend & yield tracking",
+        "1 year of data",
+        "Up to 5 tickers",
+        "Monthly overview"
+      ]
+    },
+    "monthly": {
+      "name": "Monthly",
+      "price": "€4",
+      "period": "month",
+      "features": [
+        "Unlimited tickers & accounts",
+        "All years of data",
+        "Export as CSV",
+        "Visual analytics"
+      ]
+    },
+    "yearly": {
+      "name": "Yearly",
+      "price": "€39",
+      "period": "year",
+      "badge": "Best value",
+      "features": [
+        "Everything in Monthly",
+        "Priority support",
+        "2 months free vs monthly",
+        "Early access to new features"
+      ]
+    },
+    "cta": "Get started"
   },
   "landing": {
     "badge": "Personal Finance Tracker",
