@@ -17,6 +17,32 @@
         </div>
       </div>
 
+      <!-- Plan badge -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <template v-if="isPremium">
+            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <span class="text-sm font-medium text-amber-400">{{ t('profile.planPremium') }}</span>
+          </template>
+          <template v-else>
+            <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/>
+            </svg>
+            <span class="text-sm text-gray-500">{{ t('profile.planFree') }}</span>
+          </template>
+        </div>
+        <RouterLink
+          v-if="!isPremium"
+          to="/subscriptions"
+          class="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
+        >
+          {{ t('profile.upgrade') }} →
+        </RouterLink>
+      </div>
+
       <hr class="border-gray-800" />
 
       <!-- Name -->
@@ -163,6 +189,9 @@ const settings = useSettingsStore()
 const auth = useAuthStore()
 const toast = useToastStore()
 const router = useRouter()
+
+// TODO: wire to real subscription state when billing is implemented
+const isPremium = computed(() => false)
 
 const nameInput = ref(settings.profile.name)
 const savedName = ref(settings.profile.name)

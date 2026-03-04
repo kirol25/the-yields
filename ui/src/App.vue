@@ -29,7 +29,6 @@
           >
             {{ t('nav.yields') }}
           </RouterLink>
-
           <button
             @click="bladeOpen = true"
             class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
@@ -74,6 +73,7 @@
               <li><RouterLink to="/dashboard" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dashboard') }}</RouterLink></li>
               <li><RouterLink to="/dividends" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.dividends') }}</RouterLink></li>
               <li><RouterLink to="/yields" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.yields') }}</RouterLink></li>
+              <li><RouterLink to="/subscriptions" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.subscriptions') }}</RouterLink></li>
             </ul>
           </div>
 
