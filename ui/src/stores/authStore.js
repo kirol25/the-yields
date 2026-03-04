@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { i18n } from '../i18n.js'
 import { useToastStore } from './toastStore.js'
+import { API_BASE } from '../config.js'
 
 const REGION = import.meta.env.VITE_COGNITO_REGION
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
@@ -139,6 +140,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function deleteAccount() {
     try {
+      // Delete all user data from the backend first, then remove the Cognito account
+      await fetch(`${API_BASE}/api/data`, {
+        method: 'DELETE',
+        headers: { 'X-User-Email': user.value?.email ?? '' },
+      })
       await cognitoRequest('DeleteUser', { AccessToken: accessToken.value })
     } catch (err) {
       if (isExpiredTokenError(err)) {
