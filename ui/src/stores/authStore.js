@@ -138,6 +138,15 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
+  function clearTokens() {
+    accessToken.value = null
+    idToken.value = null
+    refreshToken.value = null
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('id_token')
+    localStorage.removeItem('refresh_token')
+  }
+
   async function deleteAccount() {
     try {
       // Delete all user data from the backend first, then remove the Cognito account
@@ -153,7 +162,8 @@ export const useAuthStore = defineStore('auth', () => {
       }
       throw err
     }
-    await logout()
+    // Account is gone — clear tokens directly without GlobalSignOut
+    clearTokens()
   }
 
   async function logout() {
