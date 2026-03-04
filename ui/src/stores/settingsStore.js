@@ -82,12 +82,12 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   function setDividendGoal(year, amount) {
-    dividendGoal.value = { ...dividendGoal.value, [year]: amount }
+    dividendGoal.value = { ...dividendGoal.value, [year]: Math.max(amount, 0) }
     save()
   }
 
   function setYieldGoal(year, amount) {
-    yieldGoal.value = { ...yieldGoal.value, [year]: amount }
+    yieldGoal.value = { ...yieldGoal.value, [year]: Math.max(amount, 0) }
     save()
   }
 
