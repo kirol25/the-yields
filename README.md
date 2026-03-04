@@ -46,7 +46,7 @@ docker compose up --build
 
 ## Data format
 
-Year data is stored in `data/YYYY.json`:
+Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3://{bucket}/{prefix}/{user_email}/YYYY.json` (S3):
 
 ```json
 {
@@ -58,6 +58,27 @@ Year data is stored in `data/YYYY.json`:
   }
 }
 ```
+
+## API endpoints
+
+All requests require an `X-User-Email` header identifying the authenticated user.
+
+| Method   | Path                              | Description                          |
+|----------|-----------------------------------|--------------------------------------|
+| `GET`    | `/api/years`                      | List years with data                 |
+| `GET`    | `/api/data/{year}`                | Get dividend/yield data for a year   |
+| `PUT`    | `/api/data/{year}`                | Save dividend/yield data for a year  |
+| `DELETE` | `/api/data`                       | Delete **all** data for the user (account deletion) |
+| `DELETE` | `/api/data/{year}/{section}/{key}`| Delete a single entry                |
+
+Interactive docs available at `http://localhost:9002/docs`.
+
+## Account deletion
+
+When a user deletes their account the frontend:
+1. Calls `DELETE /api/data` to wipe all their data from the backend
+2. Calls Cognito `DeleteUser` to remove the auth account
+3. Clears local tokens and redirects to `/login`
 
 ## Taskfile commands
 
