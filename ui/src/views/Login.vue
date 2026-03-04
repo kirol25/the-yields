@@ -39,6 +39,12 @@
             />
           </div>
 
+          <div class="flex justify-end">
+            <RouterLink to="/forgot-password" class="text-xs text-gray-500 hover:text-emerald-400 transition-colors">
+              {{ t('login.forgotPassword') }}
+            </RouterLink>
+          </div>
+
           <p v-if="error" class="text-xs text-red-400">{{ error }}</p>
 
           <button
