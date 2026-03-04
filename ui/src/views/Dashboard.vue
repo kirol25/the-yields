@@ -6,8 +6,8 @@
     </div>
 
     <!-- Summary cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <template v-if="store.loading">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" :class="{ 'opacity-50 transition-opacity': store.loading && !store.initializing }">
+      <template v-if="store.initializing">
         <div v-for="i in 3" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
           <SkeletonBlock cls="h-3 w-24" />
           <SkeletonBlock cls="h-7 w-32" />
@@ -58,8 +58,8 @@
       </div>
 
       <!-- Chart body -->
-      <div class="p-6">
-        <template v-if="store.loading">
+      <div class="p-6" :class="{ 'opacity-50 transition-opacity': store.loading && !store.initializing }">
+        <template v-if="store.initializing">
           <SkeletonBlock cls="h-3 w-48 mb-4" />
           <SkeletonBlock cls="h-48 w-full rounded-lg" />
         </template>

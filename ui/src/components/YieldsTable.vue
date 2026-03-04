@@ -54,15 +54,15 @@
       </div>
     </Transition>
 
-    <!-- Skeleton rows while loading -->
-    <div v-if="store.loading" class="space-y-2 py-2">
+    <!-- Skeleton rows on initial load only -->
+    <div v-if="store.initializing" class="space-y-2 py-2">
       <div v-for="i in 4" :key="i" class="flex gap-3 items-center">
         <SkeletonBlock cls="h-4 w-32 shrink-0" />
         <SkeletonBlock cls="h-4 flex-1" />
       </div>
     </div>
 
-    <table v-else-if="banks.length" class="w-full text-sm">
+    <table v-else-if="banks.length" class="w-full text-sm" :class="{ 'opacity-50 transition-opacity': store.loading }">
       <thead>
         <tr class="border-b border-gray-800">
           <th v-if="deleteMode" class="w-8 py-2 pr-2">
@@ -130,7 +130,7 @@
         </tr>
       </tfoot>
     </table>
-    <div v-else-if="!store.loading" class="text-gray-500 text-sm py-6 text-center">
+    <div v-else-if="!store.initializing" class="text-gray-500 text-sm py-6 text-center">
       No yield accounts recorded for {{ store.currentYear }}.
     </div>
   </div>
