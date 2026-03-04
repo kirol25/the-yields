@@ -22,7 +22,9 @@
     "yearly": "J\u00e4hrlich",
     "monthlyBreakdown": "Monatliche Aufschl\u00fcsselung \u2014 {year}",
     "quarterlyBreakdown": "Quartalsweise Aufschl\u00fcsselung \u2014 {year}",
-    "incomeByYear": "Einkommen nach Jahr"
+    "incomeByYear": "Einkommen nach Jahr",
+    "avgPerMonth": "\u00d8 pro Monat",
+    "avgPerMonthHint": "basierend auf {n} Monaten mit Daten"
   },
   "dividends": {
     "title": "Dividenden",
