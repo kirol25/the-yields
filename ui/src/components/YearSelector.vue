@@ -2,7 +2,7 @@
   <div ref="container" class="relative flex items-center gap-1 bg-gray-900 border border-gray-800 rounded-lg px-1 py-1">
     <button
       @click="step(-1)"
-      :disabled="currentIndex <= 0"
+      :disabled="currentIndex <= 0 || store.loading"
       class="p-1 rounded text-gray-500 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -12,14 +12,15 @@
 
     <button
       @click="toggleOpen"
-      class="text-sm font-medium text-gray-100 w-12 text-center tabular-nums hover:text-emerald-400 transition-colors"
+      :disabled="store.loading"
+      class="text-sm font-medium text-gray-100 w-12 text-center tabular-nums hover:text-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
     >
       {{ store.currentYear }}
     </button>
 
     <button
       @click="step(1)"
-      :disabled="currentIndex >= store.years.length - 1"
+      :disabled="currentIndex >= store.years.length - 1 || store.loading"
       class="p-1 rounded text-gray-500 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
