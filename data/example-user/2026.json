@@ -90,6 +90,12 @@
       "months": {
         "01": 5.23
       }
+    },
+    "SBUX": {
+      "name": "Starbucks",
+      "months": {
+        "03": 11.78
+      }
     }
   },
   "yields": {
