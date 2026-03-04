@@ -51,6 +51,29 @@
       </template>
     </div>
 
+    <!-- Dividend goal progress (monthly tab only, when a goal is set) -->
+    <div
+      v-if="activeTab === 'monthly' && settings.dividendGoal > 0 && !store.initializing"
+      class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6"
+      :class="{ 'opacity-50 transition-opacity': store.loading && !store.initializing }"
+    >
+      <GoalDonutChart :achieved="totalDividends" :goal="settings.dividendGoal" />
+      <div class="space-y-1.5 min-w-0">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.goalProgress') }}</p>
+        <p class="text-2xl font-bold text-emerald-400">
+          {{ settings.fmt(totalDividends) }}
+          <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(settings.dividendGoal) }}</span>
+        </p>
+        <p class="text-xs text-gray-500">
+          {{
+            totalDividends >= settings.dividendGoal
+              ? t('dashboard.goalReached')
+              : t('dashboard.goalRemaining', { amount: settings.fmt(settings.dividendGoal - totalDividends) })
+          }}
+        </p>
+      </div>
+    </div>
+
     <!-- Chart card with tabs -->
     <div class="bg-gray-900 border border-gray-800 rounded-xl">
       <!-- Tab bar -->
@@ -105,6 +128,7 @@ import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
 import SkeletonBlock from '../components/SkeletonBlock.vue'
+import GoalDonutChart from '../components/GoalDonutChart.vue'
 
 const { t } = useI18n()
 const store = useDataStore()

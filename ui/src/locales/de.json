@@ -24,7 +24,10 @@
     "quarterlyBreakdown": "Quartalsweise Aufschl\u00fcsselung \u2014 {year}",
     "incomeByYear": "Einkommen nach Jahr",
     "avgPerMonth": "\u00d8 pro Monat",
-    "avgPerMonthHint": "basierend auf {n} Monaten mit Daten"
+    "avgPerMonthHint": "basierend auf {n} Monaten mit Daten",
+    "goalProgress": "Dividendenziel",
+    "goalReached": "Ziel erreicht \u2014 gut gemacht!",
+    "goalRemaining": "noch {amount} verbleibend"
   },
   "dividends": {
     "title": "Dividenden",
@@ -76,6 +79,10 @@
     "exportCsvDesc": "Alle Dividenden- und Zinsdaten \u00fcber alle Jahre als CSV-Datei herunterladen.",
     "exporting": "Wird exportiert\u2026",
     "noData": "Noch keine Daten zum Exportieren.",
+    "goals": "Ziele",
+    "dividendGoal": "J\u00e4hrliches Dividendenziel",
+    "dividendGoalDesc": "Lege ein Ziel f\u00fcr deine gesamten Dividendeneinnahmen in diesem Jahr fest. Dein Fortschritt wird im Dashboard angezeigt.",
+    "dividendGoalPlaceholder": "z.\u202fB. 2400",
     "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
     "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
     "upgradeBtn": "Upgraden"

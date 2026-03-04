@@ -24,7 +24,10 @@
     "quarterlyBreakdown": "Quarterly breakdown — {year}",
     "incomeByYear": "Income by year",
     "avgPerMonth": "Avg / Month",
-    "avgPerMonthHint": "based on {n} months with data"
+    "avgPerMonthHint": "based on {n} months with data",
+    "goalProgress": "Dividend Goal",
+    "goalReached": "Goal reached — great work!",
+    "goalRemaining": "{amount} remaining"
   },
   "dividends": {
     "title": "Dividends",
@@ -76,6 +79,10 @@
     "exportCsvDesc": "Download all your dividend and yield data across all years as a CSV file.",
     "exporting": "Exporting\u2026",
     "noData": "No data to export yet.",
+    "goals": "Goals",
+    "dividendGoal": "Yearly dividend goal",
+    "dividendGoalDesc": "Set a target for total dividend income this year. Your progress will be shown on the dashboard.",
+    "dividendGoalPlaceholder": "e.g. 2400",
     "exportLocked": "CSV export is a Monthly/Yearly feature",
     "exportLockedDesc": "Upgrade to export your data as CSV.",
     "upgradeBtn": "Upgrade"

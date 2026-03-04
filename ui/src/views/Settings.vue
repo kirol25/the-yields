@@ -146,6 +146,31 @@
       </div>
     </div>
 
+    <!-- Goals -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.goals') }}</h2>
+      <div>
+        <label class="block text-xs text-gray-400 mb-1">{{ t('settings.dividendGoal') }}</label>
+        <p class="text-xs text-gray-500 mb-2">{{ t('settings.dividendGoalDesc') }}</p>
+        <div class="flex gap-2">
+          <input
+            type="number"
+            v-model.number="goalInput"
+            min="0"
+            :placeholder="t('settings.dividendGoalPlaceholder')"
+            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+          <button
+            @click="saveGoal"
+            :disabled="goalInput === settings.dividendGoal"
+            class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
+          >
+            {{ t('common.save') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Data -->
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.data') }}</h2>
@@ -199,6 +224,13 @@ const { t } = useI18n()
 const settings = useSettingsStore()
 const store = useDataStore()
 const { isPremium } = useSubscription()
+
+// Goals
+const goalInput = ref(settings.dividendGoal)
+function saveGoal() {
+  settings.dividendGoal = goalInput.value || 0
+  settings.save()
+}
 
 const currencyContainer = ref(null)
 const currencyOpen = ref(false)
