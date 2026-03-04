@@ -269,6 +269,7 @@ async function submitDeleteAccount() {
     deleting.value = false
     return
   }
+  toast.add(t('profile.accountDeletedSuccess'), 'success')
   router.push('/login')
 }
 </script>

@@ -51,6 +51,7 @@
     "confirmDelete": "Sind Sie sicher? Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
     "confirmDeleteBtn": "Ja, Konto l\u00f6schen",
     "deleting": "Wird gel\u00f6scht\u2026",
+    "accountDeletedSuccess": "Ihr Konto wurde gel\u00f6scht.",
     "planFree": "Kostenlos",
     "planPremium": "Premium",
     "upgrade": "Upgraden"

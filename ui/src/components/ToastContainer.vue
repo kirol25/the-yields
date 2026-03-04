@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <div class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 items-end pointer-events-none">
+    <div class="fixed top-6 right-6 z-[9999] flex flex-col gap-2 items-end pointer-events-none">
       <TransitionGroup name="toast">
         <div
           v-for="toast in toastStore.toasts"
@@ -50,7 +50,7 @@ const typeClasses = {
 }
 .toast-enter-from {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(-8px);
 }
 .toast-leave-to {
   opacity: 0;
