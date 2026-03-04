@@ -30,7 +30,10 @@
     "avgPerMonthHint": "based on {n} months with data",
     "goalProgress": "Dividend Goal",
     "goalReached": "Goal reached — great work!",
-    "goalRemaining": "{amount} remaining"
+    "goalRemaining": "{amount} remaining",
+    "steuerProgress": "Tax Allowance",
+    "steuerRemaining": "{amount} still tax-free",
+    "steuerExceeded": "{amount} above allowance"
   },
   "dividends": {
     "title": "Dividends",
@@ -86,6 +89,9 @@
     "dividendGoal": "Yearly dividend goal",
     "dividendGoalDesc": "Set a target for total dividend income this year. Your progress will be shown on the dashboard.",
     "dividendGoalPlaceholder": "e.g. 2400",
+    "steuerfreibetrag": "Steuerfreibetrag",
+    "steuerfreibetragDesc": "Your personal tax-free savings allowance (max. €2,000). Once your dividends exceed this, the chart turns amber.",
+    "steuerfreibetragPlaceholder": "e.g. 1000",
     "exportLocked": "CSV export is a Monthly/Yearly feature",
     "exportLockedDesc": "Upgrade to export your data as CSV.",
     "upgradeBtn": "Upgrade"
