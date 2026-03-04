@@ -150,7 +150,9 @@
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.goals') }}</h2>
       <div>
-        <label class="block text-xs text-gray-400 mb-1">{{ t('settings.dividendGoal') }}</label>
+        <label class="block text-xs text-gray-400 mb-1">
+          {{ t('settings.dividendGoal') }} <span class="text-gray-600">({{ store.currentYear }})</span>
+        </label>
         <p class="text-xs text-gray-500 mb-2">{{ t('settings.dividendGoalDesc') }}</p>
         <div class="flex gap-2">
           <input
@@ -162,7 +164,7 @@
           />
           <button
             @click="saveGoal"
-            :disabled="goalInput === settings.dividendGoal"
+            :disabled="goalInput === (settings.dividendGoal[store.currentYear] || 0)"
             class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
           >
             {{ t('common.save') }}
@@ -214,7 +216,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useDataStore } from '../stores/dataStore.js'
@@ -226,10 +228,10 @@ const store = useDataStore()
 const { isPremium } = useSubscription()
 
 // Goals
-const goalInput = ref(settings.dividendGoal)
+const goalInput = ref(settings.dividendGoal[store.currentYear] || 0)
+watch(() => store.currentYear, (y) => { goalInput.value = settings.dividendGoal[y] || 0 })
 function saveGoal() {
-  settings.dividendGoal = goalInput.value || 0
-  settings.save()
+  settings.setDividendGoal(store.currentYear, goalInput.value || 0)
 }
 
 const currencyContainer = ref(null)

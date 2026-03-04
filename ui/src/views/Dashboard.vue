@@ -7,12 +7,11 @@
 
     <!-- Summary cards -->
     <div
-      class="grid grid-cols-1 gap-4"
-      :class="activeTab === 'monthly' ? 'sm:grid-cols-4' : 'sm:grid-cols-3'"
+      class="grid grid-cols-1 sm:grid-cols-3 gap-4"
       :style="{ opacity: store.loading && !store.initializing ? '0.5' : '' }"
     >
       <template v-if="store.initializing">
-        <div v-for="i in (activeTab === 'monthly' ? 4 : 3)" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+        <div v-for="i in 3" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
           <SkeletonBlock cls="h-3 w-24" />
           <SkeletonBlock cls="h-7 w-32" />
         </div>
@@ -39,36 +38,56 @@
           </p>
           <p class="text-2xl font-bold text-white">{{ settings.fmt(cardDividends + cardYields) }}</p>
         </div>
-        <div v-if="activeTab === 'monthly'" class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-          <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
-            {{ t('dashboard.avgPerMonth') }} {{ store.currentYear }}
-          </p>
-          <p class="text-2xl font-bold text-emerald-300">{{ settings.fmt(avgMonthlyDividends) }}</p>
-          <p v-if="monthsWithDividends > 0" class="text-xs text-gray-600 mt-1">
-            {{ t('dashboard.avgPerMonthHint', { n: monthsWithDividends }) }}
-          </p>
-        </div>
       </template>
     </div>
 
-    <!-- Dividend goal progress (monthly tab only, when a goal is set) -->
+    <!-- Average cards (monthly tab only) -->
     <div
-      v-if="activeTab === 'monthly' && settings.dividendGoal > 0 && !store.initializing"
-      class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6"
-      :class="{ 'opacity-50 transition-opacity': store.loading && !store.initializing }"
+      v-if="activeTab === 'monthly' && !store.initializing"
+      class="grid grid-cols-1 sm:grid-cols-3 gap-4"
+      :style="{ opacity: store.loading && !store.initializing ? '0.5' : '' }"
     >
-      <GoalDonutChart :achieved="totalDividends" :goal="settings.dividendGoal" />
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">{{ t('dashboard.avgDividends') }}</p>
+        <p class="text-2xl font-bold text-emerald-300">{{ settings.fmt(avgMonthlyDividends) }}</p>
+        <p v-if="monthsWithDividends > 0" class="text-xs text-gray-600 mt-1">
+          {{ t('dashboard.avgPerMonthHint', { n: monthsWithDividends }) }}
+        </p>
+      </div>
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">{{ t('dashboard.avgYields') }}</p>
+        <p class="text-2xl font-bold text-blue-300">{{ settings.fmt(avgMonthlyYields) }}</p>
+        <p v-if="monthsWithYields > 0" class="text-xs text-gray-600 mt-1">
+          {{ t('dashboard.avgPerMonthHint', { n: monthsWithYields }) }}
+        </p>
+      </div>
+      <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">{{ t('dashboard.avgCombined') }}</p>
+        <p class="text-2xl font-bold text-gray-300">{{ settings.fmt(avgMonthlyTotal) }}</p>
+        <p v-if="monthsWithAnyData > 0" class="text-xs text-gray-600 mt-1">
+          {{ t('dashboard.avgPerMonthHint', { n: monthsWithAnyData }) }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Dividend goal progress (monthly tab only, when a goal is set for this year) -->
+    <div
+      v-if="activeTab === 'monthly' && currentYearGoal > 0 && !store.initializing"
+      class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6"
+      :style="{ opacity: store.loading && !store.initializing ? '0.5' : '' }"
+    >
+      <GoalDonutChart :achieved="totalDividends" :goal="currentYearGoal" />
       <div class="space-y-1.5 min-w-0">
-        <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.goalProgress') }}</p>
+        <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.goalProgress') }} {{ store.currentYear }}</p>
         <p class="text-2xl font-bold text-emerald-400">
           {{ settings.fmt(totalDividends) }}
-          <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(settings.dividendGoal) }}</span>
+          <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(currentYearGoal) }}</span>
         </p>
         <p class="text-xs text-gray-500">
           {{
-            totalDividends >= settings.dividendGoal
+            totalDividends >= currentYearGoal
               ? t('dashboard.goalReached')
-              : t('dashboard.goalRemaining', { amount: settings.fmt(settings.dividendGoal - totalDividends) })
+              : t('dashboard.goalRemaining', { amount: settings.fmt(currentYearGoal - totalDividends) })
           }}
         </p>
       </div>
@@ -160,11 +179,27 @@ const allYearsYields = computed(() =>
 const cardDividends = computed(() => activeTab.value === 'yearly' ? allYearsDividends.value : totalDividends.value)
 const cardYields = computed(() => activeTab.value === 'yearly' ? allYearsYields.value : totalYields.value)
 
-const monthsWithDividends = computed(() => {
+const currentYearGoal = computed(() => settings.dividendGoal[store.currentYear] || 0)
+
+function monthsWithData(section) {
   const months = new Set()
-  for (const entry of Object.values(store.yearData.dividends || {})) {
+  for (const entry of Object.values(section)) {
     for (const [month, val] of Object.entries(entry.months || {})) {
       if (val > 0) months.add(month)
+    }
+  }
+  return months.size
+}
+
+const monthsWithDividends = computed(() => monthsWithData(store.yearData.dividends || {}))
+const monthsWithYields    = computed(() => monthsWithData(store.yearData.yields || {}))
+const monthsWithAnyData   = computed(() => {
+  const months = new Set()
+  for (const section of [store.yearData.dividends || {}, store.yearData.yields || {}]) {
+    for (const entry of Object.values(section)) {
+      for (const [month, val] of Object.entries(entry.months || {})) {
+        if (val > 0) months.add(month)
+      }
     }
   }
   return months.size
@@ -172,5 +207,11 @@ const monthsWithDividends = computed(() => {
 
 const avgMonthlyDividends = computed(() =>
   monthsWithDividends.value > 0 ? totalDividends.value / monthsWithDividends.value : 0,
+)
+const avgMonthlyYields = computed(() =>
+  monthsWithYields.value > 0 ? totalYields.value / monthsWithYields.value : 0,
+)
+const avgMonthlyTotal = computed(() =>
+  monthsWithAnyData.value > 0 ? (totalDividends.value + totalYields.value) / monthsWithAnyData.value : 0,
 )
 </script>
