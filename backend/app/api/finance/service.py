@@ -48,6 +48,15 @@ class YieldService:
         self.repository.write_year(year, payload)
         return {"status": "ok"}
 
+    def delete_all_data(self) -> dict[str, str]:
+        """Permanently delete all data for the current user.
+
+        Returns:
+            A status confirmation dict.
+        """
+        self.repository.delete_all_data()
+        return {"status": "ok"}
+
     def delete_entry(
         self, year: int, section: Literal["dividends", "yields"], key: str
     ) -> dict[str, str]:  # noqa: E501

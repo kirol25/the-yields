@@ -1,5 +1,6 @@
 import json
 import re
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -75,6 +76,15 @@ class YieldRepository:
         del data[section][key]
         self.write_year(year, data)
         return True
+
+    def delete_all_data(self) -> None:
+        """Delete the entire user data directory and all its contents.
+
+        This is a destructive, irreversible operation used when a user
+        permanently deletes their account.
+        """
+        if self.data_dir.exists():
+            shutil.rmtree(self.data_dir)
 
     def write_year(self, year: int, data: dict[str, Any]) -> None:
         """Persist data for the given year, creating the file if needed.
