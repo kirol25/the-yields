@@ -68,7 +68,10 @@
     "exportCsv": "Export as CSV",
     "exportCsvDesc": "Download all your dividend and yield data across all years as a CSV file.",
     "exporting": "Exporting\u2026",
-    "noData": "No data to export yet."
+    "noData": "No data to export yet.",
+    "exportLocked": "CSV export is a Monthly/Yearly feature",
+    "exportLockedDesc": "Upgrade to export your data as CSV.",
+    "upgradeBtn": "Upgrade"
   },
   "blade": {
     "account": "Account",
@@ -111,7 +114,8 @@
     "signingIn": "Signing in\u2026",
     "submit": "Sign in",
     "noAccount": "Don't have an account?",
-    "createOne": "Create one"
+    "createOne": "Create one",
+    "forgotPassword": "Forgot password?"
   },
   "register": {
     "title": "Create an account",
@@ -142,6 +146,7 @@
   "footer": {
     "impressum": "Legal Notice",
     "datenschutz": "Privacy Policy",
+    "terms": "Terms of Service",
     "tagline": "Track dividends from stocks and savings yields from any bank — all in one place.",
     "app": "App",
     "legal": "Legal",
@@ -210,5 +215,50 @@
     "step3Desc": "Charts and tables update instantly to show your progress.",
     "ctaTitle": "Ready to track your income?",
     "ctaSub": "Sign in and start building your dividend and yield history today."
+  },
+  "cookie": {
+    "message": "We use cookies and local storage only for essential functionality (authentication, preferences). No tracking or analytics.",
+    "accept": "Got it"
+  },
+  "forgotPassword": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email and we'll send you a reset code.",
+    "email": "Email",
+    "submit": "Send reset code",
+    "submitting": "Sending\u2026",
+    "successTitle": "Check your email",
+    "successSub": "We sent a password reset code to your email address.",
+    "backToSignIn": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Enter the code from your email and choose a new password.",
+    "email": "Email",
+    "code": "Reset code",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "submit": "Reset password",
+    "submitting": "Resetting\u2026",
+    "passwordMismatch": "Passwords do not match.",
+    "successToast": "Password reset successfully. Please sign in.",
+    "backToSignIn": "Back to sign in"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "acceptanceTitle": "Acceptance of Terms",
+    "acceptanceBody": "By accessing or using the-yield, you agree to be bound by these Terms of Service. If you do not agree, please do not use the service.",
+    "useTitle": "Use of Service",
+    "useBody": "the-yield is provided for personal finance tracking purposes only. You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account.",
+    "noAdviceTitle": "No Financial Advice",
+    "noAdviceBody": "Nothing on the-yield constitutes financial, investment, tax, or legal advice. All data you enter and all charts or summaries displayed are for informational purposes only. Always consult a qualified professional before making financial decisions.",
+    "dataTitle": "Data & Privacy",
+    "dataBody": "Your data is stored securely and is never sold or shared with third parties. We use local storage and authentication tokens solely to provide core app functionality. Please refer to our Privacy Policy for full details.",
+    "changesTitle": "Changes to Terms",
+    "changesBody": "We may update these Terms of Service from time to time. Continued use of the service after changes are posted constitutes your acceptance of the revised terms. The date of the most recent revision will be noted at the top of this page."
   }
 }

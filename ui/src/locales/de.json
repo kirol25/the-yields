@@ -68,7 +68,10 @@
     "exportCsv": "Als CSV exportieren",
     "exportCsvDesc": "Alle Dividenden- und Zinsdaten \u00fcber alle Jahre als CSV-Datei herunterladen.",
     "exporting": "Wird exportiert\u2026",
-    "noData": "Noch keine Daten zum Exportieren."
+    "noData": "Noch keine Daten zum Exportieren.",
+    "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
+    "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
+    "upgradeBtn": "Upgraden"
   },
   "blade": {
     "account": "Konto",
@@ -111,7 +114,8 @@
     "signingIn": "Anmeldung l\u00e4uft\u2026",
     "submit": "Anmelden",
     "noAccount": "Noch kein Konto?",
-    "createOne": "Jetzt registrieren"
+    "createOne": "Jetzt registrieren",
+    "forgotPassword": "Passwort vergessen?"
   },
   "register": {
     "title": "Konto erstellen",
@@ -142,6 +146,7 @@
   "footer": {
     "impressum": "Impressum",
     "datenschutz": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
     "tagline": "Dividenden aus Aktien und Zinsen von jeder Bank im Blick — alles an einem Ort.",
     "app": "App",
     "legal": "Rechtliches",
@@ -210,5 +215,50 @@
     "step3Desc": "Diagramme und Tabellen aktualisieren sich sofort und zeigen deinen Fortschritt.",
     "ctaTitle": "Bereit, deine Einnahmen zu tracken?",
     "ctaSub": "Meld dich an und beginne noch heute mit deiner Dividenden- und Zinshistorie."
+  },
+  "cookie": {
+    "message": "Wir verwenden Cookies und lokalen Speicher ausschließlich für grundlegende Funktionen (Authentifizierung, Einstellungen). Kein Tracking oder Analytics.",
+    "accept": "Verstanden"
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen?",
+    "subtitle": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Reset-Code.",
+    "email": "E-Mail",
+    "submit": "Reset-Code senden",
+    "submitting": "Wird gesendet\u2026",
+    "successTitle": "E-Mail prüfen",
+    "successSub": "Wir haben Ihnen einen Passwort-Reset-Code per E-Mail gesendet.",
+    "backToSignIn": "Zurück zur Anmeldung"
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Geben Sie den Code aus Ihrer E-Mail ein und wählen Sie ein neues Passwort.",
+    "email": "E-Mail",
+    "code": "Reset-Code",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "submit": "Passwort zurücksetzen",
+    "submitting": "Wird zurückgesetzt\u2026",
+    "passwordMismatch": "Passwörter stimmen nicht überein.",
+    "successToast": "Passwort erfolgreich zurückgesetzt. Bitte melden Sie sich an.",
+    "backToSignIn": "Zurück zur Anmeldung"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "subtitle": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "backHome": "Zur Startseite"
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "acceptanceTitle": "Akzeptanz der Bedingungen",
+    "acceptanceBody": "Durch den Zugriff auf oder die Nutzung von the-yield stimmen Sie diesen Nutzungsbedingungen zu. Wenn Sie nicht zustimmen, nutzen Sie den Dienst bitte nicht.",
+    "useTitle": "Nutzung des Dienstes",
+    "useBody": "the-yield dient ausschließlich der persönlichen Finanzverfolgung. Sie sind für die Vertraulichkeit Ihrer Zugangsdaten und alle Aktivitäten unter Ihrem Konto verantwortlich.",
+    "noAdviceTitle": "Kein Finanzberatung",
+    "noAdviceBody": "Nichts auf the-yield stellt eine Finanz-, Anlage-, Steuer- oder Rechtsberatung dar. Alle eingegebenen Daten sowie angezeigte Diagramme oder Zusammenfassungen dienen nur zu Informationszwecken. Konsultieren Sie stets einen qualifizierten Fachmann, bevor Sie Finanzentscheidungen treffen.",
+    "dataTitle": "Daten & Datenschutz",
+    "dataBody": "Ihre Daten werden sicher gespeichert und niemals verkauft oder an Dritte weitergegeben. Wir verwenden lokalen Speicher und Authentifizierungs-Token ausschließlich für die grundlegenden App-Funktionen. Details entnehmen Sie bitte unserer Datenschutzerklärung.",
+    "changesTitle": "Änderungen der Bedingungen",
+    "changesBody": "Wir können diese Nutzungsbedingungen von Zeit zu Zeit aktualisieren. Die weitere Nutzung des Dienstes nach Änderungen gilt als Zustimmung zu den überarbeiteten Bedingungen."
   }
 }
