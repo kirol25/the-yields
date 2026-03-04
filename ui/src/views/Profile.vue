@@ -183,6 +183,7 @@ import { useRouter } from 'vue-router'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 import { useToastStore } from '../stores/toastStore.js'
+import { useSubscription } from '../composables/useSubscription.js'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
@@ -190,8 +191,7 @@ const auth = useAuthStore()
 const toast = useToastStore()
 const router = useRouter()
 
-// TODO: wire to real subscription state when billing is implemented
-const isPremium = computed(() => false)
+const { isPremium } = useSubscription()
 
 const nameInput = ref(settings.profile.name)
 const savedName = ref(settings.profile.name)
