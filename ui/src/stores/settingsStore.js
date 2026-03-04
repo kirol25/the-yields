@@ -23,6 +23,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const locale = ref(saved.locale || 'de')
   const theme = ref(saved.theme || 'dark')
   const dividendGoal      = ref(typeof saved.dividendGoal      === 'object' && saved.dividendGoal      !== null ? saved.dividendGoal      : {})
+  const yieldGoal         = ref(typeof saved.yieldGoal         === 'object' && saved.yieldGoal         !== null ? saved.yieldGoal         : {})
   const steuerfreibetrag  = ref(typeof saved.steuerfreibetrag  === 'object' && saved.steuerfreibetrag  !== null ? saved.steuerfreibetrag  : {})
 
   function setLocale(code) {
@@ -64,6 +65,7 @@ export const useSettingsStore = defineStore('settings', () => {
         locale: locale.value,
         theme: theme.value,
         dividendGoal:     dividendGoal.value,
+        yieldGoal:        yieldGoal.value,
         steuerfreibetrag: steuerfreibetrag.value,
       }),
     )
@@ -84,10 +86,15 @@ export const useSettingsStore = defineStore('settings', () => {
     save()
   }
 
+  function setYieldGoal(year, amount) {
+    yieldGoal.value = { ...yieldGoal.value, [year]: amount }
+    save()
+  }
+
   function setSteuerfreibetrag(year, amount) {
     steuerfreibetrag.value = { ...steuerfreibetrag.value, [year]: Math.min(amount, 2000) }
     save()
   }
 
-  return { profile, currency, locale, theme, dividendGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setSteuerfreibetrag, fmt }
+  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt }
 })

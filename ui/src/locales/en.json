@@ -31,6 +31,8 @@
     "goalProgress": "Dividend Goal",
     "goalReached": "Goal reached — great work!",
     "goalRemaining": "{amount} remaining",
+    "yieldGoalProgress": "Yield Goal",
+    "noGoalSet": "No goal set",
     "steuerProgress": "Tax Allowance",
     "steuerRemaining": "{amount} still tax-free",
     "steuerExceeded": "{amount} above allowance"
@@ -89,6 +91,9 @@
     "dividendGoal": "Yearly dividend goal",
     "dividendGoalDesc": "Set a target for total dividend income this year. Your progress will be shown on the dashboard.",
     "dividendGoalPlaceholder": "e.g. 2400",
+    "yieldGoal": "Yearly yield goal",
+    "yieldGoalDesc": "Set a target for total yield income this year. Your progress will be shown on the dashboard.",
+    "yieldGoalPlaceholder": "e.g. 1200",
     "steuerfreibetrag": "Steuerfreibetrag",
     "steuerfreibetragDesc": "Your personal tax-free savings allowance (max. €2,000). Once your dividends exceed this, the chart turns amber.",
     "steuerfreibetragPlaceholder": "e.g. 1000",
