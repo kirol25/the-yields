@@ -283,12 +283,12 @@ const { isPremium } = useSubscription()
 // Goals
 const goalInput      = ref(settings.dividendGoal[store.currentYear] || 0)
 const yieldGoalInput = ref(settings.yieldGoal[store.currentYear] || 0)
-const steuerInput    = ref(settings.steuerfreibetrag[store.currentYear] || 0)
+const steuerInput    = ref(settings.steuerfreibetrag[store.currentYear] ?? 1000)
 
 watch(() => store.currentYear, (y) => {
   goalInput.value      = settings.dividendGoal[y] || 0
   yieldGoalInput.value = settings.yieldGoal[y] || 0
-  steuerInput.value    = settings.steuerfreibetrag[y] || 0
+  steuerInput.value    = settings.steuerfreibetrag[y] ?? 1000
 })
 
 function saveGoal()      { settings.setDividendGoal(store.currentYear, goalInput.value || 0) }
