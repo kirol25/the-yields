@@ -81,9 +81,11 @@ import { ref, defineComponent, h } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
+import { useToastStore } from '../stores/toastStore.js'
 
 const { t } = useI18n()
 const auth = useAuthStore()
+const toast = useToastStore()
 const router = useRouter()
 
 const email = ref(auth.pendingEmail)
@@ -111,6 +113,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.confirmSignUp(email.value, code.value)
+    toast.add(t('confirm.confirmed'), 'success')
     router.push('/login')
   } catch (err) {
     error.value = err.message ?? 'Confirmation failed. Please try again.'

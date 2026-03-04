@@ -137,7 +137,8 @@
     "submit": "Best\u00e4tigen",
     "noCode": "Keinen Code erhalten?",
     "resend": "Erneut senden",
-    "codeSent": "Code erneut gesendet \u2014 bitte pr\u00fcfen Sie Ihren Posteingang."
+    "codeSent": "Code erneut gesendet \u2014 bitte pr\u00fcfen Sie Ihren Posteingang.",
+    "confirmed": "E-Mail best\u00e4tigt \u2014 bitte melden Sie sich an."
   },
   "languages": {
     "en": "English",

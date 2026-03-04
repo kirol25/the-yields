@@ -137,7 +137,8 @@
     "submit": "Confirm",
     "noCode": "Didn't receive a code?",
     "resend": "Resend",
-    "codeSent": "Code resent \u2014 check your inbox."
+    "codeSent": "Code resent \u2014 check your inbox.",
+    "confirmed": "Email confirmed \u2014 please sign in."
   },
   "languages": {
     "en": "English",
