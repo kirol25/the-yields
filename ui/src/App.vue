@@ -159,6 +159,8 @@ watch(
   () => auth.isAuthenticated,
   async (authed) => {
     if (authed) {
+      const valid = await auth.ensureValidToken()
+      if (!valid) return
       await store.fetchYears()
       await Promise.all([store.loadYear(store.currentYear), store.loadAllYears()])
     }
