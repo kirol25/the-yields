@@ -60,6 +60,18 @@
                 </div>
               </div>
 
+              <!-- Mock goal donuts -->
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div v-for="d in mockDonuts" :key="d.label" class="bg-gray-800/40 rounded-lg p-2.5 flex flex-col items-center gap-1.5">
+                  <svg viewBox="0 0 36 36" class="w-10 h-10 -rotate-90">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="#1f2937" stroke-width="4"/>
+                    <circle cx="18" cy="18" r="14" fill="none" :stroke="d.color" stroke-width="4"
+                      :stroke-dasharray="`${d.pct * 0.879} 87.9`" stroke-linecap="round" opacity="0.85"/>
+                  </svg>
+                  <span class="text-[9px] text-gray-500 text-center leading-tight">{{ d.label }}</span>
+                </div>
+              </div>
+
               <!-- Mock ticker rows -->
               <div class="space-y-2">
                 <div v-for="row in mockTickers" :key="row.ticker" class="flex items-center justify-between px-3 py-2 bg-gray-800/40 rounded-lg">
@@ -80,7 +92,7 @@
     <!-- ── Features ──────────────────────────────────────────────────────────── -->
     <section class="py-24 bg-gray-900/40 border-y border-gray-800">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="grid md:grid-cols-3 gap-8">
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div v-for="f in features" :key="f.title" class="space-y-4">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400" v-html="f.icon"></div>
             <h3 class="text-base font-semibold text-gray-100">{{ f.title }}</h3>
@@ -157,6 +169,12 @@ const mockTickers = [
   { ticker: 'SCHD', name: 'Schwab Dividend', amount: '€ 61.20' },
 ]
 
+const mockDonuts = [
+  { label: 'Dividend Goal', pct: 68, color: '#34d399' },
+  { label: 'Yield Goal',    pct: 45, color: '#60a5fa' },
+  { label: 'Steuerfreibetrag', pct: 82, color: '#f59e0b' },
+]
+
 const features = computed(() => [
   {
     title: t('landing.feature1Title'),
@@ -172,6 +190,21 @@ const features = computed(() => [
     title: t('landing.feature3Title'),
     desc: t('landing.feature3Desc'),
     icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>',
+  },
+  {
+    title: t('landing.feature4Title'),
+    desc: t('landing.feature4Desc'),
+    icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7" stroke-dasharray="none"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 2v2m0 16v2M2 12h2m16 0h2"/></svg>',
+  },
+  {
+    title: t('landing.feature5Title'),
+    desc: t('landing.feature5Desc'),
+    icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>',
+  },
+  {
+    title: t('landing.feature6Title'),
+    desc: t('landing.feature6Desc'),
+    icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>',
   },
 ])
 
