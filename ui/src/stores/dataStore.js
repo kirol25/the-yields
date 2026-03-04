@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { API_BASE } from '../config.js'
 import { useAuthStore } from './authStore.js'
+import { useToastStore } from './toastStore.js'
 
 export const useDataStore = defineStore('data', () => {
   const currentYear = ref(new Date().getFullYear())
@@ -16,11 +17,19 @@ export const useDataStore = defineStore('data', () => {
     return { 'X-User-Email': auth.user?.email ?? '' }
   }
 
+  function toastError(message) {
+    useToastStore().add(message, 'error')
+  }
+
   async function fetchYears() {
-    const { data } = await axios.get(`${API_BASE}/api/years`, { headers: userHeaders() })
-    const base = data.length ? data : [currentYear.value]
-    const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
-    years.value = withCurrent.slice().sort((a, b) => b - a)
+    try {
+      const { data } = await axios.get(`${API_BASE}/api/years`, { headers: userHeaders() })
+      const base = data.length ? data : [currentYear.value]
+      const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
+      years.value = withCurrent.slice().sort((a, b) => b - a)
+    } catch {
+      toastError('Failed to load years. Please refresh.')
+    }
   }
 
   async function loadYear(year) {
@@ -30,34 +39,48 @@ export const useDataStore = defineStore('data', () => {
       yearData.value = data
       currentYear.value = year
       allYearsData.value[year] = data
+    } catch {
+      toastError(`Failed to load data for ${year}.`)
     } finally {
       loading.value = false
     }
   }
 
   async function loadAllYears() {
-    const results = await Promise.all(
-      years.value.map((year) =>
-        axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() }).then((r) => [year, r.data]),
-      ),
-    )
-    allYearsData.value = Object.fromEntries(results)
+    try {
+      const results = await Promise.all(
+        years.value.map((year) =>
+          axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() }).then((r) => [year, r.data]),
+        ),
+      )
+      allYearsData.value = Object.fromEntries(results)
+    } catch {
+      toastError('Failed to load historical data.')
+    }
   }
 
   async function saveData() {
-    await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value, { headers: userHeaders() })
-    await fetchYears()
-    await loadAllYears()
+    try {
+      await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value, { headers: userHeaders() })
+      await fetchYears()
+      await loadAllYears()
+    } catch {
+      toastError('Failed to save. Please try again.')
+    }
   }
 
   async function deleteEntries(section, keys) {
-    for (const key of keys) {
-      await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
-        headers: userHeaders(),
-      })
-      delete yearData.value[section][key]
+    try {
+      for (const key of keys) {
+        await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
+          headers: userHeaders(),
+        })
+        delete yearData.value[section][key]
+      }
+      await loadAllYears()
+    } catch {
+      toastError('Failed to delete entries. Please try again.')
     }
-    await loadAllYears()
   }
 
   return { currentYear, years, yearData, allYearsData, loading, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
