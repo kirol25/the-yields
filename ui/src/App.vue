@@ -154,6 +154,24 @@ const initials = computed(() => {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 })
 
+// Seed profile name/email from token as soon as the user object is available,
+// so initials show correctly before Profile.vue ever mounts.
+watch(
+  () => auth.user,
+  (u) => {
+    if (!u) return
+    if (u.name && !settings.profile.name) {
+      settings.profile.name = u.name
+      settings.save()
+    }
+    if (u.email && !settings.profile.email) {
+      settings.profile.email = u.email
+      settings.save()
+    }
+  },
+  { immediate: true },
+)
+
 // Only load data once authenticated
 watch(
   () => auth.isAuthenticated,

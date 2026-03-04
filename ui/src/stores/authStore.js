@@ -12,9 +12,9 @@ function parseIdToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
     return {
-      name: payload.preferred_username ?? payload.email ?? '',
-      email: payload.email ?? '',
-      sub: payload.sub ?? '',
+      name: payload.preferred_username || payload.email || '',
+      email: payload.email || '',
+      sub: payload.sub || '',
     }
   } catch {
     return null
