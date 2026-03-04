@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { i18n } from '../i18n.js'
 import { useToastStore } from './toastStore.js'
+import { useSettingsStore } from './settingsStore.js'
 import { API_BASE } from '../config.js'
 
 const REGION = import.meta.env.VITE_COGNITO_REGION
@@ -155,6 +156,11 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('id_token')
     localStorage.removeItem('refresh_token')
+    // Clear user-specific profile so the next account starts fresh
+    const settings = useSettingsStore()
+    settings.profile.name = ''
+    settings.profile.email = ''
+    settings.save()
   }
 
   async function deleteAccount() {
@@ -191,13 +197,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch {
       // best-effort — clear local state regardless
     }
-    accessToken.value = null
-    idToken.value = null
-    refreshToken.value = null
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('refresh_token')
-
+    clearTokens()
   }
 
   return {
