@@ -21,6 +21,16 @@ const routes = [
   { path: '/subscriptions', component: () => import('../views/Subscriptions.vue'), meta: { public: true } },
   { path: '/impressum',  component: () => import('../views/Impressum.vue'), meta: { public: true } },
   { path: '/datenschutz', component: () => import('../views/Datenschutz.vue'), meta: { public: true } },
+
+  // Password reset (guest only)
+  { path: '/forgot-password', component: () => import('../views/ForgotPassword.vue'), meta: { guestOnly: true } },
+  { path: '/reset-password',  component: () => import('../views/ResetPassword.vue'),  meta: { guestOnly: true } },
+
+  // Public pages
+  { path: '/terms', component: () => import('../views/Terms.vue'), meta: { public: true } },
+
+  // 404 catch-all — must be last
+  { path: '/:pathMatch(.*)*', component: () => import('../views/NotFound.vue'), meta: { public: true } },
 ]
 
 const router = createRouter({
