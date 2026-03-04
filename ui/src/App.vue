@@ -97,6 +97,7 @@
             <ul class="space-y-2">
               <li><RouterLink to="/impressum" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.impressum') }}</RouterLink></li>
               <li><RouterLink to="/datenschutz" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.datenschutz') }}</RouterLink></li>
+              <li><RouterLink to="/terms" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.terms') }}</RouterLink></li>
             </ul>
           </div>
 
@@ -111,6 +112,7 @@
     </footer>
 
     <ProfileBlade v-if="auth.isAuthenticated" :open="bladeOpen" @close="bladeOpen = false" />
+    <CookieBanner />
     <ToastContainer />
   </div>
 </template>
@@ -124,6 +126,7 @@ import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
 import ProfileBlade from './components/ProfileBlade.vue'
 import ToastContainer from './components/ToastContainer.vue'
+import CookieBanner from './components/CookieBanner.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -135,7 +138,7 @@ const bladeOpen = ref(false)
 // Apply persisted theme immediately (also wires up system listener if needed)
 settings.setTheme(settings.theme)
 
-const isLanding = computed(() => ['/', '/login', '/register', '/confirm'].includes(route.path))
+const isLanding = computed(() => ['/', '/login', '/register', '/confirm', '/forgot-password', '/reset-password'].includes(route.path))
 
 const initials = computed(() => {
   const name = (settings.profile.name || auth.user?.name || '').trim()
