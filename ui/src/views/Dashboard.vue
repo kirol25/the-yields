@@ -70,26 +70,49 @@
       </div>
     </div>
 
-    <!-- Dividend goal progress (monthly tab only, when a goal is set for this year) -->
+    <!-- Goal + Steuerfreibetrag donuts (monthly tab only) -->
     <div
-      v-if="activeTab === 'monthly' && currentYearGoal > 0 && !store.initializing"
-      class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6"
+      v-if="activeTab === 'monthly' && (currentYearGoal > 0 || currentYearSteuer > 0) && !store.initializing"
+      class="grid gap-4"
+      :class="currentYearGoal > 0 && currentYearSteuer > 0 ? 'sm:grid-cols-2' : 'grid-cols-1'"
       :style="{ opacity: store.loading && !store.initializing ? '0.5' : '' }"
     >
-      <GoalDonutChart :achieved="totalDividends" :goal="currentYearGoal" />
-      <div class="space-y-1.5 min-w-0">
-        <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.goalProgress') }} {{ store.currentYear }}</p>
-        <p class="text-2xl font-bold text-emerald-400">
-          {{ settings.fmt(totalDividends) }}
-          <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(currentYearGoal) }}</span>
-        </p>
-        <p class="text-xs text-gray-500">
-          {{
-            totalDividends >= currentYearGoal
-              ? t('dashboard.goalReached')
-              : t('dashboard.goalRemaining', { amount: settings.fmt(currentYearGoal - totalDividends) })
-          }}
-        </p>
+      <!-- Dividend goal -->
+      <div v-if="currentYearGoal > 0" class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6">
+        <GoalDonutChart :achieved="totalDividends" :goal="currentYearGoal" />
+        <div class="space-y-1.5 min-w-0">
+          <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.goalProgress') }} {{ store.currentYear }}</p>
+          <p class="text-2xl font-bold text-emerald-400">
+            {{ settings.fmt(totalDividends) }}
+            <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(currentYearGoal) }}</span>
+          </p>
+          <p class="text-xs text-gray-500">
+            {{
+              totalDividends >= currentYearGoal
+                ? t('dashboard.goalReached')
+                : t('dashboard.goalRemaining', { amount: settings.fmt(currentYearGoal - totalDividends) })
+            }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Steuerfreibetrag -->
+      <div v-if="currentYearSteuer > 0" class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-6">
+        <GoalDonutChart :achieved="totalDividends" :goal="currentYearSteuer" counterclockwise can-exceed />
+        <div class="space-y-1.5 min-w-0">
+          <p class="text-xs text-gray-400 uppercase tracking-wide">{{ t('dashboard.steuerProgress') }} {{ store.currentYear }}</p>
+          <p class="text-2xl font-bold" :class="totalDividends > currentYearSteuer ? 'text-amber-400' : 'text-amber-300'">
+            {{ settings.fmt(totalDividends) }}
+            <span class="text-sm font-normal text-gray-500">/ {{ settings.fmt(currentYearSteuer) }}</span>
+          </p>
+          <p class="text-xs" :class="totalDividends > currentYearSteuer ? 'text-amber-500' : 'text-gray-500'">
+            {{
+              totalDividends > currentYearSteuer
+                ? t('dashboard.steuerExceeded', { amount: settings.fmt(totalDividends - currentYearSteuer) })
+                : t('dashboard.steuerRemaining', { amount: settings.fmt(currentYearSteuer - totalDividends) })
+            }}
+          </p>
+        </div>
       </div>
     </div>
 
@@ -179,7 +202,8 @@ const allYearsYields = computed(() =>
 const cardDividends = computed(() => activeTab.value === 'yearly' ? allYearsDividends.value : totalDividends.value)
 const cardYields = computed(() => activeTab.value === 'yearly' ? allYearsYields.value : totalYields.value)
 
-const currentYearGoal = computed(() => settings.dividendGoal[store.currentYear] || 0)
+const currentYearGoal   = computed(() => settings.dividendGoal[store.currentYear] || 0)
+const currentYearSteuer = computed(() => settings.steuerfreibetrag[store.currentYear] || 0)
 
 function monthsWithData(section) {
   const months = new Set()
