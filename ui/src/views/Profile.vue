@@ -264,10 +264,11 @@ async function submitDeleteAccount() {
   deleting.value = true
   try {
     await auth.deleteAccount()
-    router.push('/login')
   } catch (e) {
     deleteError.value = e.message
     deleting.value = false
+    return
   }
+  router.push('/login')
 }
 </script>
