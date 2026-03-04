@@ -6,9 +6,13 @@
     </div>
 
     <!-- Summary cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" :class="{ 'opacity-50 transition-opacity': store.loading && !store.initializing }">
+    <div
+      class="grid grid-cols-1 gap-4"
+      :class="activeTab === 'monthly' ? 'sm:grid-cols-4' : 'sm:grid-cols-3'"
+      :style="{ opacity: store.loading && !store.initializing ? '0.5' : '' }"
+    >
       <template v-if="store.initializing">
-        <div v-for="i in 3" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+        <div v-for="i in (activeTab === 'monthly' ? 4 : 3)" :key="i" class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
           <SkeletonBlock cls="h-3 w-24" />
           <SkeletonBlock cls="h-7 w-32" />
         </div>
@@ -34,6 +38,15 @@
             <span v-if="activeTab !== 'yearly'">{{ store.currentYear }}</span>
           </p>
           <p class="text-2xl font-bold text-white">{{ settings.fmt(cardDividends + cardYields) }}</p>
+        </div>
+        <div v-if="activeTab === 'monthly'" class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">
+            {{ t('dashboard.avgPerMonth') }} {{ store.currentYear }}
+          </p>
+          <p class="text-2xl font-bold text-emerald-300">{{ settings.fmt(avgMonthlyDividends) }}</p>
+          <p v-if="monthsWithDividends > 0" class="text-xs text-gray-600 mt-1">
+            {{ t('dashboard.avgPerMonthHint', { n: monthsWithDividends }) }}
+          </p>
         </div>
       </template>
     </div>
@@ -122,4 +135,18 @@ const allYearsYields = computed(() =>
 
 const cardDividends = computed(() => activeTab.value === 'yearly' ? allYearsDividends.value : totalDividends.value)
 const cardYields = computed(() => activeTab.value === 'yearly' ? allYearsYields.value : totalYields.value)
+
+const monthsWithDividends = computed(() => {
+  const months = new Set()
+  for (const entry of Object.values(store.yearData.dividends || {})) {
+    for (const [month, val] of Object.entries(entry.months || {})) {
+      if (val > 0) months.add(month)
+    }
+  }
+  return months.size
+})
+
+const avgMonthlyDividends = computed(() =>
+  monthsWithDividends.value > 0 ? totalDividends.value / monthsWithDividends.value : 0,
+)
 </script>

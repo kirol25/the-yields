@@ -22,7 +22,9 @@
     "yearly": "Yearly",
     "monthlyBreakdown": "Monthly breakdown — {year}",
     "quarterlyBreakdown": "Quarterly breakdown — {year}",
-    "incomeByYear": "Income by year"
+    "incomeByYear": "Income by year",
+    "avgPerMonth": "Avg / Month",
+    "avgPerMonthHint": "based on {n} months with data"
   },
   "dividends": {
     "title": "Dividends",
