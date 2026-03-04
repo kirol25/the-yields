@@ -126,6 +126,8 @@
     "creating": "Konto wird erstellt\u2026",
     "submit": "Konto erstellen",
     "passwordMismatch": "Passw\u00f6rter stimmen nicht \u00fcberein.",
+    "name": "Name",
+    "namePlaceholder": "Ihr Name",
     "alreadyAccount": "Bereits ein Konto?",
     "signIn": "Anmelden"
   },

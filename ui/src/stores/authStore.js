@@ -12,7 +12,7 @@ function parseIdToken(token) {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]))
     return {
-      name: payload.name ?? payload['cognito:username'] ?? payload.email ?? '',
+      name: payload.name ?? payload.email ?? '',
       email: payload.email ?? '',
       sub: payload.sub ?? '',
     }
@@ -68,12 +68,15 @@ export const useAuthStore = defineStore('auth', () => {
     if (RefreshToken) localStorage.setItem('refresh_token', RefreshToken)
   }
 
-  async function signUp(email, password) {
+  async function signUp(email, password, name) {
     await cognitoRequest('SignUp', {
       ClientId: CLIENT_ID,
       Username: email,
       Password: password,
-      UserAttributes: [{ Name: 'email', Value: email }],
+      UserAttributes: [
+        { Name: 'email', Value: email },
+        { Name: 'name', Value: name },
+      ],
     })
     pendingEmail.value = email
     sessionStorage.setItem('pending_email', email)
