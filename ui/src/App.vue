@@ -29,6 +29,13 @@
           >
             {{ t('nav.yields') }}
           </RouterLink>
+          <RouterLink
+            to="/subscriptions"
+            class="text-sm font-medium transition-colors hover:text-emerald-400"
+            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
+          >
+            {{ t('nav.subscriptions') }}
+          </RouterLink>
           <button
             @click="bladeOpen = true"
             class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
@@ -40,6 +47,13 @@
 
         <!-- Guest nav (landing page) -->
         <div v-else class="flex items-center gap-3">
+          <RouterLink
+            to="/subscriptions"
+            class="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors"
+            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : ''"
+          >
+            {{ t('nav.subscriptions') }}
+          </RouterLink>
           <RouterLink
             to="/login"
             class="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors"
