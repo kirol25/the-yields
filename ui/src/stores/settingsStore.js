@@ -92,7 +92,7 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   function setSteuerfreibetrag(year, amount) {
-    steuerfreibetrag.value = { ...steuerfreibetrag.value, [year]: Math.min(amount, 2000) }
+    steuerfreibetrag.value = { ...steuerfreibetrag.value, [year]: Math.min(Math.max(amount, 0), 2000) }
     save()
   }
 
