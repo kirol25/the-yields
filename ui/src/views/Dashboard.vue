@@ -150,7 +150,7 @@
           <SkeletonBlock cls="h-48 w-full rounded-lg" />
         </template>
         <template v-else>
-          <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">
+          <p v-if="activeTab !== 'breakdown'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
             {{
               activeTab === 'monthly'
                 ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
@@ -161,7 +161,19 @@
           </p>
           <MonthlyChart v-if="activeTab === 'monthly'" />
           <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
-          <YearlyChart v-else />
+          <YearlyChart v-else-if="activeTab === 'yearly'" />
+          <template v-else>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.dividends') }}</p>
+                <PortfolioBreakdown section="dividends" />
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.yields') }}</p>
+                <PortfolioBreakdown section="yields" />
+              </div>
+            </div>
+          </template>
         </template>
       </div>
     </div>
@@ -177,6 +189,7 @@ import YearSelector from '../components/YearSelector.vue'
 import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
+import PortfolioBreakdown from '../components/PortfolioBreakdown.vue'
 import SkeletonBlock from '../components/SkeletonBlock.vue'
 import GoalDonutChart from '../components/GoalDonutChart.vue'
 
@@ -188,6 +201,7 @@ const tabs = computed(() => [
   { value: 'monthly', label: t('dashboard.monthly') },
   { value: 'quarterly', label: t('dashboard.quarterly') },
   { value: 'yearly', label: t('dashboard.yearly') },
+  { value: 'breakdown', label: t('dashboard.breakdown') },
 ])
 const activeTab = ref('monthly')
 

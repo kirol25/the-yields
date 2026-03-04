@@ -20,6 +20,8 @@
     "monthly": "Monthly",
     "quarterly": "Quarterly",
     "yearly": "Yearly",
+    "breakdown": "Breakdown",
+    "noDataForYear": "No data recorded for {year}.",
     "monthlyBreakdown": "Monthly breakdown — {year}",
     "quarterlyBreakdown": "Quarterly breakdown — {year}",
     "incomeByYear": "Income by year",
