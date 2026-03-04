@@ -84,6 +84,17 @@ npm run build   # outputs to dist/
 npm run preview # preview the production build
 ```
 
+## nginx (production)
+
+The production image serves the built SPA via nginx (`nginx.conf`).
+
+**Caching**
+- `index.html` — `no-cache, must-revalidate`: always revalidated so new deploys are picked up immediately.
+- `/assets/*` — `max-age=31536000, immutable`: cached for 1 year. Safe because Vite hashes asset filenames on every build.
+
+**Rate limiting**
+- `/api/` is limited to 10 req/s per IP with a burst of 20. Requests beyond the burst receive a `429 Too Many Requests` response.
+
 ## Docker
 
 ```bash
