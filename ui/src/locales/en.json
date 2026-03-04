@@ -51,6 +51,7 @@
     "confirmDelete": "Are you sure? This cannot be undone.",
     "confirmDeleteBtn": "Yes, delete my account",
     "deleting": "Deleting\u2026",
+    "accountDeletedSuccess": "Your account has been deleted.",
     "planFree": "Free plan",
     "planPremium": "Premium",
     "upgrade": "Upgrade"
