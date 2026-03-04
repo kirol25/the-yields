@@ -22,7 +22,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const currency = ref(saved.currency || 'USD')
   const locale = ref(saved.locale || 'de')
   const theme = ref(saved.theme || 'dark')
-  const dividendGoal = ref(saved.dividendGoal || 0)
+  const dividendGoal = ref(typeof saved.dividendGoal === 'object' && saved.dividendGoal !== null ? saved.dividendGoal : {})
 
   function setLocale(code) {
     locale.value = code
@@ -77,5 +77,10 @@ export const useSettingsStore = defineStore('settings', () => {
     }).format(amount)
   }
 
-  return { profile, currency, locale, theme, dividendGoal, CURRENCIES, LANGUAGES, save, setLocale, setTheme, fmt }
+  function setDividendGoal(year, amount) {
+    dividendGoal.value = { ...dividendGoal.value, [year]: amount }
+    save()
+  }
+
+  return { profile, currency, locale, theme, dividendGoal, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, fmt }
 })
