@@ -25,10 +25,14 @@
     "incomeByYear": "Einkommen nach Jahr"
   },
   "dividends": {
-    "title": "Dividenden"
+    "title": "Dividenden",
+    "empty": "Keine Dividenden für {year} erfasst.",
+    "emptyHint": "Füge deinen ersten Dividendeneintrag hinzu."
   },
   "yields": {
-    "title": "Zinsen"
+    "title": "Zinsen",
+    "empty": "Keine Zinsen für {year} erfasst.",
+    "emptyHint": "Füge dein erstes Zinskonto hinzu."
   },
   "profile": {
     "title": "Profil",
