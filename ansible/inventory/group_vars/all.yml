@@ -1,0 +1,29 @@
+# ── Domain ────────────────────────────────────────────────────────────────────
+# Your domain name (must point to your server's IP in DNS before running certbot)
+domain: "the-yield.app"
+admin_email: "lorikbajrami25@gmail.com"
+
+# ── App user ──────────────────────────────────────────────────────────────────
+# A dedicated non-root user that will own and run the app
+app_user: "yield"
+app_group: "yield"
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+app_dir: "/home/{{ app_user }}/app"
+backend_dir: "{{ app_dir }}/backend"
+frontend_dir: "{{ app_dir }}/ui"
+venv_dir: "{{ app_dir }}/venv"
+frontend_build_dir: "{{ frontend_dir }}/dist"
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+backend_port: 8000
+python_version: "python3"
+
+# ── SSL ───────────────────────────────────────────────────────────────────────
+# Email used by Let's Encrypt for expiry notifications
+certbot_email: "{{ admin_email }}"
+
+# ── Security settings ──────────────────────────────────────────────────────────────
+fail2ban_bantime: 3600
+fail2ban_findtime: 600
+fail2ban_maxretry: 5

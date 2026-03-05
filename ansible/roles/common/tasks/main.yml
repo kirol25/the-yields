@@ -1,0 +1,474 @@
+---
+# common/tasks/main.yml
+# Base server hardening and package setup. Runs once on a fresh server.
+
+# ============================================
+# Step 1: Initial Setup and Basic Security
+# ============================================
+- name: "STEP 1: Initial Setup and Basic Security"
+  debug:
+    msg: "Configuring initial setup and basic security"
+
+- name: Update apt cache and upgrade packages
+  apt:
+    update_cache: yes
+    upgrade: dist
+    cache_valid_time: 3600
+
+- name: Install essential packages
+  apt:
+    name:
+      - curl
+      - wget
+      - git
+      - htop
+      - net-tools
+      - unattended-upgrades
+      - apt-listchanges
+      - fail2ban
+      - ufw
+      - python3
+      - python3-pip
+      - python3-venv
+      - unzip
+    state: present
+
+- name: Set system timezone
+  timezone:
+    name: UTC
+  notify: restart system services
+
+# ============================================
+# Step 2: SSH Hardening
+# ============================================
+
+- name: "STEP 2: SSH Hardening"
+  debug:
+    msg: "Configuring SSH security"
+
+- name: Disable SSH password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify: restart sshd
+
+- name: Disable SSH root login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin no"
+    state: present
+  notify: restart sshd
+
+- name: Enable SSH pubkey authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PubkeyAuthentication"
+    line: "PubkeyAuthentication yes"
+    state: present
+  notify: restart sshd
+
+- name: Disable X11 forwarding
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?X11Forwarding"
+    line: "X11Forwarding no"
+    state: present
+  notify: restart sshd
+
+- name: Set SSH ClientAliveInterval
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveInterval"
+    line: "ClientAliveInterval 300"
+    state: present
+  notify: restart sshd
+
+- name: Set SSH ClientAliveCountMax
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveCountMax"
+    line: "ClientAliveCountMax 2"
+    state: present
+  notify: restart sshd
+
+- name: Disable SSH empty password login
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitEmptyPasswords"
+    line: "PermitEmptyPasswords no"
+    state: present
+  notify: restart sshd
+
+- name: Limit SSH login attempts
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxAuthTries"
+    line: "MaxAuthTries 3"
+    state: present
+  notify: restart sshd
+
+- name: Disable SSH protocol version 1
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Protocol"
+    line: "Protocol 2"
+    state: present
+  notify: restart sshd
+
+- name: Configure SSH idle timeout
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveInterval"
+    line: "ClientAliveInterval 300"
+    state: present
+  notify: restart sshd
+
+# ============================================
+# Step 3: Firewall Configuration (UFW)
+# ============================================
+
+- name: "STEP 3: Firewall Configuration"
+  debug:
+    msg: "Setting up UFW firewall"
+
+- name: Reset UFW to defaults
+  ufw:
+    state: reset
+
+- name: Set UFW default deny policy
+  ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set UFW default allow outgoing
+  ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+- name: Allow SSH access
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    comment: "Allow SSH"
+
+- name: Allow HTTP (optional - adjust as needed)
+  ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+    comment: "Allow HTTP"
+
+- name: Allow HTTPS (optional - adjust as needed)
+  ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+    comment: "Allow HTTPS"
+
+- name: Display UFW status
+  command: ufw status
+  register: ufw_status
+  changed_when: false
+
+- name: Show UFW status
+  debug:
+    var: ufw_status.stdout_lines
+
+- name: Create app user
+  user:
+    name: "{{ app_user }}"
+    shell: /bin/bash
+    create_home: yes
+    state: present
+
+# ============================================
+# Step 4: Automatic Security Updates
+# ============================================
+
+- name: "STEP 4: Automatic Security Updates"
+  debug:
+    msg: "Configuring unattended-upgrades"
+
+- name: Configure unattended-upgrades
+  copy:
+    content: |
+      Unattended-Upgrade::Allowed-Origins {
+          "${distro_id}:${distro_codename}-security";
+          "${distro_id}:${distro_codename}-updates";
+      };
+
+      Unattended-Upgrade::Package-Blacklist {
+      };
+
+      Unattended-Upgrade::DevRelease "false";
+      Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+      Unattended-Upgrade::MinimalSteps "true";
+      Unattended-Upgrade::InstallOnShutdown "false";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Automatic-Reboot "false";
+      Unattended-Upgrade::Automatic-Reboot-WithUsers "false";
+      Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+      Unattended-Upgrade::SyslogEnable "true";
+      Unattended-Upgrade::SyslogFacility "daemon";
+      Unattended-Upgrade::Mail "{{ admin_email }}";
+      Unattended-Upgrade::MailReport "on-change";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+      Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: '0644'
+
+- name: Enable automatic updates
+  copy:
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "7";
+      APT::Periodic::Unattended-Upgrade "1";
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: '0644'
+
+# ============================================
+# Step 5: Fail2Ban Setup
+# ============================================
+
+- name: "STEP 5: Fail2Ban - Intrusion Prevention"
+  debug:
+    msg: "Setting up Fail2Ban"
+
+- name: Create fail2ban local config
+  copy:
+    content: |
+      [DEFAULT]
+      bantime = {{ fail2ban_bantime }}
+      findtime = {{ fail2ban_findtime }}
+      maxretry = {{ fail2ban_maxretry }}
+      destemail = {{ admin_email }}
+      sendername = Fail2Ban
+      action = %(action_mwl)s
+
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+
+      [sshd-ddos]
+      enabled = true
+      port = ssh
+      filter = sshd-ddos
+      logpath = /var/log/auth.log
+      maxretry = 10
+    dest: /etc/fail2ban/jail.local
+    mode: '0644'
+  notify: restart fail2ban
+
+- name: Start and enable fail2ban
+  systemd:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+# ============================================
+# Step 6: System Hardening
+# ============================================
+
+- name: "STEP 6: System Hardening"
+  debug:
+    msg: "Applying system hardening settings"
+
+- name: Disable IPv6 (optional - set to 1 to disable)
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+  loop:
+    - { name: 'net.ipv4.ip_forward', value: '0' }
+    - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.default.send_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.default.accept_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.rp_filter', value: '1' }
+    - { name: 'net.ipv4.conf.default.rp_filter', value: '1' }
+    - { name: 'net.ipv4.icmp_echo_ignore_broadcasts', value: '1' }
+    - { name: 'net.ipv4.tcp_syncookies', value: '1' }
+    - { name: 'net.ipv4.tcp_timestamps', value: '1' }
+    - { name: 'net.ipv4.conf.all.log_martians', value: '1' }
+    - { name: 'net.ipv4.conf.default.log_martians', value: '1' }
+
+- name: Set file permissions on important files
+  file:
+    path: "{{ item }}"
+    mode: '0600'
+  loop:
+    - /etc/ssh/sshd_config
+    - /etc/shadow
+    - /etc/gshadow
+    - /etc/passwd-
+    - /etc/shadow-
+
+# ============================================
+# Step 7: Account Security
+# ============================================
+
+- name: "STEP 7: Account Security"
+  debug:
+    msg: "Securing user accounts"
+
+- name: Disable unnecessary system accounts
+  user:
+    name: "{{ item }}"
+    shell: /usr/sbin/nologin
+    createhome: no
+  loop:
+    - bin
+    - sys
+    - sync
+    - games
+    - man
+    - lp
+    - mail
+    - news
+    - uucp
+    - proxy
+    - www-data
+    - backup
+    - list
+    - irc
+    - gnats
+  ignore_errors: yes
+
+- name: Set password policy
+  copy:
+    content: |
+      # Password policy settings
+      password [success=1 default=ignore] pam_unix.so obscure useauthorok try_first_pass yescrypt sha512 shadow remember=5
+      password requisite pam_deny.so
+      password required pam_permit.so
+      password required pam_unix.so use_authtok try_first_pass yescrypt sha512 shadow
+      password optional pam_gnome_keyring.so
+      password required pam_permit.so
+    dest: /etc/pam.d/common-password-hardened
+    mode: '0644'
+  ignore_errors: yes
+
+# ============================================
+# Step 8: Logging and Monitoring
+# ============================================
+
+- name: "STEP 8: Logging and Monitoring"
+  debug:
+    msg: "Setting up logging"
+
+- name: Configure rsyslog
+  copy:
+    content: |
+      # /etc/rsyslog.d/30-hetzner-security.conf
+      # Security-related logs
+      auth,authpriv.*                 /var/log/auth.log
+      *.*;auth,authpriv.none          -/var/log/syslog
+      kern.*                          -/var/log/kern.log
+      mail.*                          -/var/log/mail.log
+      mail.err                        /var/log/mail.err
+      daemon.*                        -/var/log/daemon.log
+    dest: /etc/rsyslog.d/30-hetzner-security.conf
+    mode: '0644'
+  notify: restart rsyslog
+
+- name: Create log rotation config
+  copy:
+    content: |
+      /var/log/auth.log {
+          daily
+          rotate 14
+          missingok
+          notifempty
+          compress
+          delaycompress
+          postrotate
+              /lib/systemd/systemd-tmpfiles-setup.service >/dev/null 2>&1 || true
+          endscript
+      }
+
+      /var/log/syslog
+      /var/log/kern.log
+      /var/log/daemon.log
+      {
+          daily
+          rotate 14
+          missingok
+          notifempty
+          compress
+          delaycompress
+          postrotate
+              /lib/systemd/systemd-tmpfiles-setup.service >/dev/null 2>&1 || true
+          endscript
+      }
+    dest: /etc/logrotate.d/hetzner-security
+    mode: '0644'
+
+# ============================================
+# Step 9: Verification and Summary
+# ============================================
+
+- name: "STEP 9: Verification"
+  debug:
+    msg: "Verifying security settings"
+
+- name: Check SSH config validity
+  command: sshd -t
+  changed_when: false
+  register: sshd_check
+
+- name: Show SSH config check
+  debug:
+    msg: "SSH configuration is valid"
+  when: sshd_check.rc == 0
+
+- name: Get fail2ban status
+  command: fail2ban-client status
+  register: fail2ban_status
+  changed_when: false
+
+- name: Show fail2ban status
+  debug:
+    var: fail2ban_status.stdout_lines
+
+- name: Show security summary
+  debug:
+    msg: |
+      ========================================
+      Hetzner Security Hardening Complete!
+      ========================================
+
+      Configured:
+      ✓ SSH hardening (pubkey only, no root)
+      ✓ UFW firewall (deny by default)
+      ✓ Automatic security updates
+      ✓ Fail2Ban (intrusion prevention)
+      ✓ System hardening (sysctl)
+      ✓ Account security
+      ✓ Logging and monitoring
+
+      Next steps:
+      1. Verify SSH access works
+      2. Check firewall rules: sudo ufw status
+      3. Monitor logs: tail -f /var/log/auth.log
+      4. Test fail2ban: sudo fail2ban-client status
+
+      Important:
+      - Ensure you have SSH key-based access
+      - Don't lock yourself out!
+      - Monitor logs regularly
+      - Keep backups of configurations
+      ========================================
