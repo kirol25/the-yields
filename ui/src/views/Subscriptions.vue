@@ -27,7 +27,7 @@
           to="/register"
           class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block"
         >
-          {{ t('subscriptions.cta') }}
+          {{ t('subscriptions.ctaFree') }}
         </RouterLink>
       </div>
 
@@ -47,7 +47,7 @@
           </li>
         </ul>
         <button type="button" disabled class="w-full py-2.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-500 cursor-not-allowed">
-          {{ t('subscriptions.cta') }}
+          {{ t('subscriptions.ctaPaid') }}
         </button>
       </div>
 
@@ -72,7 +72,7 @@
           </li>
         </ul>
         <button type="button" disabled class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600/30 text-emerald-400 cursor-not-allowed border border-emerald-500/30">
-          {{ t('subscriptions.cta') }}
+          {{ t('subscriptions.ctaPaid') }}
         </button>
       </div>
     </div>
