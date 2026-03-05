@@ -103,6 +103,7 @@
     "steuerfreibetrag": "Steuerfreibetrag",
     "steuerfreibetragDesc": "Dein pers\u00f6nlicher Sparerpauschbetrag (max. 2.000\u202f\u20ac). Sobald deine Dividenden diesen \u00fcberschreiten, wechselt das Diagramm auf Bernstein.",
     "steuerfreibetragPlaceholder": "z.\u202fB. 1000",
+    "steuerfreibetragMax": "Der Maximalwert betr\u00e4gt 2.000\u202f\u20ac.",
     "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
     "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
     "upgradeBtn": "Upgraden"
