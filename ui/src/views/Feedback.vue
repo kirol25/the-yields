@@ -1,6 +1,9 @@
 <template>
   <div class="max-w-lg mx-auto space-y-6">
-    <h1 class="text-2xl font-bold">{{ t('feedback.title') }}</h1>
+    <div>
+      <h1 class="text-2xl font-bold">{{ t('feedback.title') }}</h1>
+      <p class="text-sm text-gray-400 mt-1">{{ t('feedback.subtitle') }}</p>
+    </div>
 
     <!-- Success state -->
     <div v-if="submitted" class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 text-center">
@@ -22,12 +25,10 @@
     </div>
 
     <!-- Form -->
-    <div v-else class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-5">
-      <p class="text-sm text-gray-400">{{ t('feedback.subtitle') }}</p>
-
+    <div v-else class="bg-gray-900 border border-gray-800 rounded-xl p-10 space-y-10">
       <!-- Category -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-gray-300">{{ t('feedback.category') }}</label>
+      <div class="space-y-4">
+        <h2 class="text-base font-semibold text-gray-100">{{ t('feedback.category') }}</h2>
         <div class="flex flex-wrap gap-2">
           <button
             v-for="cat in categories"
@@ -46,8 +47,8 @@
       </div>
 
       <!-- Message -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-gray-300">{{ t('feedback.message') }}</label>
+      <div class="space-y-4">
+        <h2 class="text-base font-semibold text-gray-100">{{ t('feedback.message') }}</h2>
         <textarea
           v-model="message"
           rows="5"
@@ -57,7 +58,7 @@
       </div>
 
       <!-- Submit -->
-      <div class="pt-1">
+      <div>
         <button
           @click="submit"
           :disabled="!message.trim() || submitting"
