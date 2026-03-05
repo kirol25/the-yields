@@ -16,6 +16,18 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         description="Comma-separated list of allowed CORS origins",
     )
+    FEEDBACK_TO_EMAIL: str = Field(
+        "contact@the-yield.app",
+        description="Recipient address for feedback submissions",
+    )
+    FEEDBACK_FROM_EMAIL: str = Field(
+        "noreply@the-yield.app",
+        description="Verified SES sender address for feedback emails",
+    )
+    AWS_REGION: str = Field(
+        "eu-central-1",
+        description="AWS region used for SES",
+    )
 
 
 @lru_cache

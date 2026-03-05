@@ -15,6 +15,7 @@ router = APIRouter(prefix="/api", tags=["finance"])
     responses={
         status.HTTP_200_OK: {"description": "Years retrieved successfully"},
     },
+    status_code=status.HTTP_200_OK,
     summary="List available years",
     description="Scans the data directory and returns a sorted list of years for which"
     " a `YYYY.json` file exists.",
@@ -30,6 +31,7 @@ def get_years(service: ServiceDep) -> list[int]:
         status.HTTP_200_OK: {"description": "Data retrieved successfully"},
         status.HTTP_404_NOT_FOUND: {"description": "Year not found"},
     },
+    status_code=status.HTTP_200_OK,
     summary="Get year data",
     description="Reads and returns the dividend and yield data for the given year."
     " Returns empty collections if no file exists yet.",
@@ -46,6 +48,7 @@ def get_data(year: int, service: ServiceDep) -> dict[str, Any]:
         status.HTTP_200_OK: {"description": "Data saved successfully"},
         status.HTTP_404_NOT_FOUND: {"description": "Year not found"},
     },
+    status_code=status.HTTP_200_OK,
     summary="Save year data",
     description="Writes the provided dividend and yield payload to `YYYY.json`,"
     "creating the file if it does not exist.",
@@ -60,6 +63,7 @@ def put_data(year: int, payload: dict[str, Any], service: ServiceDep) -> dict[st
     responses={
         status.HTTP_200_OK: {"description": "All user data deleted successfully"},
     },
+    status_code=status.HTTP_200_OK,
     summary="Delete all user data",
     description="Permanently deletes all data files for the authenticated user."
     " Called as part of the account deletion flow.",
@@ -75,6 +79,7 @@ def delete_all_data(service: ServiceDep) -> dict[str, str]:
         status.HTTP_202_ACCEPTED: {"description": "Entry deleted successfully"},
         status.HTTP_404_NOT_FOUND: {"description": "Entry not found"},
     },
+    status_code=status.HTTP_202_ACCEPTED,
     summary="Delete an entry",
     description="Removes a single dividend or yield entry from the given year's data file.",  # noqa: E501
 )
