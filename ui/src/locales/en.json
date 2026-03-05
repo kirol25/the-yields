@@ -313,7 +313,11 @@
     "categoryFeature": "Feature Request",
     "message": "Message",
     "messagePlaceholder": "Tell us what's on your mind…",
-    "submit": "Send Feedback"
+    "submit": "Send Feedback",
+    "submitting": "Sending…",
+    "successTitle": "Thanks for your feedback!",
+    "successSub": "We read every message and will get back to you if needed.",
+    "sendAnother": "Send another"
   },
   "terms": {
     "title": "Terms of Service",
