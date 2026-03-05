@@ -17,49 +17,47 @@
       </button>
     </div>
 
-    <div v-if="hasData" class="overflow-x-auto">
-      <div class="min-w-max">
-        <!-- Month headers -->
-        <div class="flex gap-1 mb-1.5" style="padding-left: 3rem">
-          <div
-            v-for="m in MONTHS"
-            :key="m.value"
-            class="w-9 text-center text-xs text-gray-500"
-          >
-            {{ m.short }}
-          </div>
-        </div>
-
-        <!-- Year rows -->
+    <template v-if="hasData">
+      <!-- Month headers -->
+      <div class="flex gap-1 mb-1.5" style="padding-left: 2.75rem">
         <div
-          v-for="year in store.years"
-          :key="year"
-          class="flex items-center gap-1 mb-1"
+          v-for="m in MONTHS"
+          :key="m.value"
+          class="flex-1 text-center text-xs text-gray-500"
         >
-          <div class="w-10 text-right text-xs text-gray-500 shrink-0 pr-2">{{ year }}</div>
-          <div
-            v-for="m in MONTHS"
-            :key="m.value"
-            class="relative group w-9 h-9 rounded-md transition-transform hover:scale-110 hover:z-10 cursor-default"
-            :style="{ backgroundColor: cellColor(grid[year]?.[m.value] ?? 0) }"
-          >
-            <!-- Tooltip -->
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 hidden group-hover:block pointer-events-none">
-              <div class="bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-xs whitespace-nowrap shadow-2xl">
-                <div class="font-medium text-gray-200 mb-0.5">{{ m.label }} {{ year }}</div>
-                <div
-                  class="font-mono font-semibold"
-                  :class="(grid[year]?.[m.value] ?? 0) > 0 ? 'text-emerald-400' : 'text-gray-600'"
-                >
-                  {{ settings.fmt(grid[year]?.[m.value] ?? 0) }}
-                </div>
+          {{ m.short }}
+        </div>
+      </div>
+
+      <!-- Year rows -->
+      <div
+        v-for="year in store.years"
+        :key="year"
+        class="flex items-center gap-1 mb-1"
+      >
+        <div class="w-9 text-right text-xs text-gray-500 shrink-0 pr-2">{{ year }}</div>
+        <div
+          v-for="m in MONTHS"
+          :key="m.value"
+          class="relative group flex-1 h-7 rounded-md transition-transform hover:scale-110 hover:z-10 cursor-default"
+          :style="{ backgroundColor: cellColor(grid[year]?.[m.value] ?? 0) }"
+        >
+          <!-- Tooltip -->
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20 hidden group-hover:block pointer-events-none">
+            <div class="bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-xs whitespace-nowrap shadow-2xl">
+              <div class="font-medium text-gray-200 mb-0.5">{{ m.label }} {{ year }}</div>
+              <div
+                class="font-mono font-semibold"
+                :class="(grid[year]?.[m.value] ?? 0) > 0 ? 'text-emerald-400' : 'text-gray-600'"
+              >
+                {{ settings.fmt(grid[year]?.[m.value] ?? 0) }}
               </div>
-              <div class="w-2 h-2 bg-gray-950 border-r border-b border-gray-700 rotate-45 mx-auto -mt-1" />
             </div>
+            <div class="w-2 h-2 bg-gray-950 border-r border-b border-gray-700 rotate-45 mx-auto -mt-1" />
           </div>
         </div>
       </div>
-    </div>
+    </template>
 
     <p v-else class="text-sm text-gray-600 text-center py-8">
       {{ t('dashboard.noDataForYear', { year: store.currentYear }) }}
