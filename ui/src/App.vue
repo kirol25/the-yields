@@ -7,31 +7,31 @@
         </RouterLink>
 
         <!-- Authenticated nav -->
-        <div v-if="auth.isAuthenticated" class="flex items-center gap-6">
+        <div v-if="auth.isAuthenticated" class="flex items-center gap-1">
           <RouterLink
             to="/dashboard"
-            class="text-sm font-medium transition-colors hover:text-emerald-400"
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
             :class="$route.path === '/dashboard' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.dashboard') }}
           </RouterLink>
           <RouterLink
             to="/dividends"
-            class="text-sm font-medium transition-colors hover:text-emerald-400"
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
             :class="$route.path === '/dividends' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.dividends') }}
           </RouterLink>
           <RouterLink
             to="/yields"
-            class="text-sm font-medium transition-colors hover:text-emerald-400"
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
             :class="$route.path === '/yields' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.yields') }}
           </RouterLink>
           <RouterLink
             to="/subscriptions"
-            class="text-sm font-medium transition-colors hover:text-emerald-400"
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
             :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.subscriptions') }}
@@ -46,17 +46,29 @@
         </div>
 
         <!-- Guest nav (landing page) -->
-        <div v-else class="flex items-center gap-3">
+        <div v-else class="flex items-center gap-1">
+          <button
+            @click="scrollToSection('features')"
+            class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            {{ t('nav.features') }}
+          </button>
+          <button
+            @click="scrollToSection('how-it-works')"
+            class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            {{ t('nav.howItWorks') }}
+          </button>
           <RouterLink
             to="/subscriptions"
-            class="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors"
-            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : ''"
+            class="px-3 py-1.5 text-sm font-medium hover:bg-gray-800 rounded-lg transition-colors"
+            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400 hover:text-gray-100'"
           >
             {{ t('nav.subscriptions') }}
           </RouterLink>
           <RouterLink
             to="/login"
-            class="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors"
+            class="ml-2 px-4 py-1.5 text-sm font-medium text-gray-900 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors"
           >
             {{ t('landing.signIn') }}
           </RouterLink>
@@ -128,7 +140,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
@@ -138,10 +150,19 @@ import CookieBanner from './components/CookieBanner.vue'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const store = useDataStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
 const bladeOpen = ref(false)
+
+function scrollToSection(id) {
+  if (route.path === '/') {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push({ path: '/', hash: `#${id}` })
+  }
+}
 
 // Apply persisted theme immediately (also wires up system listener if needed)
 settings.setTheme(settings.theme)
