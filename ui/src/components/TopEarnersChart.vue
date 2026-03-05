@@ -1,19 +1,36 @@
 <template>
   <div>
-    <div class="flex gap-3 mb-4">
-      <button
-        v-for="opt in filterOptions"
-        :key="opt.value"
-        @click="filter = opt.value"
-        :class="[
-          'px-3 py-1 rounded-full text-xs font-medium transition-colors',
-          filter === opt.value
-            ? 'bg-emerald-600 text-white'
-            : 'bg-gray-700 text-gray-400 hover:bg-gray-600',
-        ]"
-      >
-        {{ opt.label }}
-      </button>
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex gap-2">
+        <button
+          v-for="opt in filterOptions"
+          :key="opt.value"
+          @click="filter = opt.value"
+          :class="[
+            'px-3 py-1 rounded-full text-xs font-medium transition-colors',
+            filter === opt.value
+              ? 'bg-emerald-600 text-white'
+              : 'bg-gray-700 text-gray-400 hover:bg-gray-600',
+          ]"
+        >
+          {{ opt.label }}
+        </button>
+      </div>
+      <div class="flex gap-1.5">
+        <button
+          v-for="n in limitOptions"
+          :key="n"
+          @click="limit = n"
+          :class="[
+            'px-2.5 py-1 rounded-full text-xs font-medium transition-colors',
+            limit === n
+              ? 'bg-gray-600 text-gray-100'
+              : 'bg-gray-800 text-gray-500 hover:bg-gray-700',
+          ]"
+        >
+          Top {{ n }}
+        </button>
+      </div>
     </div>
 
     <div v-if="items.length > 0">
