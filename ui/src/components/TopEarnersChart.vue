@@ -1,0 +1,133 @@
+<template>
+  <div>
+    <div class="flex gap-3 mb-4">
+      <button
+        v-for="opt in filterOptions"
+        :key="opt.value"
+        @click="filter = opt.value"
+        :class="[
+          'px-3 py-1 rounded-full text-xs font-medium transition-colors',
+          filter === opt.value
+            ? 'bg-emerald-600 text-white'
+            : 'bg-gray-700 text-gray-400 hover:bg-gray-600',
+        ]"
+      >
+        {{ opt.label }}
+      </button>
+    </div>
+
+    <div v-if="items.length > 0">
+      <Bar :data="chartData" :options="chartOptions" :plugins="[ChartDataLabels]" :style="{ height: chartHeight + 'px' }" />
+    </div>
+    <p v-else class="text-sm text-gray-600 text-center py-6">
+      {{ t('dashboard.noDataForYear', { year: store.currentYear }) }}
+    </p>
+  </div>
+</template>
+
+<script setup>
+import { computed, ref } from 'vue'
+import { Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { useI18n } from 'vue-i18n'
+
+import { useDataStore } from '../stores/dataStore.js'
+import { useSettingsStore } from '../stores/settingsStore.js'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
+
+const { t } = useI18n()
+const store = useDataStore()
+const settings = useSettingsStore()
+
+const filter = ref('all')
+const filterOptions = computed(() => [
+  { value: 'all',       label: t('dashboard.combined') },
+  { value: 'dividends', label: t('dashboard.dividends') },
+  { value: 'yields',    label: t('dashboard.yields') },
+])
+
+const MAX = 10
+
+const items = computed(() => {
+  const result = []
+
+  if (filter.value !== 'yields') {
+    for (const [ticker, entry] of Object.entries(store.yearData.dividends || {})) {
+      const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
+      if (amount > 0) result.push({ label: ticker, amount, type: 'dividend' })
+    }
+  }
+
+  if (filter.value !== 'dividends') {
+    for (const [account, entry] of Object.entries(store.yearData.yields || {})) {
+      const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
+      if (amount > 0) result.push({ label: account, amount, type: 'yield' })
+    }
+  }
+
+  return result.sort((a, b) => b.amount - a.amount).slice(0, MAX)
+})
+
+const chartHeight = computed(() => Math.max(items.value.length * 40, 80))
+
+const chartData = computed(() => ({
+  labels: items.value.map((i) => i.label),
+  datasets: [
+    {
+      data: items.value.map((i) => i.amount),
+      backgroundColor: items.value.map((i) =>
+        i.type === 'dividend' ? 'rgba(52, 211, 153, 0.75)' : 'rgba(96, 165, 250, 0.75)',
+      ),
+      borderColor: items.value.map((i) =>
+        i.type === 'dividend' ? 'rgb(52, 211, 153)' : 'rgb(96, 165, 250)',
+      ),
+      borderWidth: 1,
+      borderRadius: 4,
+    },
+  ],
+}))
+
+const chartOptions = computed(() => {
+  void settings.currency
+  return {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => ` ${settings.fmt(ctx.parsed.x)}`,
+        },
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'end',
+        color: '#9ca3af',
+        font: { size: 11, weight: '500' },
+        formatter: (v) => settings.fmt(v),
+      },
+    },
+    scales: {
+      x: {
+        ticks: { color: '#9ca3af', callback: (v) => settings.fmt(v) },
+        grid: { color: 'rgba(75,85,99,0.3)' },
+      },
+      y: {
+        ticks: { color: '#d1d5db', font: { family: 'monospace', size: 12 } },
+        grid: { display: false },
+      },
+    },
+    layout: { padding: { right: 80 } },
+  }
+})
+</script>

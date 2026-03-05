@@ -172,14 +172,22 @@
             </template>
           </template>
           <template v-else>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div>
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.dividends') }}</p>
-                <PortfolioBreakdown section="dividends" />
+            <div class="space-y-4">
+              <!-- Donuts -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                  <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.dividends') }}</p>
+                  <PortfolioBreakdown section="dividends" />
+                </div>
+                <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                  <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.yields') }}</p>
+                  <PortfolioBreakdown section="yields" />
+                </div>
               </div>
-              <div>
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.yields') }}</p>
-                <PortfolioBreakdown section="yields" />
+              <!-- Top earners -->
+              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
+                <TopEarnersChart />
               </div>
             </div>
           </template>
@@ -199,6 +207,7 @@ import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
 import PortfolioBreakdown from '../components/PortfolioBreakdown.vue'
+import TopEarnersChart from '../components/TopEarnersChart.vue'
 import CumulativeChart from '../components/CumulativeChart.vue'
 import YearlyCumulativeChart from '../components/YearlyCumulativeChart.vue'
 import SkeletonBlock from '../components/SkeletonBlock.vue'
