@@ -3,7 +3,9 @@
     "dashboard": "Dashboard",
     "dividends": "Dividends",
     "yields": "Yields",
-    "subscriptions": "Pricing"
+    "subscriptions": "Pricing",
+    "features": "Features",
+    "howItWorks": "How it works"
   },
   "common": {
     "cancel": "Cancel",
