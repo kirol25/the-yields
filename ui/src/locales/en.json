@@ -82,6 +82,8 @@
   "settings": {
     "title": "Settings",
     "preferences": "Preferences",
+    "appearance": "Appearance",
+    "finance": "Finance",
     "currency": "Currency",
     "language": "Language",
     "theme": "Theme",
