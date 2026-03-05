@@ -80,7 +80,7 @@ const limit = ref(10)
 const limitOptions = [10, 20, 50]
 
 function sumSection(sectionData) {
-  // returns { key: { amount, label } }
+  // returns { key: { amount, label, key } }
   const totals = {}
   for (const [key, entry] of Object.entries(sectionData || {})) {
     const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
