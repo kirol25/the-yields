@@ -1,6 +1,6 @@
 ---
 # app/tasks/main.yml
-# Deploys the backend and frontend to the server.
+# Syncs the project to the server and runs it via Docker Compose.
 
 - name: Create app directory
   file:
@@ -10,48 +10,34 @@
     group: "{{ app_group }}"
     mode: "0755"
 
-# ── Backend ───────────────────────────────────────────────────────────────────
+# ── Sync code ─────────────────────────────────────────────────────────────────
 
-- name: Copy backend source to server
+- name: Sync project to server
   synchronize:
-    src: "{{ playbook_dir }}/../backend/"
-    dest: "{{ backend_dir }}/"
+    src: "{{ playbook_dir }}/../../"
+    dest: "{{ app_dir }}/"
     delete: yes
     rsync_opts:
+      - "--exclude=.git"
       - "--exclude=__pycache__"
       - "--exclude=*.pyc"
-      - "--exclude=.env"
+      - "--exclude=node_modules"
+      - "--exclude=ansible"
+  become: false
 
-- name: Create Python virtual environment
-  command: "{{ python_version }} -m venv {{ venv_dir }}"
+- name: Set ownership of app directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    recurse: yes
+
+# ── Docker Compose ────────────────────────────────────────────────────────────
+
+- name: Build and start containers
+  command: docker compose up -d --build
   args:
-    creates: "{{ venv_dir }}/bin/activate"
-
-- name: Install Python dependencies
-  pip:
-    requirements: "{{ backend_dir }}/requirements.txt"
-    virtualenv: "{{ venv_dir }}"
-
-- name: Write systemd service for backend
-  template:
-    src: the-yield.service.j2
-    dest: /etc/systemd/system/the-yield.service
-    mode: "0644"
-  notify:
-    - Reload systemd
-    - Restart backend
-
-- name: Enable and start backend service
-  service:
-    name: the-yield
-    state: started
-    enabled: yes
-
-# ── Frontend ──────────────────────────────────────────────────────────────────
-
-- name: Copy frontend build to server
-  # Run "npm run build" locally before deploying, then this copies the dist/
-  synchronize:
-    src: "{{ playbook_dir }}/../ui/dist/"
-    dest: "{{ frontend_build_dir }}/"
-    delete: yes
+    chdir: "{{ app_dir }}"
+  become: true
+  become_user: "{{ app_user }}"
