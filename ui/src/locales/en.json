@@ -39,6 +39,9 @@
     "goalRemaining": "{amount} remaining",
     "yieldGoalProgress": "Yield Goal",
     "noGoalSet": "No goal set",
+    "heatmap": "Income heatmap",
+    "less": "Less",
+    "more": "More",
     "steuerProgress": "Tax Allowance",
     "steuerRemaining": "{amount} still tax-free",
     "steuerExceeded": "{amount} above allowance"
