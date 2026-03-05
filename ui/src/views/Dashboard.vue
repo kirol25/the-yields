@@ -171,6 +171,10 @@
                 <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
                 <TopEarnersChart all-years />
               </div>
+              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.heatmap') }}</p>
+                <IncomeHeatmap />
+              </div>
             </div>
           </template>
           <template v-else-if="activeTab === 'cumulative'">
@@ -221,6 +225,7 @@ import PortfolioBreakdown from '../components/PortfolioBreakdown.vue'
 import TopEarnersChart from '../components/TopEarnersChart.vue'
 import CumulativeChart from '../components/CumulativeChart.vue'
 import YearlyCumulativeChart from '../components/YearlyCumulativeChart.vue'
+import IncomeHeatmap from '../components/IncomeHeatmap.vue'
 import SkeletonBlock from '../components/SkeletonBlock.vue'
 import GoalDonutChart from '../components/GoalDonutChart.vue'
 
