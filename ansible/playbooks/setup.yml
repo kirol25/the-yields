@@ -7,14 +7,18 @@
 #
 # What it does (in order):
 #   1. common  — updates packages, creates app user, configures firewall
-#   2. nginx   — installs and configures Nginx
-#   3. app     — deploys backend + frontend, sets up systemd service
-#   4. certbot — obtains SSL certificate from Let's Encrypt
+#   2. docker  — installs Docker CE + Compose plugin
+#   3. nginx   — installs and configures Nginx (SSL termination + static files)
+#   4. app     — syncs code and runs docker compose
+#   5. certbot — obtains SSL certificate from Let's Encrypt
 
 - name: Provision server
   hosts: all
-  become: false  # run as root (sudo)
+  become: true
 
   roles:
     - common
+    - docker
     - nginx
+    - app
+    - certbot

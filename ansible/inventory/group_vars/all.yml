@@ -10,14 +10,9 @@ app_group: "yield"
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
 app_dir: "/home/{{ app_user }}/app"
-backend_dir: "{{ app_dir }}/backend"
-frontend_dir: "{{ app_dir }}/ui"
-venv_dir: "{{ app_dir }}/venv"
-frontend_build_dir: "{{ frontend_dir }}/dist"
 
 # ── Backend ───────────────────────────────────────────────────────────────────
 backend_port: 8000
-python_version: "python3"
 
 # ── SSL ───────────────────────────────────────────────────────────────────────
 # Email used by Let's Encrypt for expiry notifications
