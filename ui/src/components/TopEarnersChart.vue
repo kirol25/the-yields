@@ -48,6 +48,10 @@ const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 
+const props = defineProps({
+  allYears: { type: Boolean, default: false },
+})
+
 const filter = ref('all')
 const filterOptions = computed(() => [
   { value: 'all',       label: t('dashboard.combined') },
@@ -55,26 +59,54 @@ const filterOptions = computed(() => [
   { value: 'yields',    label: t('dashboard.yields') },
 ])
 
-const MAX = 10
+const limit = ref(10)
+const limitOptions = [10, 20, 50]
+
+function sumSection(sectionData) {
+  // returns { key: { amount, label } }
+  const totals = {}
+  for (const [key, entry] of Object.entries(sectionData || {})) {
+    const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
+    if (!totals[key]) totals[key] = { amount: 0, label: entry.name || key }
+    totals[key].amount += amount
+  }
+  return totals
+}
 
 const items = computed(() => {
+  const dividendTotals = {}
+  const yieldTotals = {}
+
+  const yearDatasets = props.allYears
+    ? Object.values(store.allYearsData)
+    : [store.yearData]
+
+  for (const data of yearDatasets) {
+    for (const [k, v] of Object.entries(sumSection(data.dividends))) {
+      if (!dividendTotals[k]) dividendTotals[k] = { amount: 0, label: v.label }
+      dividendTotals[k].amount += v.amount
+    }
+    for (const [k, v] of Object.entries(sumSection(data.yields))) {
+      if (!yieldTotals[k]) yieldTotals[k] = { amount: 0, label: v.label }
+      yieldTotals[k].amount += v.amount
+    }
+  }
+
   const result = []
 
   if (filter.value !== 'yields') {
-    for (const [ticker, entry] of Object.entries(store.yearData.dividends || {})) {
-      const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
-      if (amount > 0) result.push({ label: ticker, amount, type: 'dividend' })
+    for (const { label, amount } of Object.values(dividendTotals)) {
+      if (amount > 0) result.push({ label, amount, type: 'dividend' })
     }
   }
 
   if (filter.value !== 'dividends') {
-    for (const [account, entry] of Object.entries(store.yearData.yields || {})) {
-      const amount = Object.values(entry.months || {}).reduce((a, b) => a + b, 0)
-      if (amount > 0) result.push({ label: account, amount, type: 'yield' })
+    for (const { label, amount } of Object.values(yieldTotals)) {
+      if (amount > 0) result.push({ label, amount, type: 'yield' })
     }
   }
 
-  return result.sort((a, b) => b.amount - a.amount).slice(0, MAX)
+  return result.sort((a, b) => b.amount - a.amount).slice(0, limit.value)
 })
 
 const chartHeight = computed(() => Math.max(items.value.length * 40, 80))

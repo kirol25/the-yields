@@ -150,7 +150,7 @@
           <SkeletonBlock cls="h-48 w-full rounded-lg" />
         </template>
         <template v-else>
-          <p v-if="activeTab !== 'breakdown' && activeTab !== 'cumulative'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
+          <p v-if="activeTab === 'monthly' || activeTab === 'quarterly'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
             {{
               activeTab === 'monthly'
                 ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
@@ -161,7 +161,18 @@
           </p>
           <MonthlyChart v-if="activeTab === 'monthly'" />
           <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
-          <YearlyChart v-else-if="activeTab === 'yearly'" />
+          <template v-else-if="activeTab === 'yearly'">
+            <div class="space-y-4">
+              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.incomeByYear') }}</p>
+                <YearlyChart />
+              </div>
+              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
+                <TopEarnersChart all-years />
+              </div>
+            </div>
+          </template>
           <template v-else-if="activeTab === 'cumulative'">
             <CumulativeChart />
             <template v-if="store.years.length > 1">
