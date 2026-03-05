@@ -313,7 +313,11 @@
     "categoryFeature": "Funktionswunsch",
     "message": "Nachricht",
     "messagePlaceholder": "Was liegt dir auf dem Herzen\u2026",
-    "submit": "Feedback senden"
+    "submit": "Feedback senden",
+    "submitting": "Wird gesendet\u2026",
+    "successTitle": "Danke f\u00fcr dein Feedback!",
+    "successSub": "Wir lesen jede Nachricht und melden uns bei Bedarf.",
+    "sendAnother": "Weiteres senden"
   },
   "terms": {
     "title": "Nutzungsbedingungen",
