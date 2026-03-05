@@ -78,17 +78,11 @@ const hasData = computed(() =>
   dividendMonthly.value.some((v) => v > 0) || yieldMonthly.value.some((v) => v > 0),
 )
 
-function onTrackLine(goal) {
-  if (!goal) return null
-  return MONTHS_CONFIG.map((_, i) => (goal / 12) * (i + 1))
-}
-
 const chartData = computed(() => {
   const datasets = []
   const isAll = filter.value === 'all'
 
   if (isAll || filter.value === 'dividends') {
-    const goal = settings.dividendGoal[store.currentYear] || 0
     datasets.push({
       label: t('dashboard.dividends'),
       data: dividendCumul.value,
@@ -99,23 +93,9 @@ const chartData = computed(() => {
       pointRadius: 3,
       pointHoverRadius: 5,
     })
-    if (!isAll && goal) {
-      datasets.push({
-        label: t('dashboard.onTrack'),
-        data: onTrackLine(goal),
-        borderColor: 'rgba(245, 158, 11, 0.6)',
-        borderDash: [6, 4],
-        borderWidth: 1.5,
-        fill: false,
-        tension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-      })
-    }
   }
 
   if (isAll || filter.value === 'yields') {
-    const goal = settings.yieldGoal[store.currentYear] || 0
     datasets.push({
       label: t('dashboard.yields'),
       data: yieldCumul.value,
@@ -126,23 +106,9 @@ const chartData = computed(() => {
       pointRadius: 3,
       pointHoverRadius: 5,
     })
-    if (!isAll && goal) {
-      datasets.push({
-        label: t('dashboard.onTrack'),
-        data: onTrackLine(goal),
-        borderColor: 'rgba(245, 158, 11, 0.6)',
-        borderDash: [6, 4],
-        borderWidth: 1.5,
-        fill: false,
-        tension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-      })
-    }
   }
 
   if (isAll) {
-    const combinedGoal = (settings.dividendGoal[store.currentYear] || 0) + (settings.yieldGoal[store.currentYear] || 0)
     datasets.push({
       label: t('dashboard.combined'),
       data: combinedCumul.value,
@@ -154,19 +120,6 @@ const chartData = computed(() => {
       pointRadius: 2,
       pointHoverRadius: 4,
     })
-    if (combinedGoal) {
-      datasets.push({
-        label: t('dashboard.onTrack'),
-        data: onTrackLine(combinedGoal),
-        borderColor: 'rgba(245, 158, 11, 0.6)',
-        borderDash: [6, 4],
-        borderWidth: 1.5,
-        fill: false,
-        tension: 0,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-      })
-    }
   }
 
   return { labels: MONTHS_CONFIG.map((m) => m.short), datasets }
