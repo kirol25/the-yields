@@ -213,16 +213,22 @@
             min="0"
             max="2000"
             :placeholder="t('settings.steuerfreibetragPlaceholder')"
-            class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            :class="[
+              'w-full bg-gray-800 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 transition-colors',
+              steuerInvalid
+                ? 'border border-red-500 focus:ring-red-500 text-red-300'
+                : 'border border-gray-700 focus:ring-emerald-500',
+            ]"
           />
           <button
             @click="saveSteuer"
-            :disabled="steuerInput === (settings.steuerfreibetrag[store.currentYear] || 0)"
+            :disabled="steuerInvalid || steuerInput === (settings.steuerfreibetrag[store.currentYear] ?? 1000)"
             class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-medium rounded-md transition-colors"
           >
             {{ t('common.save') }}
           </button>
         </div>
+        <p v-if="steuerInvalid" class="text-xs text-red-400 mt-1.5">{{ t('settings.steuerfreibetragMax') }}</p>
       </div>
     </div>
 
@@ -291,9 +297,11 @@ watch(() => store.currentYear, (y) => {
   steuerInput.value    = settings.steuerfreibetrag[y] ?? 1000
 })
 
+const steuerInvalid = computed(() => steuerInput.value > 2000 || steuerInput.value < 0)
+
 function saveGoal()      { settings.setDividendGoal(store.currentYear, goalInput.value || 0) }
 function saveYieldGoal() { settings.setYieldGoal(store.currentYear, yieldGoalInput.value || 0) }
-function saveSteuer()    { settings.setSteuerfreibetrag(store.currentYear, steuerInput.value || 0) }
+function saveSteuer()    { if (!steuerInvalid.value) settings.setSteuerfreibetrag(store.currentYear, steuerInput.value || 0) }
 
 const currencyContainer = ref(null)
 const currencyOpen = ref(false)

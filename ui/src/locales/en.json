@@ -103,6 +103,7 @@
     "steuerfreibetrag": "Steuerfreibetrag",
     "steuerfreibetragDesc": "Your personal tax-free savings allowance (max. €2,000). Once your dividends exceed this, the chart turns amber.",
     "steuerfreibetragPlaceholder": "e.g. 1000",
+    "steuerfreibetragMax": "Maximum value is €2,000.",
     "exportLocked": "CSV export is a Monthly/Yearly feature",
     "exportLockedDesc": "Upgrade to export your data as CSV.",
     "upgradeBtn": "Upgrade"
