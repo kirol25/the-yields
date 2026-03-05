@@ -114,6 +114,7 @@
     "account": "Konto",
     "profile": "Profil",
     "settings": "Einstellungen",
+    "feedback": "Feedback",
     "signOut": "Abmelden"
   },
   "modal": {
@@ -234,7 +235,9 @@
         "Früher Zugang zu neuen Funktionen"
       ]
     },
-    "cta": "Loslegen"
+    "cta": "Loslegen",
+    "ctaFree": "Jetzt registrieren",
+    "ctaPaid": "Zahlungspflichtig bestellen"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",
@@ -295,6 +298,17 @@
     "title": "Seite nicht gefunden",
     "subtitle": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
     "backHome": "Zur Startseite"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Teile einen Gedanken, melde einen Fehler oder schlage eine Funktion vor. Wir lesen jede Nachricht.",
+    "category": "Kategorie",
+    "categoryFeedback": "Feedback",
+    "categoryBug": "Fehlerbericht",
+    "categoryFeature": "Funktionswunsch",
+    "message": "Nachricht",
+    "messagePlaceholder": "Was liegt dir auf dem Herzen\u2026",
+    "submit": "Feedback senden"
   },
   "terms": {
     "title": "Nutzungsbedingungen",
