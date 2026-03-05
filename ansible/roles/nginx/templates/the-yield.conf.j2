@@ -1,0 +1,38 @@
+# Nginx site config for {{ domain }}
+# Jinja2 variables ({{ }}) are filled in by Ansible from group_vars/all.yml
+
+server {
+    listen 80;
+    server_name {{ domain }} www.{{ domain }};
+
+    # Redirect all HTTP to HTTPS (enabled after certbot runs)
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name {{ domain }} www.{{ domain }};
+
+    # SSL certificates — filled in by certbot
+    ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+
+    # ── Frontend (Vue 3 static build) ─────────────────────────────────────────
+    root {{ frontend_build_dir }};
+    index index.html;
+
+    # All frontend routes fall back to index.html (Vue Router history mode)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # ── Backend API (FastAPI) ──────────────────────────────────────────────────
+    # Requests to /api/* are proxied to uvicorn running on localhost:8000
+    location /api/ {
+        proxy_pass         http://127.0.0.1:{{ backend_port }};
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+}

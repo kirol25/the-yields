@@ -80,6 +80,22 @@ When a user deletes their account the frontend:
 2. Calls Cognito `DeleteUser` to remove the auth account
 3. Clears local tokens and redirects to `/login`
 
+## Deployment (Ansible)
+
+Before running Ansible for the first time, copy your SSH key to the server:
+
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub root@0.0.0.0
+```
+
+Then provision and deploy:
+
+```bash
+cd ansible
+ansible-playbook playbooks/setup.yml   # first time only
+ansible-playbook playbooks/deploy.yml  # subsequent deploys
+```
+
 ## Taskfile commands
 
 | Task            | Description                              |
