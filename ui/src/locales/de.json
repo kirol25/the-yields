@@ -39,6 +39,9 @@
     "goalRemaining": "noch {amount} verbleibend",
     "yieldGoalProgress": "Zinsziel",
     "noGoalSet": "Kein Ziel gesetzt",
+    "heatmap": "Einkommens-Heatmap",
+    "less": "Weniger",
+    "more": "Mehr",
     "steuerProgress": "Steuerfreibetrag",
     "steuerRemaining": "noch {amount} steuerfrei",
     "steuerExceeded": "{amount} \u00fcber dem Freibetrag"
