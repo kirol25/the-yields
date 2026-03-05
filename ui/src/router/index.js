@@ -27,7 +27,8 @@ const routes = [
   { path: '/reset-password',  component: () => import('../views/ResetPassword.vue'),  meta: { guestOnly: true } },
 
   // Public pages
-  { path: '/terms', component: () => import('../views/Terms.vue'), meta: { public: true } },
+  { path: '/terms',     component: () => import('../views/Terms.vue'),    meta: { public: true } },
+  { path: '/feedback',  component: () => import('../views/Feedback.vue'), meta: { public: true } },
 
   // 404 catch-all — must be last
   { path: '/:pathMatch(.*)*', component: () => import('../views/NotFound.vue'), meta: { public: true } },
