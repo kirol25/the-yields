@@ -1,0 +1,31 @@
+---
+- name: Configure rsyslog security rules
+  copy:
+    content: |
+      auth,authpriv.*                 /var/log/auth.log
+      *.*;auth,authpriv.none          -/var/log/syslog
+      kern.*                          -/var/log/kern.log
+      mail.*                          -/var/log/mail.log
+      mail.err                        /var/log/mail.err
+      daemon.*                        -/var/log/daemon.log
+    dest: /etc/rsyslog.d/30-security.conf
+    mode: "0644"
+  notify: restart rsyslog
+
+- name: Configure log rotation
+  copy:
+    content: |
+      /var/log/auth.log
+      /var/log/syslog
+      /var/log/kern.log
+      /var/log/daemon.log
+      {
+          daily
+          rotate 14
+          missingok
+          notifempty
+          compress
+          delaycompress
+      }
+    dest: /etc/logrotate.d/security
+    mode: "0644"
