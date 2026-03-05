@@ -1,0 +1,19 @@
+---
+# playbooks/setup.yml
+# Full server provisioning — run this ONCE on a fresh server.
+#
+# Usage:
+#   ansible-playbook playbooks/setup.yml
+#
+# What it does (in order):
+#   1. common  — updates packages, creates app user, configures firewall
+#   2. nginx   — installs and configures Nginx
+#   3. app     — deploys backend + frontend, sets up systemd service
+#   4. certbot — obtains SSL certificate from Let's Encrypt
+
+- name: Provision server
+  hosts: all
+  become: true  # run as root (sudo)
+
+  roles:
+    - common

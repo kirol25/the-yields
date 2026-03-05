@@ -1,0 +1,15 @@
+---
+# playbooks/deploy.yml
+# Deploy new code to an already-provisioned server.
+# Run this every time you push an update.
+#
+# Usage:
+#   npm run build          (in /ui — builds the frontend)
+#   ansible-playbook playbooks/deploy.yml
+
+- name: Deploy latest code
+  hosts: all
+  become: true
+
+  roles:
+    - app   # re-syncs backend + frontend and restarts the service
