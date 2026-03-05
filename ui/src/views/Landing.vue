@@ -90,7 +90,7 @@
     </section>
 
     <!-- ── Features ──────────────────────────────────────────────────────────── -->
-    <section class="py-24 bg-gray-900/40 border-y border-gray-800">
+    <section id="features" class="py-24 bg-gray-900/40 border-y border-gray-800">
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           <div v-for="f in features" :key="f.title" class="space-y-4">
@@ -103,7 +103,7 @@
     </section>
 
     <!-- ── How it works ──────────────────────────────────────────────────────── -->
-    <section class="py-24">
+    <section id="how-it-works" class="py-24">
       <div class="max-w-7xl mx-auto px-6">
         <h2 class="text-2xl font-bold text-gray-100 text-center mb-14">{{ t('landing.howTitle') }}</h2>
         <div class="grid md:grid-cols-3 gap-8 relative">
