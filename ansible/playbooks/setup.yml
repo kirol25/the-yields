@@ -13,7 +13,8 @@
 
 - name: Provision server
   hosts: all
-  become: true  # run as root (sudo)
+  become: false  # run as root (sudo)
 
   roles:
     - common
+    - nginx

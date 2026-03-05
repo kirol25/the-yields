@@ -13,3 +13,4 @@
 
   roles:
     - app   # re-syncs backend + frontend and restarts the service
+    - certbot
