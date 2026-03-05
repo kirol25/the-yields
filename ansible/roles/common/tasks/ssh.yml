@@ -6,11 +6,14 @@
     line: "PasswordAuthentication no"
   notify: restart sshd
 
-- name: Disable SSH root login
+- name: Restrict SSH root login to key-based only
+  # "prohibit-password" blocks root password login but keeps key-based access.
+  # This means Ansible can still connect as root using your SSH key.
+  # Change to "no" only after confirming you can SSH in as {{ app_user }}.
   lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^#?PermitRootLogin"
-    line: "PermitRootLogin no"
+    line: "PermitRootLogin prohibit-password"
   notify: restart sshd
 
 - name: Enable SSH pubkey authentication
