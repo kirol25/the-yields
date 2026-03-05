@@ -7,14 +7,23 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
+    # --- CORS settings ---
+    CORS_ORIGINS: str = Field(
+        "http://localhost:5173",
+        description="Comma-separated list of allowed CORS origins",
+    )
+
+    # --- Storage settings ---
     STORAGE_BACKEND: str = Field(
         "local", description="Storage backend to use: 'local' or 's3'"
     )
     S3_BUCKET: str = Field("the-yield-data", description="S3 bucket name")
     S3_PREFIX: str = Field("test-user", description="S3 prefix for storing data")
-    CORS_ORIGINS: str = Field(
-        "http://localhost:5173",
-        description="Comma-separated list of allowed CORS origins",
+
+    # --- Feedback email settings ---
+    AWS_REGION: str = Field(
+        "eu-central-1",
+        description="AWS region used for SES",
     )
     FEEDBACK_TO_EMAIL: str = Field(
         "contact@the-yield.app",
@@ -23,10 +32,6 @@ class Settings(BaseSettings):
     FEEDBACK_FROM_EMAIL: str = Field(
         "noreply@the-yield.app",
         description="Verified SES sender address for feedback emails",
-    )
-    AWS_REGION: str = Field(
-        "eu-central-1",
-        description="AWS region used for SES",
     )
 
 
