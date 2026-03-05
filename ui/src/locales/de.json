@@ -82,6 +82,8 @@
   "settings": {
     "title": "Einstellungen",
     "preferences": "Einstellungen",
+    "appearance": "Erscheinungsbild",
+    "finance": "Finanzen",
     "currency": "W\u00e4hrung",
     "language": "Sprache",
     "theme": "Design",
