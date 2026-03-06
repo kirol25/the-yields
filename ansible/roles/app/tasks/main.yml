@@ -20,9 +20,12 @@
     rsync_opts:
       - "--exclude=.git"
       - "--exclude=__pycache__"
+      - "--exclude=.ruff_cache"
       - "--exclude=*.pyc"
       - "--exclude=node_modules"
       - "--exclude=ansible"
+      - "--exclude=.claude"
+      - "--exclude=CLAUDE.md"
   become: false
 
 - name: Set ownership of app directory

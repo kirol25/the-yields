@@ -31,3 +31,8 @@
     name: nginx
     state: started
     enabled: yes
+
+- name: Reload Nginx to apply config
+  service:
+    name: nginx
+    state: reloaded

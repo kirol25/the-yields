@@ -1,20 +1,8 @@
-# Nginx site config for {{ domain }}
-# Acts as SSL-terminating reverse proxy in front of the Docker containers.
+# Nginx site config — IP only (no SSL until domain is configured)
 
 server {
     listen 80;
-    server_name {{ domain }} www.{{ domain }};
-
-    # Redirect all HTTP to HTTPS (enabled after certbot runs)
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    server_name {{ domain }} www.{{ domain }};
-
-    ssl_certificate     /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+    server_name _;
 
     # ── Backend API ───────────────────────────────────────────────────────────
     location /api/ {
