@@ -1,0 +1,15 @@
+---
+# playbooks/deploy.yml
+# Deploy new code to an already-provisioned server.
+# Run this every time you push an update.
+#
+# Usage:
+#   ansible-playbook playbooks/deploy.yml
+
+- name: Deploy latest code
+  hosts: all
+  become: true
+
+  roles:
+    - app    # re-syncs code and restarts Docker containers
+    - nginx  # reloads nginx config

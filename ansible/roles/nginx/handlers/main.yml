@@ -1,0 +1,8 @@
+---
+# Handlers are only triggered when a task says "notify: Reload Nginx"
+# They run once at the end of the play, not immediately.
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded
