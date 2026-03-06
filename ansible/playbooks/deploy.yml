@@ -1,15 +1,17 @@
 ---
 # playbooks/deploy.yml
-# Deploy new code to an already-provisioned server.
+# Deploy the-yield to an already-provisioned server.
 # Run this every time you push an update.
+#
+# Prerequisites: server-mgmt provision.yml has been run at least once.
 #
 # Usage:
 #   ansible-playbook playbooks/deploy.yml
 
-- name: Deploy latest code
+- name: Deploy the-yield
   hosts: all
   become: true
 
   roles:
-    - app    # re-syncs code and restarts Docker containers
-    - nginx  # reloads nginx config
+    - app    # syncs code and restarts Docker containers
+    - nginx  # deploys/updates the app's Nginx vhost config
