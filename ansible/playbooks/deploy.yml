@@ -13,5 +13,6 @@
   become: true
 
   roles:
-    - app    # syncs code and restarts Docker containers
-    - nginx  # deploys/updates the app's Nginx vhost config
+    - app     # syncs code and restarts Docker containers
+    - nginx   # deploys/updates the app's Nginx vhost config
+    - certbot # obtains SSL certificate (skipped if cert already exists)
