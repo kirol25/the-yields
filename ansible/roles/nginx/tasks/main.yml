@@ -1,0 +1,38 @@
+---
+# nginx/tasks/main.yml
+# Installs Nginx and drops in our site config.
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Write site config from template
+  template:
+    src: the-yield.conf.j2
+    dest: /etc/nginx/sites-available/the-yield.conf
+    mode: "0644"
+  notify: Reload Nginx
+
+- name: Enable site
+  file:
+    src: /etc/nginx/sites-available/the-yield.conf
+    dest: /etc/nginx/sites-enabled/the-yield.conf
+    state: link
+  notify: Reload Nginx
+
+- name: Ensure Nginx is started and enabled
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Reload Nginx to apply config
+  service:
+    name: nginx
+    state: reloaded

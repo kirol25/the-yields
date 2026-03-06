@@ -1,0 +1,9 @@
+---
+- import_tasks: packages.yml   # apt update, essential packages, timezone
+- import_tasks: user.yml       # create app user with sudo + copy SSH key
+- import_tasks: ssh.yml        # SSH hardening (key-only, no root, timeouts)
+- import_tasks: firewall.yml   # UFW rules (SSH/HTTP/HTTPS only)
+- import_tasks: updates.yml    # unattended-upgrades config
+- import_tasks: fail2ban.yml   # intrusion prevention
+- import_tasks: hardening.yml  # sysctl, file permissions, system accounts
+- import_tasks: logging.yml    # rsyslog + logrotate

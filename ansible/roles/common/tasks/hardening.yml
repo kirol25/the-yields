@@ -1,0 +1,53 @@
+---
+- name: Apply sysctl hardening settings
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+  loop:
+    - { name: 'net.ipv4.ip_forward',                      value: '0' }
+    - { name: 'net.ipv4.conf.all.send_redirects',         value: '0' }
+    - { name: 'net.ipv4.conf.default.send_redirects',     value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_redirects',       value: '0' }
+    - { name: 'net.ipv4.conf.default.accept_redirects',   value: '0' }
+    - { name: 'net.ipv4.conf.all.rp_filter',              value: '1' }
+    - { name: 'net.ipv4.conf.default.rp_filter',          value: '1' }
+    - { name: 'net.ipv4.icmp_echo_ignore_broadcasts',     value: '1' }
+    - { name: 'net.ipv4.tcp_syncookies',                  value: '1' }
+    - { name: 'net.ipv4.tcp_timestamps',                  value: '1' }
+    - { name: 'net.ipv4.conf.all.log_martians',           value: '1' }
+    - { name: 'net.ipv4.conf.default.log_martians',       value: '1' }
+
+- name: Restrict permissions on sensitive files
+  file:
+    path: "{{ item }}"
+    mode: "0600"
+  loop:
+    - /etc/ssh/sshd_config
+    - /etc/shadow
+    - /etc/gshadow
+    - /etc/passwd-
+    - /etc/shadow-
+
+- name: Disable unnecessary system accounts
+  user:
+    name: "{{ item }}"
+    shell: /usr/sbin/nologin
+    createhome: no
+  loop:
+    - bin
+    - sys
+    - sync
+    - games
+    - man
+    - lp
+    - mail
+    - news
+    - uucp
+    - proxy
+    - backup
+    - list
+    - irc
+    - gnats
+  ignore_errors: yes
