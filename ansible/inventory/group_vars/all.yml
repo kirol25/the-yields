@@ -1,5 +1,6 @@
 # ── App identity ──────────────────────────────────────────────────────────────
-domain: "the-yield.app"
+domain: "checkmeineimmo.de"
+admin_email: "lorikbajrami25@gmail.com"
 
 # ── App user (must match server-mgmt/inventory/group_vars/all.yml) ────────────
 app_user: "yield"
