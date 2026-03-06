@@ -1,0 +1,44 @@
+---
+# app/tasks/main.yml
+# Syncs the project to the server and runs it via Docker Compose.
+
+- name: Create app directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0755"
+
+# ── Sync code ─────────────────────────────────────────────────────────────────
+
+- name: Sync project to server
+  synchronize:
+    src: "{{ playbook_dir }}/../../"
+    dest: "{{ app_dir }}/"
+    delete: yes
+    rsync_opts:
+      - "--exclude=.git"
+      - "--exclude=__pycache__"
+      - "--exclude=.ruff_cache"
+      - "--exclude=*.pyc"
+      - "--exclude=node_modules"
+      - "--exclude=ansible"
+      - "--exclude=.claude"
+      - "--exclude=CLAUDE.md"
+  become: false
+
+- name: Set ownership of app directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    recurse: yes
+
+# ── Docker Compose ────────────────────────────────────────────────────────────
+
+- name: Build and start containers
+  command: docker compose up -d --build
+  args:
+    chdir: "{{ app_dir }}"
