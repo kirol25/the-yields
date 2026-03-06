@@ -11,4 +11,5 @@
   become: true
 
   roles:
-    - app   # re-syncs backend + frontend and restarts the service
+    - app    # re-syncs code and restarts Docker containers
+    - nginx  # reloads nginx config
