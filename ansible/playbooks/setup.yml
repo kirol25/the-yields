@@ -1,26 +1,19 @@
 ---
 # playbooks/setup.yml
-# Full server provisioning — run this ONCE on a fresh server.
+# First-time app setup on an already-provisioned server.
+# Run this once after running server-mgmt/playbooks/provision.yml.
 #
 # Usage:
 #   ansible-playbook playbooks/setup.yml
 #
-# What it does (in order):
-#   1. common — updates packages, creates app user, configures firewall
-#   2. docker — installs Docker CE + Compose plugin
-#   3. nginx  — installs and configures Nginx as reverse proxy
-#   4. app    — syncs code and runs docker compose
-#
-# Note: certbot (SSL) is skipped until a domain is configured.
-#       When ready, add domain to group_vars/all.yml and run:
-#         ansible-playbook playbooks/setup.yml --tags certbot
+# What it does:
+#   1. app   — syncs code and starts Docker containers
+#   2. nginx — registers the app's vhost config and reloads Nginx
 
-- name: Provision server
+- name: First-time setup for the-yield
   hosts: all
   become: true
 
   roles:
-    - common
-    - docker
-    - nginx
     - app
+    - nginx
