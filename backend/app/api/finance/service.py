@@ -57,6 +57,15 @@ class YieldService:
         self.repository.delete_all_data()
         return {"status": "ok"}
 
+    def get_settings(self) -> dict[str, Any]:
+        """Retrieve user settings (goals, steuerfreibetrag)."""
+        return self.repository.read_settings()
+
+    def save_settings(self, payload: dict[str, Any]) -> dict[str, str]:
+        """Persist user settings."""
+        self.repository.write_settings(payload)
+        return {"status": "ok"}
+
     def delete_entry(
         self, year: int, section: Literal["dividends", "yields"], key: str
     ) -> dict[str, str]:  # noqa: E501

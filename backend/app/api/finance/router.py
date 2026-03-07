@@ -58,6 +58,26 @@ def put_data(year: int, payload: dict[str, Any], service: ServiceDep) -> dict[st
     return service.save_data(year, payload)
 
 
+@router.get(
+    "/settings",
+    status_code=status.HTTP_200_OK,
+    summary="Get user settings",
+    description="Returns the user's saved goals and steuerfreibetrag.",
+)
+def get_settings(service: ServiceDep) -> dict[str, Any]:
+    return service.get_settings()
+
+
+@router.put(
+    "/settings",
+    status_code=status.HTTP_200_OK,
+    summary="Save user settings",
+    description="Persists the user's goals and steuerfreibetrag.",
+)
+def put_settings(payload: dict[str, Any], service: ServiceDep) -> dict[str, str]:
+    return service.save_settings(payload)
+
+
 @router.delete(
     "/data",
     responses={
