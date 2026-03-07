@@ -84,8 +84,7 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   function _userHeaders() {
-    const auth = useAuthStore()
-    return { 'X-User-Email': auth.user?.email ?? '' }
+    return useAuthStore().getAuthHeaders()
   }
 
   async function loadFromServer() {

@@ -1,7 +1,8 @@
 import { computed } from 'vue'
+import { useAuthStore } from '../stores/authStore.js'
 
-// TODO: wire to real billing state when payments are implemented
 export function useSubscription() {
-  const isPremium = computed(() => false)
+  const auth = useAuthStore()
+  const isPremium = computed(() => auth.user?.isPremium === true)
   return { isPremium }
 }
