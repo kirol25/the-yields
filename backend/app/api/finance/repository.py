@@ -97,3 +97,19 @@ class YieldRepository:
         path = self.data_dir / f"{year}.json"
         with open(path, "w") as f:
             json.dump(data, f, indent=2)
+
+    def read_settings(self) -> dict[str, Any]:
+        """Read and return user settings (goals, steuerfreibetrag)."""
+        self._ensure_dir()
+        path = self.data_dir / "settings.json"
+        if not path.exists():
+            return {}
+        with open(path) as f:
+            return json.load(f)  # type: ignore[no-any-return]
+
+    def write_settings(self, data: dict[str, Any]) -> None:
+        """Persist user settings to settings.json."""
+        self._ensure_dir()
+        path = self.data_dir / "settings.json"
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2)
