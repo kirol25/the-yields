@@ -322,6 +322,12 @@
     "successSub": "We read every message and will get back to you if needed.",
     "sendAnother": "Send another"
   },
+  "upsell": {
+    "tickerLimitTitle": "Free plan limit reached ({n} tickers / accounts)",
+    "tickerLimitDesc": "Upgrade to add unlimited tickers and savings accounts.",
+    "upgrade": "Upgrade to Premium",
+    "limitReached": "limit reached"
+  },
   "terms": {
     "title": "Terms of Service",
     "acceptanceTitle": "Acceptance of Terms",

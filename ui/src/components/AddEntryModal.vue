@@ -23,6 +23,20 @@
 
         <div class="space-y-5">
 
+          <!-- Free-tier limit banner -->
+          <div v-if="atLimit && selectedKey === '__new__'" class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
+            <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            </svg>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-amber-400">{{ t('upsell.tickerLimitTitle', { n: FREE_TIER_LIMIT }) }}</p>
+              <p class="text-xs text-amber-300/70 mt-0.5">{{ t('upsell.tickerLimitDesc') }}</p>
+              <RouterLink to="/subscriptions" @click="$emit('close')" class="inline-block mt-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
+                {{ t('upsell.upgrade') }} →
+              </RouterLink>
+            </div>
+          </div>
+
           <!-- Ticker / Bank — custom dropdown -->
           <div>
             <label class="block text-xs font-medium text-gray-400 mb-1.5">
@@ -61,13 +75,14 @@
                 <div v-if="props.existingKeys.length" class="border-t border-gray-800 my-1" />
                 <button
                   type="button"
-                  @click="selectedKey = '__new__'; keyOpen = false"
+                  :disabled="atLimit"
+                  @click="!atLimit && (selectedKey = '__new__', keyOpen = false)"
                   :class="[
                     'w-full px-3 py-2 text-sm text-left transition-colors',
-                    selectedKey === '__new__' ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-500 hover:bg-gray-800',
+                    atLimit ? 'text-gray-600 cursor-not-allowed' : selectedKey === '__new__' ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-500 hover:bg-gray-800',
                   ]"
                 >
-                  {{ t('modal.addNew') }}
+                  {{ t('modal.addNew') }}{{ atLimit ? ` (${t('upsell.limitReached')})` : '' }}
                 </button>
               </div>
             </div>
@@ -180,9 +195,13 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useMonths } from '../composables/useMonths.js'
+import { useSubscription } from '../composables/useSubscription.js'
+
+const FREE_TIER_LIMIT = 5
 
 const { t } = useI18n()
 const { months } = useMonths()
+const { isPremium } = useSubscription()
 
 const props = defineProps({
   type: { type: String, required: true }, // 'dividend' | 'yield'
@@ -192,7 +211,12 @@ const emit = defineEmits(['close', 'saved'])
 
 const store = useDataStore()
 
-const selectedKey = ref(props.existingKeys[0] ?? '__new__')
+// Free users cannot add more than FREE_TIER_LIMIT new tickers/accounts
+const atLimit = computed(
+  () => !isPremium.value && props.existingKeys.length >= FREE_TIER_LIMIT,
+)
+
+const selectedKey = ref(atLimit.value ? '__new__' : (props.existingKeys[0] ?? '__new__'))
 const keyOpen = ref(false)
 const newKey = ref('')
 const newName = ref('')
@@ -212,7 +236,10 @@ const resolvedKey = computed(() =>
   selectedKey.value === '__new__' ? newKey.value.trim() : selectedKey.value,
 )
 
-const canSubmit = computed(() => resolvedKey.value && amount.value != null && amount.value >= 0)
+const isAddingNew = computed(() => selectedKey.value === '__new__')
+const canSubmit = computed(
+  () => resolvedKey.value && amount.value != null && amount.value >= 0 && !(atLimit.value && isAddingNew.value),
+)
 
 async function submit() {
   if (!canSubmit.value) return
