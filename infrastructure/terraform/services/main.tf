@@ -1,5 +1,5 @@
 locals {
-  invite_mail = templatefile("${path.module}/templates/invite_mail.html.tpl", {
+  invite_mail = templatefile("${path.module}/templates/confirm_signup.html.tpl", {
     project_name = var.project_name
   })
 }
@@ -36,16 +36,6 @@ resource "aws_cognito_user_pool" "main" {
       min_length = 1
       max_length = 128
     }
-  }
-
-  schema {
-    name                     = "preferred_username"
-    attribute_data_type      = "String"
-    developer_only_attribute = false
-    mutable                  = true
-    required                 = true
-
-    string_attribute_constraints {}
   }
 
   account_recovery_setting {
