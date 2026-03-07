@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     STORAGE_BACKEND: str = Field(
         "local", description="Storage backend to use: 'local' or 's3'"
     )
-    S3_BUCKET: str = Field("the-yield-data", description="S3 bucket name")
+    S3_BUCKET: str = Field("the-yields-data", description="S3 bucket name")
     S3_PREFIX: str = Field("test-user", description="S3 prefix for storing data")
 
     # --- Cognito / Auth settings ---
@@ -61,11 +61,11 @@ class Settings(BaseSettings):
         description="AWS region used for SES",
     )
     FEEDBACK_TO_EMAIL: str = Field(
-        "contact@the-yield.app",
+        "contact@the-yields.app",
         description="Recipient address for feedback submissions",
     )
     FEEDBACK_FROM_EMAIL: str = Field(
-        "noreply@the-yield.app",
+        "noreply@the-yields.app",
         description="Verified SES sender address for feedback emails",
     )
 

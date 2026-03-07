@@ -7,7 +7,7 @@ app_user: "yield"
 app_group: "yield"
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-app_dir: "/home/{{ app_user }}/the-yield"
+app_dir: "/home/{{ app_user }}/the-yields"
 
 # ── Backend ───────────────────────────────────────────────────────────────────
 backend_port: 8000

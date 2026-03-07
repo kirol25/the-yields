@@ -21,7 +21,7 @@ def submit_feedback(
     """Send a feedback submission as an email via AWS SES."""
     sender = email or _ANONYMOUS
     category_label = _CATEGORY_LABELS.get(payload.category, payload.category)
-    subject = f"[{category_label}] the-yield feedback"
+    subject = f"[{category_label}] the-yields feedback"
     timestamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
     body = (

@@ -1,14 +1,14 @@
-# the-yield
+# the-yields
 
-[![CI](https://github.com/kirol25/the-yield/actions/workflows/ci.yml/badge.svg)](https://github.com/kirol25/the-yield/actions/workflows/ci.yml)
-[![Dependabot Updates](https://github.com/kirol25/the-yield/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/kirol25/the-yield/actions/workflows/dependabot/dependabot-updates)
+[![CI](https://github.com/kirol25/the-yields/actions/workflows/ci.yml/badge.svg)](https://github.com/kirol25/the-yields/actions/workflows/ci.yml)
+[![Dependabot Updates](https://github.com/kirol25/the-yields/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/kirol25/the-yields/actions/workflows/dependabot/dependabot-updates)
 
 A personal finance tracker for dividends and investment yields. Built with a FastAPI backend and a Vue 3 frontend.
 
 ## Structure
 
 ```md
-the-yield/
+the-yields/
 ├── backend/        # FastAPI API server
 ├── ui/             # Vue 3 SPA
 ├── data/           # JSON data files (YYYY.json), mounted as a volume in Docker
@@ -70,7 +70,7 @@ Browser → nginx in ui container (:80)
                                 └── backend container (:8000)
 ```
 
-`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service — not the container name (`the-yield-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
+`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service — not the container name (`the-yields-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
 
 ### `VITE_API_BASE` and why it must be empty in production
 

@@ -3,7 +3,7 @@
     <nav class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-4 relative z-50">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
-          the-yield
+          the-yields
         </RouterLink>
 
         <!-- Authenticated nav — desktop -->
@@ -175,7 +175,7 @@
 
           <!-- Brand -->
           <div class="col-span-3 sm:col-span-1 space-y-2">
-            <span class="text-sm font-bold text-gray-100">the-yield</span>
+            <span class="text-sm font-bold text-gray-100">the-yields</span>
             <p class="text-sm text-gray-500 leading-relaxed">{{ t('footer.tagline') }}</p>
           </div>
 
