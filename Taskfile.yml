@@ -3,6 +3,20 @@ vars:
   BACKEND_PORT: 9002
 
 tasks:
+  ui:
+    desc: Start the Vite dev server on :5173
+    cmd: |
+      cd ui
+      npm run dev
+
+  api:
+    desc: Start the FastAPI server
+    env:
+      PYTHONPATH: backend
+    cmd: |
+      cd backend
+      uv run uvicorn app.main:app --reload --host 0.0.0.0 --port {{.BACKEND_PORT}}
+
   dev:
     desc: Start both ui and api concurrently
     deps: [ui, api]
