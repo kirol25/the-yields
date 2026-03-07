@@ -246,7 +246,9 @@ const mobileMenuOpen = ref(false)
 
 function closeMobileMenu() { mobileMenuOpen.value = false }
 
-onMounted(() => { document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu() }) })
+function onKeyDown(e) { if (e.key === 'Escape') closeMobileMenu() }
+onMounted(() => { document.addEventListener('keydown', onKeyDown) })
+onUnmounted(() => { document.removeEventListener('keydown', onKeyDown) })
 
 watch(() => route.path, () => { mobileMenuOpen.value = false })
 

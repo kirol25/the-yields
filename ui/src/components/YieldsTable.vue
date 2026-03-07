@@ -155,7 +155,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
-import { MONTHS } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
 import EditEntryModal from './EditEntryModal.vue'
 import SkeletonBlock from './SkeletonBlock.vue'
 
@@ -163,6 +163,7 @@ const { t } = useI18n()
 const emit = defineEmits(['add'])
 const store = useDataStore()
 const settings = useSettingsStore()
+const { months: MONTHS } = useMonths()
 
 const editingKey = ref(null)
 const deleteMode = ref(false)
