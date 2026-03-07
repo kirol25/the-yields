@@ -44,6 +44,44 @@ docker compose up --build
 | Frontend | http://localhost      |
 | Backend  | http://localhost:8000 |
 
+## Frontend ↔ Backend communication
+
+### Local development
+
+In dev mode, Vite's built-in proxy handles `/api/*` requests:
+
+```md
+Browser → Vite dev server (:5173) → FastAPI (:9002)
+```
+
+`vite.config.js` proxies any `/api/` request to `http://localhost:9002`, so the browser never needs to know the backend port.
+
+### Production (Docker)
+
+In production the frontend is compiled into static files and served by nginx inside the `ui` container. API calls use **relative paths** (e.g. `/api/years`), which the browser sends back to the same origin that served the page. nginx inside the container catches them:
+
+```
+Browser → nginx in ui container (:80)
+            ├── /         → serve static files
+            └── /api/*    → proxy_pass http://backend:8000 (Docker internal DNS)
+                                └── backend container (:8000)
+```
+
+`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service — not the container name (`the-yield-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
+
+### `VITE_API_BASE` and why it must be empty in production
+
+`ui/src/config.js` exports `API_BASE = import.meta.env.VITE_API_BASE`. All fetch/axios calls prepend this to their paths:
+
+```js
+axios.get(`${API_BASE}/api/years`)
+```
+
+- **Dev**: set to `http://localhost:9002` so calls go directly to FastAPI
+- **Production**: must be `""` (empty string) so calls become relative (e.g. `/api/years`) and are caught by nginx
+
+Any `VITE_*` variable is compiled into the JS bundle at build time and is readable by anyone in DevTools — never put secrets there. `VITE_COGNITO_CLIENT_ID` is safe because the Cognito Client ID is a public identifier by design.
+
 ## Data format
 
 Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3://{bucket}/{prefix}/{user_email}/YYYY.json` (S3):
