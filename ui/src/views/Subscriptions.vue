@@ -46,8 +46,16 @@
             {{ feature }}
           </li>
         </ul>
-        <button type="button" disabled class="w-full py-2.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-500 cursor-not-allowed">
-          {{ t('subscriptions.ctaPaid') }}
+        <button
+          type="button"
+          :disabled="!stripeEnabled || loading === 'monthly'"
+          @click="checkout('monthly')"
+          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors"
+          :class="stripeEnabled
+            ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed'
+            : 'bg-gray-800 text-gray-500 cursor-not-allowed'"
+        >
+          {{ loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
 
@@ -71,16 +79,82 @@
             {{ feature }}
           </li>
         </ul>
-        <button type="button" disabled class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600/30 text-emerald-400 cursor-not-allowed border border-emerald-500/30">
-          {{ t('subscriptions.ctaPaid') }}
+        <button
+          type="button"
+          :disabled="!stripeEnabled || loading === 'yearly'"
+          @click="checkout('yearly')"
+          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors border"
+          :class="stripeEnabled
+            ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed'
+            : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
+        >
+          {{ loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
     </div>
+
+    <!-- Manage subscription (premium users) -->
+    <div v-if="isPremium" class="mt-10 text-center">
+      <button
+        @click="openPortal"
+        :disabled="portalLoading"
+        class="text-sm text-gray-400 hover:text-gray-200 underline underline-offset-2 transition-colors disabled:opacity-50"
+      >
+        {{ portalLoading ? t('subscriptions.redirecting') : t('subscriptions.manageSubscription') }}
+      </button>
+    </div>
+
+    <!-- Error -->
+    <p v-if="error" class="mt-6 text-center text-sm text-red-400">{{ error }}</p>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import axios from 'axios'
+import { API_BASE } from '../config.js'
+import { useAuthStore } from '../stores/authStore.js'
+import { useSubscription } from '../composables/useSubscription.js'
 
 const { t, tm } = useI18n()
+const auth = useAuthStore()
+const { isPremium } = useSubscription()
+
+const stripeEnabled = import.meta.env.VITE_STRIPE_ENABLED === 'true'
+const loading = ref(null)   // 'monthly' | 'yearly' | null
+const portalLoading = ref(false)
+const error = ref('')
+
+async function checkout(plan) {
+  loading.value = plan
+  error.value = ''
+  try {
+    const { data } = await axios.post(
+      `${API_BASE}/api/subscription/checkout`,
+      { plan },
+      { headers: auth.getAuthHeaders() },
+    )
+    window.location.href = data.url
+  } catch {
+    error.value = t('subscriptions.checkoutError')
+    loading.value = null
+  }
+}
+
+async function openPortal() {
+  portalLoading.value = true
+  error.value = ''
+  try {
+    const { data } = await axios.post(
+      `${API_BASE}/api/subscription/portal`,
+      {},
+      { headers: auth.getAuthHeaders() },
+    )
+    window.location.href = data.url
+  } catch {
+    error.value = t('subscriptions.checkoutError')
+    portalLoading.value = false
+  }
+}
 </script>

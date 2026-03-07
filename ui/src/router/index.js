@@ -19,6 +19,7 @@ const routes = [
   { path: '/profile',    component: () => import('../views/Profile.vue') },
   { path: '/settings',   component: () => import('../views/Settings.vue') },
   { path: '/subscriptions', component: () => import('../views/Subscriptions.vue'), meta: { public: true } },
+  { path: '/subscription/success', component: () => import('../views/SubscriptionSuccess.vue'), meta: { public: true } },
   { path: '/impressum',  component: () => import('../views/Impressum.vue'), meta: { public: true } },
   { path: '/datenschutz', component: () => import('../views/Datenschutz.vue'), meta: { public: true } },
 
