@@ -178,6 +178,7 @@
             </div>
           </template>
           <template v-else-if="activeTab === 'cumulative'">
+            <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeThisYear', { year: store.currentYear }) }}</p>
             <CumulativeChart />
             <template v-if="store.years.length > 1">
               <div class="border-t border-gray-800 mt-10 pt-8">
