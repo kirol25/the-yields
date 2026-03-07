@@ -16,6 +16,8 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=500]
       - id: check-merge-conflict
+      - id: check-yaml
+        exclude: .*/cloudformation/
 
   # Ruff - Python linter and formatter
   - repo: https://github.com/astral-sh/ruff-pre-commit
