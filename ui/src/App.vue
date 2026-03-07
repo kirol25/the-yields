@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
-    <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4">
+    <nav class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-4 relative z-50">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
           the-yield
         </RouterLink>
 
-        <!-- Authenticated nav -->
-        <div v-if="auth.isAuthenticated" class="flex items-center gap-1">
+        <!-- Authenticated nav — desktop -->
+        <div v-if="auth.isAuthenticated" class="hidden md:flex items-center gap-1">
           <RouterLink
             to="/dashboard"
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
@@ -45,8 +45,8 @@
           </button>
         </div>
 
-        <!-- Guest nav (landing page) -->
-        <div v-else class="flex items-center gap-1">
+        <!-- Guest nav — desktop -->
+        <div v-else class="hidden md:flex items-center gap-1">
           <button
             @click="scrollToSection('features')"
             class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
@@ -73,21 +73,107 @@
             {{ t('landing.signIn') }}
           </RouterLink>
         </div>
+
+        <!-- Mobile right side -->
+        <div class="flex md:hidden items-center gap-2">
+          <!-- Profile avatar (authenticated) -->
+          <button
+            v-if="auth.isAuthenticated"
+            @click="bladeOpen = true"
+            class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
+            aria-label="Open profile"
+          >
+            {{ initials }}
+          </button>
+          <!-- Hamburger -->
+          <button
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            class="p-2 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg v-if="!mobileMenuOpen" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <svg v-else class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
       </div>
+
+      <!-- Mobile dropdown -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div
+          v-if="mobileMenuOpen"
+          class="md:hidden absolute top-full left-0 right-0 bg-gray-900 border-b border-gray-800 shadow-xl px-4 py-3 space-y-1"
+        >
+          <template v-if="auth.isAuthenticated">
+            <RouterLink
+              v-for="link in [
+                { to: '/dashboard', label: t('nav.dashboard') },
+                { to: '/dividends', label: t('nav.dividends') },
+                { to: '/yields', label: t('nav.yields') },
+                { to: '/subscriptions', label: t('nav.subscriptions') },
+              ]"
+              :key="link.to"
+              :to="link.to"
+              @click="closeMobileMenu"
+              class="block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
+              :class="$route.path === link.to ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
+            >
+              {{ link.label }}
+            </RouterLink>
+          </template>
+          <template v-else>
+            <button
+              @click="scrollToSection('features'); closeMobileMenu()"
+              class="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors"
+            >
+              {{ t('nav.features') }}
+            </button>
+            <button
+              @click="scrollToSection('how-it-works'); closeMobileMenu()"
+              class="w-full text-left px-4 py-2.5 text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-gray-100 rounded-lg transition-colors"
+            >
+              {{ t('nav.howItWorks') }}
+            </button>
+            <RouterLink
+              to="/subscriptions"
+              @click="closeMobileMenu"
+              class="block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
+              :class="$route.path === '/subscriptions' ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
+            >
+              {{ t('nav.subscriptions') }}
+            </RouterLink>
+            <RouterLink
+              to="/login"
+              @click="closeMobileMenu"
+              class="block px-4 py-2.5 text-sm font-medium text-gray-900 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors text-center mt-2"
+            >
+              {{ t('landing.signIn') }}
+            </RouterLink>
+          </template>
+        </div>
+      </Transition>
     </nav>
 
-    <main :class="isLanding ? 'flex-1 w-full' : 'max-w-7xl mx-auto px-6 pt-8 pb-16 flex-1 w-full'">
+    <main :class="isLanding ? 'flex-1 w-full' : 'max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-16 flex-1 w-full'">
       <RouterView />
     </main>
 
     <footer class="mt-auto border-t border-gray-800 bg-gray-900/40">
-      <div class="max-w-7xl mx-auto px-6 pt-8 pb-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-6">
 
         <!-- Columns -->
-        <div class="grid grid-cols-4 gap-8 mb-8">
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-6 sm:gap-8 mb-8">
 
           <!-- Brand -->
-          <div class="space-y-2">
+          <div class="col-span-3 sm:col-span-1 space-y-2">
             <span class="text-sm font-bold text-gray-100">the-yield</span>
             <p class="text-sm text-gray-500 leading-relaxed">{{ t('footer.tagline') }}</p>
           </div>
@@ -138,7 +224,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from './stores/dataStore.js'
@@ -155,6 +241,13 @@ const store = useDataStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
 const bladeOpen = ref(false)
+const mobileMenuOpen = ref(false)
+
+function closeMobileMenu() { mobileMenuOpen.value = false }
+
+onMounted(() => { document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileMenu() }) })
+
+watch(() => route.path, () => { mobileMenuOpen.value = false })
 
 function scrollToSection(id) {
   if (route.path === '/') {
