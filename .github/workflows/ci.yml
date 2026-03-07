@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  build-ui:
+    name: Build UI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Placeholder values so Vite can build without real credentials
+          VITE_API_BASE: http://localhost:8000
+          VITE_COGNITO_REGION: eu-central-1
+          VITE_COGNITO_CLIENT_ID: ci-placeholder
+          VITE_REGISTRATION_ENABLED: "true"
+          VITE_STRIPE_ENABLED: "false"
+
+  # ── Backend ─────────────────────────────────────────────────────────────────
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Lint (ruff check)
+        run: uv run ruff check .
+
+      - name: Format check (ruff format)
+        run: uv run ruff format --check .
+
+      - name: Smoke test — app imports cleanly
+        run: uv run python -c "from app.main import app; print('app loaded OK')"
+        env:
+          STORAGE_BACKEND: local
+
+      - name: Health endpoint check
+        run: |
+          uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          sleep 3
+          curl --fail --silent http://127.0.0.1:8000/monitoring/health
+        env:
+          STORAGE_BACKEND: local
+
+  # ── Gate ────────────────────────────────────────────────────────────────────
+  healthy:
+    name: Healthy
+    needs: [build-ui, build-backend]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All checks passed ✓"
