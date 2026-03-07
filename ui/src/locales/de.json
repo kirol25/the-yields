@@ -25,6 +25,7 @@
     "breakdown": "Aufschl\u00fcsselung",
     "topEarners": "Top-Einnahmen",
     "cumulative": "Kumulativ",
+    "cumulativeThisYear": "Kumulativ \u2014 {year}",
     "cumulativeAllYears": "Kumulativ \u2014 alle Jahre",
     "onTrack": "Zielkurve",
     "noDataForYear": "Keine Daten f\u00fcr {year} erfasst.",
