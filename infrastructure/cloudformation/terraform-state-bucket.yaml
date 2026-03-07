@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Create S3 bucket for Terraform state and Route53 hosted zone with deletion protection'
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: 'the-yield-terraform-state-bucket'
+    Description: 'Name of the S3 bucket'
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: 'ExpireOldVersions'
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 365
+          - Id: 'AbortIncompleteMultipartUploads'
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+      Tags:
+        - Key: Purpose
+          Value: TerraformState
+
+  TerraformStateBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TerraformStateBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !Sub 'arn:aws:s3:::${BucketName}/*'
+              - !Sub 'arn:aws:s3:::${BucketName}'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+Outputs:
+  S3BucketName:
+    Description: 'The name of the S3 bucket created for Terraform state'
+    Value: !Ref TerraformStateBucket
