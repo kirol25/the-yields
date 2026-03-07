@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel in-progress runs for the same branch/PR when a new commit is pushed
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Minimal read-only permissions for all jobs
+permissions:
+  contents: read
+
 jobs:
   # ── Frontend ────────────────────────────────────────────────────────────────
   build-ui:
