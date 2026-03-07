@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 import boto3
 from fastapi import HTTPException, status
@@ -22,7 +22,7 @@ def submit_feedback(
     sender = email or _ANONYMOUS
     category_label = _CATEGORY_LABELS.get(payload.category, payload.category)
     subject = f"[{category_label}] the-yield feedback"
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
     body = (
         f"Category: {category_label}\n"
