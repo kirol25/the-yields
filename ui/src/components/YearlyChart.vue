@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -33,6 +33,11 @@ const store = useDataStore()
 const settings = useSettingsStore()
 
 const plugins = [ChartDataLabels]
+
+const isMobile = ref(window.innerWidth < 640)
+function onResize() { isMobile.value = window.innerWidth < 640 }
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 function sectionTotal(data, section) {
   return Object.values(data[section] || {})
@@ -93,6 +98,7 @@ const chartOptions = computed(() => {
       },
     },
     datalabels: {
+      display: !isMobile.value,
       anchor: 'end',
       align: 'end',
       offset: 2,

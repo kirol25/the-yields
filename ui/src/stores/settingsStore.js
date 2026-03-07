@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { i18n } from '../i18n.js'
+import { API_BASE } from '../config.js'
+import { useAuthStore } from './authStore.js'
 
 const STORAGE_KEY = 'yield-settings'
 
@@ -81,20 +83,57 @@ export const useSettingsStore = defineStore('settings', () => {
     }).format(amount)
   }
 
+  function _userHeaders() {
+    const auth = useAuthStore()
+    return { 'X-User-Email': auth.user?.email ?? '' }
+  }
+
+  async function loadFromServer() {
+    try {
+      const res = await fetch(`${API_BASE}/api/settings`, { headers: _userHeaders() })
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.dividendGoal && typeof data.dividendGoal === 'object')
+        dividendGoal.value = data.dividendGoal
+      if (data.yieldGoal && typeof data.yieldGoal === 'object')
+        yieldGoal.value = data.yieldGoal
+      if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object')
+        steuerfreibetrag.value = data.steuerfreibetrag
+      save()
+    } catch { /* silent — local values remain */ }
+  }
+
+  async function _saveToServer() {
+    try {
+      await fetch(`${API_BASE}/api/settings`, {
+        method: 'PUT',
+        headers: { ..._userHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dividendGoal: dividendGoal.value,
+          yieldGoal: yieldGoal.value,
+          steuerfreibetrag: steuerfreibetrag.value,
+        }),
+      })
+    } catch { /* silent */ }
+  }
+
   function setDividendGoal(year, amount) {
     dividendGoal.value = { ...dividendGoal.value, [year]: Math.max(amount, 0) }
     save()
+    _saveToServer()
   }
 
   function setYieldGoal(year, amount) {
     yieldGoal.value = { ...yieldGoal.value, [year]: Math.max(amount, 0) }
     save()
+    _saveToServer()
   }
 
   function setSteuerfreibetrag(year, amount) {
     steuerfreibetrag.value = { ...steuerfreibetrag.value, [year]: Math.min(Math.max(amount, 0), 2000) }
     save()
+    _saveToServer()
   }
 
-  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt }
+  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer }
 })
