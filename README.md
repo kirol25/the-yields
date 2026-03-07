@@ -1,5 +1,7 @@
 # the-yield
 
+[![CI](https://github.com/kirol25/the-yield/actions/workflows/ci.yml/badge.svg)](https://github.com/kirol25/the-yield/actions/workflows/ci.yml)
+
 A personal finance tracker for dividends and investment yields. Built with a FastAPI backend and a Vue 3 frontend.
 
 ## Structure
