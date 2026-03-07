@@ -1,4 +1,4 @@
-# the-yield — ui
+# the-yields — ui
 
 Vue 3 single-page application for tracking dividends and investment yields.
 
@@ -101,7 +101,7 @@ The production image serves the built SPA via nginx (`nginx.conf`).
 docker build \
   --build-arg VITE_COGNITO_REGION=eu-central-1 \
   --build-arg VITE_COGNITO_CLIENT_ID=<client-id> \
-  -t the-yield-ui .
+  -t the-yields-ui .
 
-docker run -p 80:80 the-yield-ui
+docker run -p 80:80 the-yields-ui
 ```

@@ -1,4 +1,4 @@
-# the-yield — backend
+# the-yields — backend
 
 FastAPI service that stores and serves dividend and yield data per year.
 
@@ -65,13 +65,13 @@ All settings are loaded from environment variables (or a `.env` file):
 | Variable          | Default                    | Description                          |
 |-------------------|----------------------------|--------------------------------------|
 | `STORAGE_BACKEND` | `local`                    | `local` or `s3`                      |
-| `S3_BUCKET`       | `the-yield-data`           | S3 bucket name (when using s3)       |
+| `S3_BUCKET`       | `the-yields-data`           | S3 bucket name (when using s3)       |
 | `S3_PREFIX`       | `test-user`                | S3 key prefix (when using s3)        |
 | `CORS_ORIGINS`    | `http://localhost:5173`    | Comma-separated allowed origins      |
 
 ## Docker
 
 ```bash
-docker build -t the-yield-backend .
-docker run -p 8000:8000 -v $(pwd)/../data:/data -e STORAGE_BACKEND=local the-yield-backend
+docker build -t the-yields-backend .
+docker run -p 8000:8000 -v $(pwd)/../data:/data -e STORAGE_BACKEND=local the-yields-backend
 ```

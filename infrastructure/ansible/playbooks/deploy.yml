@@ -1,6 +1,6 @@
 ---
 # playbooks/deploy.yml
-# Deploy the-yield to an already-provisioned server.
+# Deploy the-yields to an already-provisioned server.
 # Run this every time you push an update.
 #
 # Prerequisites: server-mgmt provision.yml has been run at least once.
@@ -8,7 +8,7 @@
 # Usage:
 #   ansible-playbook playbooks/deploy.yml
 
-- name: Deploy the-yield
+- name: Deploy the-yields
   hosts: all
   become: true
 
