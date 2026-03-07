@@ -243,7 +243,13 @@
     },
     "cta": "Loslegen",
     "ctaFree": "Jetzt registrieren",
-    "ctaPaid": "Zahlungspflichtig bestellen"
+    "ctaPaid": "Zahlungspflichtig bestellen",
+    "redirecting": "Weiterleitung…",
+    "checkoutError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "manageSubscription": "Abo verwalten oder kündigen",
+    "successTitle": "Du bist jetzt Premium!",
+    "successSub": "Dein Abonnement ist aktiv. Alle Premium-Funktionen sind freigeschaltet.",
+    "successCta": "Zum Dashboard"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",

@@ -243,7 +243,13 @@
     },
     "cta": "Get started",
     "ctaFree": "Get started for free",
-    "ctaPaid": "Order now"
+    "ctaPaid": "Order now",
+    "redirecting": "Redirecting…",
+    "checkoutError": "Something went wrong. Please try again.",
+    "manageSubscription": "Manage or cancel subscription",
+    "successTitle": "You're now Premium!",
+    "successSub": "Your subscription is active. All premium features are unlocked.",
+    "successCta": "Go to Dashboard"
   },
   "landing": {
     "badge": "Personal Finance Tracker",
