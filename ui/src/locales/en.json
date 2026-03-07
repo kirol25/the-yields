@@ -25,6 +25,7 @@
     "breakdown": "Breakdown",
     "topEarners": "Top earners",
     "cumulative": "Cumulative",
+    "cumulativeThisYear": "Cumulative — {year}",
     "cumulativeAllYears": "Cumulative — all years",
     "onTrack": "On track",
     "noDataForYear": "No data recorded for {year}.",
