@@ -29,13 +29,6 @@
           >
             {{ t('nav.yields') }}
           </RouterLink>
-          <RouterLink
-            to="/subscriptions"
-            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
-          >
-            {{ t('nav.subscriptions') }}
-          </RouterLink>
           <button
             @click="bladeOpen = true"
             class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
@@ -118,7 +111,6 @@
                 { to: '/dashboard', label: t('nav.dashboard') },
                 { to: '/dividends', label: t('nav.dividends') },
                 { to: '/yields', label: t('nav.yields') },
-                { to: '/subscriptions', label: t('nav.subscriptions') },
               ]"
               :key="link.to"
               :to="link.to"
