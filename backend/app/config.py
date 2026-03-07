@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     S3_BUCKET: str = Field("the-yield-data", description="S3 bucket name")
     S3_PREFIX: str = Field("test-user", description="S3 prefix for storing data")
 
+    # --- Cognito / Auth settings ---
+    COGNITO_REGION: str = Field(
+        "",
+        description="AWS Cognito region (e.g. eu-central-1). "
+        "Leave empty to skip JWT verification in dev mode.",
+    )
+
     # --- Feedback email settings ---
     AWS_REGION: str = Field(
         "eu-central-1",
