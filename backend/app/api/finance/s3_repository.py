@@ -81,3 +81,24 @@ class S3YieldRepository:
         del data[section][key]
         self.write_year(year, data)
         return True
+
+    def read_settings(self) -> dict[str, Any]:
+        """Read and return user settings (goals, steuerfreibetrag)."""
+        settings_key = f"{self.prefix}/settings.json"
+        try:
+            obj = self._s3.get_object(Bucket=self.bucket, Key=settings_key)
+            return json.loads(obj["Body"].read())  # type: ignore[no-any-return]
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "NoSuchKey":
+                return {}
+            raise
+
+    def write_settings(self, data: dict[str, Any]) -> None:
+        """Persist user settings to settings.json in S3."""
+        settings_key = f"{self.prefix}/settings.json"
+        self._s3.put_object(
+            Bucket=self.bucket,
+            Key=settings_key,
+            Body=json.dumps(data, indent=2),
+            ContentType="application/json",
+        )
