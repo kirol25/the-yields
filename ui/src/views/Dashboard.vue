@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
       <h1 class="text-2xl font-bold">{{ t('dashboard.title') }}</h1>
       <YearSelector v-if="activeTab !== 'yearly'" />
     </div>
@@ -127,13 +127,13 @@
     <!-- Chart card with tabs -->
     <div class="bg-gray-900 border border-gray-800 rounded-xl">
       <!-- Tab bar -->
-      <div class="flex border-b border-gray-800">
+      <div class="flex border-b border-gray-800 overflow-x-auto scrollbar-none">
         <button
           v-for="tab in tabs"
           :key="tab.value"
           @click="activeTab = tab.value"
           :class="[
-            'px-5 py-3 text-sm font-medium transition-colors border-b-2 -mb-px',
+            'px-4 sm:px-5 py-3 text-sm font-medium transition-colors border-b-2 -mb-px shrink-0',
             activeTab === tab.value
               ? 'border-emerald-500 text-emerald-400'
               : 'border-transparent text-gray-400 hover:text-gray-200',
