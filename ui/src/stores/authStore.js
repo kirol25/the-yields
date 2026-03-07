@@ -15,6 +15,7 @@ function parseIdToken(token) {
       name: payload.preferred_username || payload.email || '',
       email: payload.email || '',
       sub: payload.sub || '',
+      isPremium: payload['custom:is_premium'] === 'true',
     }
   } catch {
     return null
@@ -211,7 +212,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await fetch(`${API_BASE}/api/data`, {
         method: 'DELETE',
-        headers: { 'X-User-Email': user.value?.email ?? '' },
+        headers: getAuthHeaders(),
       })
     } catch {
       // network error or backend unreachable — proceed anyway
@@ -243,6 +244,12 @@ export const useAuthStore = defineStore('auth', () => {
     clearTokens()
   }
 
+  function getAuthHeaders() {
+    const headers = { 'X-User-Email': user.value?.email ?? '' }
+    if (accessToken.value) headers['Authorization'] = `Bearer ${accessToken.value}`
+    return headers
+  }
+
   return {
     isAuthenticated,
     user,
@@ -258,5 +265,6 @@ export const useAuthStore = defineStore('auth', () => {
     deleteAccount,
     refreshSession,
     ensureValidToken,
+    getAuthHeaders,
   }
 })

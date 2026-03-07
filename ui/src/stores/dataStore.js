@@ -15,8 +15,7 @@ export const useDataStore = defineStore('data', () => {
   const initializing = ref(true) // true until the first loadYear completes
 
   function userHeaders() {
-    const auth = useAuthStore()
-    return { 'X-User-Email': auth.user?.email ?? '' }
+    return useAuthStore().getAuthHeaders()
   }
 
   function toastError(message) {
