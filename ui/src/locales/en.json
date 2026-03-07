@@ -212,10 +212,10 @@
       "price": "€0",
       "period": "forever",
       "features": [
-        "Basic dividend & yield tracking",
-        "1 year of data",
-        "Up to 5 tickers",
-        "Monthly overview"
+        "Dividend & yield tracking",
+        "Current year only",
+        "Up to 5 tickers & 5 accounts",
+        "Monthly chart"
       ]
     },
     "monthly": {
@@ -225,8 +225,9 @@
       "features": [
         "Unlimited tickers & accounts",
         "All years of data",
-        "Export as CSV",
-        "Visual analytics"
+        "Quarterly, yearly & cumulative charts",
+        "Portfolio breakdown & income heatmap",
+        "Export as CSV"
       ]
     },
     "yearly": {

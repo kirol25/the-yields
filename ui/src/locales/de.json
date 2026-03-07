@@ -212,10 +212,10 @@
       "price": "€0",
       "period": "für immer",
       "features": [
-        "Grundlegendes Dividenden- & Zins-Tracking",
-        "1 Jahr Datenspeicherung",
-        "Bis zu 5 Ticker",
-        "Monatliche Übersicht"
+        "Dividenden- & Zins-Tracking",
+        "Nur aktuelles Jahr",
+        "Bis zu 5 Ticker & 5 Konten",
+        "Monatliches Diagramm"
       ]
     },
     "monthly": {
@@ -225,8 +225,9 @@
       "features": [
         "Unbegrenzte Ticker & Konten",
         "Alle Jahre gespeichert",
-        "Export als CSV",
-        "Visuelle Analysen"
+        "Quartals-, Jahres- & kumulative Diagramme",
+        "Portfolio-Aufschlüsselung & Heatmap",
+        "Export als CSV"
       ]
     },
     "yearly": {
