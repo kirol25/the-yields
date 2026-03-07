@@ -150,63 +150,80 @@
           <SkeletonBlock cls="h-48 w-full rounded-lg" />
         </template>
         <template v-else>
-          <p v-if="activeTab === 'monthly' || activeTab === 'quarterly'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
-            {{
-              activeTab === 'monthly'
-                ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
-                : activeTab === 'quarterly'
-                ? t('dashboard.quarterlyBreakdown', { year: store.currentYear })
-                : t('dashboard.incomeByYear')
-            }}
-          </p>
-          <MonthlyChart v-if="activeTab === 'monthly'" />
-          <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
-          <template v-else-if="activeTab === 'yearly'">
-            <div class="space-y-4">
-              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.incomeByYear') }}</p>
-                <YearlyChart />
-              </div>
-              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
-                <TopEarnersChart all-years />
-              </div>
-              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.heatmap') }}</p>
-                <IncomeHeatmap />
+          <!-- Wrap in blur+overlay when free user is on a premium tab -->
+          <div :class="{ 'relative': isLockedTab }">
+            <div :class="{ 'blur-sm pointer-events-none select-none': isLockedTab }">
+              <p v-if="activeTab === 'monthly' || activeTab === 'quarterly'" class="text-xs text-gray-500 uppercase tracking-wider mb-4">
+                {{
+                  activeTab === 'monthly'
+                    ? t('dashboard.monthlyBreakdown', { year: store.currentYear })
+                    : t('dashboard.quarterlyBreakdown', { year: store.currentYear })
+                }}
+              </p>
+              <MonthlyChart v-if="activeTab === 'monthly'" />
+              <QuarterlyChart v-else-if="activeTab === 'quarterly'" />
+              <template v-else-if="activeTab === 'yearly'">
+                <div class="space-y-4">
+                  <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.incomeByYear') }}</p>
+                    <YearlyChart />
+                  </div>
+                  <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
+                    <TopEarnersChart all-years />
+                  </div>
+                  <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.heatmap') }}</p>
+                    <IncomeHeatmap />
+                  </div>
+                </div>
+              </template>
+              <template v-else-if="activeTab === 'cumulative'">
+                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeThisYear', { year: store.currentYear }) }}</p>
+                <CumulativeChart />
+                <template v-if="store.years.length > 1">
+                  <div class="border-t border-gray-800 mt-10 pt-8">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeAllYears') }}</p>
+                    <YearlyCumulativeChart />
+                  </div>
+                </template>
+              </template>
+              <template v-else-if="activeTab === 'breakdown'">
+                <div class="space-y-4">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                      <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.dividends') }}</p>
+                      <PortfolioBreakdown section="dividends" />
+                    </div>
+                    <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                      <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.yields') }}</p>
+                      <PortfolioBreakdown section="yields" />
+                    </div>
+                  </div>
+                  <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
+                    <TopEarnersChart />
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <!-- Upsell overlay (only shown for free users on premium tabs) -->
+            <div v-if="isLockedTab" class="absolute inset-0 flex flex-col items-center justify-center">
+              <div class="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-2xl px-8 py-6 shadow-xl flex flex-col items-center gap-3 text-center">
+                <svg class="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-gray-100">{{ t('upsell.analyticsTitle') }}</p>
+                  <p class="text-xs text-gray-400 mt-1 max-w-xs">{{ t('upsell.analyticsDesc') }}</p>
+                </div>
+                <RouterLink to="/subscriptions" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-sm font-medium rounded-lg transition-colors">
+                  {{ t('upsell.upgrade') }}
+                </RouterLink>
               </div>
             </div>
-          </template>
-          <template v-else-if="activeTab === 'cumulative'">
-            <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeThisYear', { year: store.currentYear }) }}</p>
-            <CumulativeChart />
-            <template v-if="store.years.length > 1">
-              <div class="border-t border-gray-800 mt-10 pt-8">
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.cumulativeAllYears') }}</p>
-                <YearlyCumulativeChart />
-              </div>
-            </template>
-          </template>
-          <template v-else>
-            <div class="space-y-4">
-              <!-- Donuts -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                  <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.dividends') }}</p>
-                  <PortfolioBreakdown section="dividends" />
-                </div>
-                <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                  <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.yields') }}</p>
-                  <PortfolioBreakdown section="yields" />
-                </div>
-              </div>
-              <!-- Top earners -->
-              <div class="bg-gray-800 border border-gray-700/60 rounded-xl p-5">
-                <p class="text-xs text-gray-500 uppercase tracking-wider mb-4">{{ t('dashboard.topEarners') }}</p>
-                <TopEarnersChart />
-              </div>
-            </div>
-          </template>
+          </div>
         </template>
       </div>
     </div>
@@ -218,6 +235,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { useSubscription } from '../composables/useSubscription.js'
 import YearSelector from '../components/YearSelector.vue'
 import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
@@ -233,15 +251,20 @@ import GoalDonutChart from '../components/GoalDonutChart.vue'
 const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
+const { isPremium } = useSubscription()
 
 const tabs = computed(() => [
-  { value: 'monthly',    label: t('dashboard.monthly') },
-  { value: 'quarterly',  label: t('dashboard.quarterly') },
-  { value: 'yearly',     label: t('dashboard.yearly') },
-  { value: 'cumulative', label: t('dashboard.cumulative') },
-  { value: 'breakdown',  label: t('dashboard.breakdown') },
+  { value: 'monthly',    label: t('dashboard.monthly'),    premium: false },
+  { value: 'quarterly',  label: t('dashboard.quarterly'),  premium: true },
+  { value: 'yearly',     label: t('dashboard.yearly'),     premium: true },
+  { value: 'cumulative', label: t('dashboard.cumulative'), premium: true },
+  { value: 'breakdown',  label: t('dashboard.breakdown'),  premium: true },
 ])
 const activeTab = ref('monthly')
+
+const isLockedTab = computed(
+  () => !isPremium.value && tabs.value.find((t) => t.value === activeTab.value)?.premium === true,
+)
 
 function sumSection(section) {
   return Object.values(section)

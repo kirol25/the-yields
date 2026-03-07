@@ -325,6 +325,8 @@
   "upsell": {
     "tickerLimitTitle": "Kostenloses Kontingent erreicht ({n} Ticker / Konten)",
     "tickerLimitDesc": "Upgrade durchführen, um unbegrenzt Ticker und Sparkonten hinzuzufügen.",
+    "analyticsTitle": "Visuelle Analysen sind eine Premium-Funktion",
+    "analyticsDesc": "Upgrade durchführen, um Quartals-, Jahres- und kumulative Diagramme sowie die Portfolio-Aufschlüsselung freizuschalten.",
     "upgrade": "Auf Premium upgraden",
     "limitReached": "Limit erreicht"
   },
