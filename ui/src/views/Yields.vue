@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
       <h1 class="text-2xl font-bold">{{ t('yields.title') }}</h1>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <YearSelector />
         <button
           @click="showModal = true"
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-md transition-colors"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-sm font-medium rounded-md transition-colors whitespace-nowrap"
         >
           {{ t('common.addEntry') }}
         </button>

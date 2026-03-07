@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 html.light {
   /* Page background — clearly visible slate gray */
   --color-gray-950: oklch(0.920 0.010 255);

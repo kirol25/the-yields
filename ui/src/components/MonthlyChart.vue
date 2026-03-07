@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -47,6 +47,11 @@ const store = useDataStore()
 const settings = useSettingsStore()
 const filter = ref('all')
 const plugins = [ChartDataLabels]
+
+const isMobile = ref(window.innerWidth < 640)
+function onResize() { isMobile.value = window.innerWidth < 640 }
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 const filterOptions = computed(() => [
   { value: 'all', label: t('dashboard.combined') },
@@ -110,6 +115,7 @@ const chartOptions = computed(() => {
       },
     },
     datalabels: {
+      display: !isMobile.value,
       anchor: 'end',
       align: 'end',
       offset: 2,
