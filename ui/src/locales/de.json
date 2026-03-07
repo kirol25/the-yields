@@ -322,6 +322,12 @@
     "successSub": "Wir lesen jede Nachricht und melden uns bei Bedarf.",
     "sendAnother": "Weiteres senden"
   },
+  "upsell": {
+    "tickerLimitTitle": "Kostenloses Kontingent erreicht ({n} Ticker / Konten)",
+    "tickerLimitDesc": "Upgrade durchführen, um unbegrenzt Ticker und Sparkonten hinzuzufügen.",
+    "upgrade": "Auf Premium upgraden",
+    "limitReached": "Limit erreicht"
+  },
   "terms": {
     "title": "Nutzungsbedingungen",
     "acceptanceTitle": "Akzeptanz der Bedingungen",
