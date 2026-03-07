@@ -1,3 +1,9 @@
+locals {
+  invite_mail = templatefile("${path.module}/templates/invite_mail.html.tpl", {
+    project_name = var.project_name
+  })
+}
+
 # ============================================
 # UserPool
 # ============================================
@@ -56,15 +62,7 @@ resource "aws_cognito_user_pool" "main" {
   verification_message_template {
     default_email_option = "CONFIRM_WITH_CODE"
     email_subject        = "Welcome to ${upper(var.project_name)}! Confirm Your Registration"
-    email_message        = <<EOF
-      <p>Welcome to ${upper(var.project_name)}!</p>
-      <p>To complete your registration, please use the confirmation code below.</p>
-      <p>Your Confirmation Code: <strong>{####}</strong></p>
-      <p>If you did not request this code, please ignore this email. The code is valid for a limited time only, so please enter it promptly.</p>
-      <p>We're excited to have you on board!</p>
-      <p>Best regards,<br>
-      The ${upper(var.project_name)}-Team</p>
-    EOF
+    email_message        = local.invite_mail
   }
 }
 

@@ -39,9 +39,9 @@ module "api" {
 
   # --- Cognito ---
   cognito = {
-    enabled             = false
+    enabled             = true
     password_min_length = 8
-    callback_urls       = ["skyscore://auth/callback"]
-    logout_urls         = ["skyscore://auth/logout"]
+    callback_urls       = ["https://checkmeineimmo.de/auth/callback"]
+    logout_urls         = ["https://checkmeineimmo.de/auth/logout"]
   }
 }
