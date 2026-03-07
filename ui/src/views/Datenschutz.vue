@@ -42,6 +42,13 @@
     <section class="space-y-3">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">4. Drittanbieter / Hosting</h2>
       <p>
+        <span class="text-gray-100 font-medium">IONOS SE (Anwendungsserver):</span> Der Anwendungsserver
+        wird von IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Deutschland betrieben. Der Server
+        befindet sich in Deutschland und unterliegt damit dem deutschen und europäischen Datenschutzrecht.
+        Weitere Informationen finden Sie unter
+        <a href="https://www.ionos.de/terms-gtc/datenschutzerklaerung/" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">ionos.de/terms-gtc/datenschutzerklaerung</a>.
+      </p>
+      <p>
         <span class="text-gray-100 font-medium">Amazon Web Services (AWS):</span> Authentifizierung
         und Datenspeicherung erfolgen über AWS-Dienste (Amazon Cognito, Amazon S3). AWS ist gemäß
         Art. 46 DSGVO zertifiziert. Weitere Informationen finden Sie unter
@@ -56,7 +63,22 @@
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">5. Speicherdauer</h2>
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">5. Keine Nutzungsanalyse / kein Tracking</h2>
+      <p>
+        Diese Anwendung verwendet <span class="text-gray-100 font-medium">kein Google Analytics</span>
+        und keine vergleichbaren Analyse- oder Tracking-Dienste. Es wird kein nutzerspezifisches
+        Verhalten aufgezeichnet, keine Sitzungsaufzeichnung durchgeführt und keine Daten an
+        Werbenetzwerke übermittelt.
+      </p>
+      <p>
+        Es werden ausschließlich die technisch notwendigen Daten verarbeitet, die zur Bereitstellung
+        der Anwendungsfunktionen unbedingt erforderlich sind (Authentifizierungstoken, eingegebene
+        Finanzdaten, Spracheinstellung).
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">6. Speicherdauer</h2>
       <p>
         Personenbezogene Daten werden nur so lange gespeichert, wie es für die jeweiligen Zwecke
         erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen. Nach Löschung Ihres Kontos
@@ -65,7 +87,7 @@
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">6. Ihre Rechte (DSGVO)</h2>
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">7. Ihre Rechte (DSGVO)</h2>
       <ul class="space-y-2">
         <li class="flex gap-2">
           <span class="text-emerald-400 shrink-0">→</span>
@@ -102,7 +124,7 @@
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">7. Cookies und lokaler Speicher</h2>
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">8. Cookies und lokaler Speicher</h2>
       <p>
         Diese Anwendung setzt keine Tracking-Cookies ein. Es werden ausschließlich technisch
         notwendige Session-Tokens (zur Authentifizierung) sowie Einstellungen (Sprache, Währung)
