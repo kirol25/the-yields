@@ -29,7 +29,7 @@ services:
     command:
       - --nginx.scrape-uri=http://ui/stub_status
     ports:
-      - "127.0.0.1:9114:9113"
+      - "127.0.0.1:9113:9113"
     depends_on:
       - ui
     labels:
