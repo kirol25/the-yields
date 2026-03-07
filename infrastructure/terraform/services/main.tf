@@ -1,5 +1,5 @@
 locals {
-  invite_mail = templatefile("${path.module}/templates/confirm_signup.html.tpl", {
+  invite_mail = templatefile("${path.module}/templates/email_template.html.tpl", {
     project_name = var.project_name
   })
 }
