@@ -22,7 +22,7 @@ provider "aws" {
     tags = {
       Creator = "Terraform"
       Stage   = "dev"
-      Project = "the-yield"
+      Project = "the-yields"
     }
   }
 }
@@ -35,7 +35,7 @@ module "api" {
   source = "../../services"
 
   stage        = "dev"
-  project_name = "the-yield"
+  project_name = "the-yields"
 
   # --- Cognito ---
   cognito = {

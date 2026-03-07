@@ -9,7 +9,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     labels:
-      app: "the-yield"
+      app: "the-yields"
       service: "backend"
   ui:
     build:
@@ -21,7 +21,7 @@ services:
     depends_on:
       - backend
     labels:
-      app: "the-yield"
+      app: "the-yields"
       service: "ui"
 
   nginx-exporter:
@@ -33,5 +33,5 @@ services:
     depends_on:
       - ui
     labels:
-      app: "the-yield"
+      app: "the-yields"
       service: "nginx-exporter"
