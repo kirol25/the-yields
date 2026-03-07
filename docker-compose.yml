@@ -23,3 +23,15 @@ services:
     labels:
       app: "the-yield"
       service: "ui"
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    command:
+      - --nginx.scrape-uri=http://ui/stub_status
+    ports:
+      - "127.0.0.1:9114:9113"
+    depends_on:
+      - ui
+    labels:
+      app: "the-yield"
+      service: "nginx-exporter"
