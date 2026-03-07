@@ -1,0 +1,26 @@
+# Systemd unit file for the FastAPI backend
+# Systemd is the process manager on Linux — it starts the app on boot
+# and restarts it if it crashes.
+
+[Unit]
+Description=the-yield FastAPI backend
+After=network.target
+
+[Service]
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ backend_dir }}
+
+# Load environment variables from a .env file on the server
+# You create this manually on the server — never commit it to git
+EnvironmentFile={{ app_dir }}/.env
+
+# Start uvicorn using the virtual environment's Python
+ExecStart={{ venv_dir }}/bin/uvicorn backend.main:app --host 127.0.0.1 --port {{ backend_port }}
+
+# Restart automatically if the process dies
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

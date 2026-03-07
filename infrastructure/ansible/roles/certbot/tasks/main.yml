@@ -1,0 +1,24 @@
+---
+# certbot/tasks/main.yml
+# Obtains a free SSL certificate from Let's Encrypt for {{ domain }}.
+# DNS must already point to this server before running this.
+
+- name: Install certbot and Nginx plugin
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Obtain SSL certificate
+  command: >
+    certbot certonly --nginx
+    -d {{ domain }}
+    -d www.{{ domain }}
+    --non-interactive
+    --agree-tos
+    --email {{ admin_email }}
+  args:
+    creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem
+
+# certbot auto-installs a systemd timer for renewal — nothing else needed
