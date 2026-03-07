@@ -56,7 +56,7 @@ class YieldRepository:
         path = self.data_dir / f"{year}.json"
         if not path.exists():
             return {"dividends": {}, "yields": {}}
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)  # type: ignore[no-any-return]
 
     def delete_entry(self, year: int, section: str, key: str) -> bool:
@@ -95,7 +95,7 @@ class YieldRepository:
         """
         self._ensure_dir()
         path = self.data_dir / f"{year}.json"
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def read_settings(self) -> dict[str, Any]:
@@ -104,12 +104,12 @@ class YieldRepository:
         path = self.data_dir / "settings.json"
         if not path.exists():
             return {}
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             return json.load(f)  # type: ignore[no-any-return]
 
     def write_settings(self, data: dict[str, Any]) -> None:
         """Persist user settings to settings.json."""
         self._ensure_dir()
         path = self.data_dir / "settings.json"
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
