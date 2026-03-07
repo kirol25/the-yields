@@ -54,7 +54,7 @@
           </table>
 
           <p style="margin-top:20px;font-size:12px;color:#9ca3af;">
-            © 2026 ${{ var.project_name }}
+            © 2026 ${project_name}
           </p>
 
         </td>
