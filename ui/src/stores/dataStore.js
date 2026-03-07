@@ -80,15 +80,20 @@ export const useDataStore = defineStore('data', () => {
 
   async function deleteEntries(section, keys) {
     try {
+      await Promise.all(
+        keys.map((key) =>
+          axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
+            headers: userHeaders(),
+          }),
+        ),
+      )
       for (const key of keys) {
-        await axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
-          headers: userHeaders(),
-        })
         delete yearData.value[section][key]
       }
       await loadAllYears()
     } catch {
       toastError('Failed to delete entries. Please try again.')
+      await loadYear(currentYear.value)
     }
   }
 

@@ -230,7 +230,7 @@ function save() {
 }
 
 // Change password
-const pw = reactive({ open: false, current: '', next: '', confirm: '', loading: false, error: '' })
+const pw = reactive({ open: false, current: '', next: '', confirm: '', loading: false, error: '', success: false })
 
 async function submitPasswordChange() {
   pw.error = ''
