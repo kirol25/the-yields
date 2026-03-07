@@ -41,7 +41,7 @@ module "api" {
   cognito = {
     enabled             = true
     password_min_length = 8
-    callback_urls       = ["https://checkmeineimmo.de/auth/callback"]
-    logout_urls         = ["https://checkmeineimmo.de/auth/logout"]
+    callback_urls       = ["https://checkmeineimmo.de/auth/callback", "http://localhost:5173/auth/callback"]
+    logout_urls         = ["https://checkmeineimmo.de/auth/logout", "http://localhost:5173/auth/logout"]
   }
 }
