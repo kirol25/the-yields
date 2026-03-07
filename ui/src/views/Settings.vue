@@ -410,7 +410,7 @@ async function exportCsv() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `the-yield-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `the-yields-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(url)
   } finally {

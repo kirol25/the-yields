@@ -4,7 +4,7 @@ Description: 'Create S3 bucket for Terraform state and Route53 hosted zone with 
 Parameters:
   BucketName:
     Type: String
-    Default: 'the-yield-terraform-state-bucket'
+    Default: 'the-yields-terraform-state-bucket'
     Description: 'Name of the S3 bucket'
 
 Resources:

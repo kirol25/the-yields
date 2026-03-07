@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket       = "the-yield-terraform-state-bucket"
+    bucket       = "the-yields-terraform-state-bucket"
     key          = "dev.tfstate"
     region       = "eu-central-1"
     encrypt      = true

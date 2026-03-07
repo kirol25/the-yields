@@ -4,7 +4,7 @@
 
       <!-- Logo -->
       <div class="text-center mb-8">
-        <span class="text-3xl font-bold text-emerald-400 tracking-tight">the-yield</span>
+        <span class="text-3xl font-bold text-emerald-400 tracking-tight">the-yields</span>
       </div>
 
       <!-- Card -->

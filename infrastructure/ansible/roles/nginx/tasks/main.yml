@@ -1,18 +1,18 @@
 ---
 # nginx/tasks/main.yml
-# Manages only the vhost config for the-yield.
+# Manages only the vhost config for the-yields.
 # Nginx installation is handled centrally by server-mgmt.
 
 - name: Write vhost config from template
   template:
-    src: the-yield.conf.j2
-    dest: /etc/nginx/sites-available/the-yield.conf
+    src: the-yields.conf.j2
+    dest: /etc/nginx/sites-available/the-yields.conf
     mode: "0644"
   notify: Reload Nginx
 
 - name: Enable site
   file:
-    src: /etc/nginx/sites-available/the-yield.conf
-    dest: /etc/nginx/sites-enabled/the-yield.conf
+    src: /etc/nginx/sites-available/the-yields.conf
+    dest: /etc/nginx/sites-enabled/the-yields.conf
     state: link
   notify: Reload Nginx
