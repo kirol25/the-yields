@@ -49,7 +49,14 @@
 - These are irreversible and can destroy work — no exceptions, no matter the situation
 - If you think you need one of these, STOP and ask the user instead
 
-## 8. Conventional Commits
+## 8. Feature Branch & PR Required
+
+- **ALWAYS** create a feature branch for new features — never commit directly to `main`
+- Branch naming: `feat/<short-description>` (e.g. `feat/stripe-subscriptions`)
+- Open a PR from the feature branch into `main` when the feature is complete
+- Bug fixes and chores on `main` are acceptable; new features are not
+
+## 9. Conventional Commits
 
 - Make small, focused commits using conventional commit format
 - Commit early and often — one logical change per commit
