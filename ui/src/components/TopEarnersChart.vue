@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -68,6 +68,11 @@ const settings = useSettingsStore()
 const props = defineProps({
   allYears: { type: Boolean, default: false },
 })
+
+const isMobile = ref(window.innerWidth < 640)
+function onResize() { isMobile.value = window.innerWidth < 640 }
+onMounted(() => window.addEventListener('resize', onResize))
+onUnmounted(() => window.removeEventListener('resize', onResize))
 
 const filter = ref('all')
 const filterOptions = computed(() => [
@@ -159,6 +164,7 @@ const chartOptions = computed(() => {
         },
       },
       datalabels: {
+        display: !isMobile.value,
         anchor: 'end',
         align: 'end',
         color: '#9ca3af',
@@ -176,7 +182,7 @@ const chartOptions = computed(() => {
         grid: { display: false },
       },
     },
-    layout: { padding: { right: 80 } },
+    layout: { padding: { right: isMobile.value ? 0 : 80 } },
   }
 })
 </script>
