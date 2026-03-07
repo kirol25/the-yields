@@ -211,7 +211,7 @@
 
         <!-- Bottom bar -->
         <div class="border-t border-gray-800 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} [Project Maintainer]. {{ t('common.allRightsReserved') }}</p>
+          <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} {{ APP_NAME }}. {{ t('common.allRightsReserved') }}</p>
         </div>
 
       </div>
@@ -226,6 +226,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { APP_NAME } from '@/config.js'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'

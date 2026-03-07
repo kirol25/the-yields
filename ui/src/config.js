@@ -1,4 +1,5 @@
 export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:9002'
+export const APP_NAME = 'the-yield'
 
 // ── Brand colours ────────────────────────────────────────────────────────────
 // These are the Tailwind CSS custom property values used across the app.

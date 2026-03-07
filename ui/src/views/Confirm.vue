@@ -70,7 +70,7 @@
 
       <!-- Footer -->
       <p class="text-center text-xs text-gray-700 mt-6">
-        © {{ new Date().getFullYear() }} [Project Maintainer]. {{ t('common.allRightsReserved') }}
+        © {{ new Date().getFullYear() }} {{ APP_NAME }}. {{ t('common.allRightsReserved') }}
       </p>
     </div>
   </div>
@@ -79,6 +79,7 @@
 <script setup>
 import { ref, defineComponent, h } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { APP_NAME } from '@/config.js'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import { useToastStore } from '../stores/toastStore.js'
