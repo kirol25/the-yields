@@ -325,6 +325,8 @@
   "upsell": {
     "tickerLimitTitle": "Free plan limit reached ({n} tickers / accounts)",
     "tickerLimitDesc": "Upgrade to add unlimited tickers and savings accounts.",
+    "analyticsTitle": "Visual analytics are a Premium feature",
+    "analyticsDesc": "Upgrade to unlock quarterly, yearly, cumulative charts and portfolio breakdown.",
     "upgrade": "Upgrade to Premium",
     "limitReached": "limit reached"
   },
