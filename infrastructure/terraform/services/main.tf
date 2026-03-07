@@ -38,6 +38,19 @@ resource "aws_cognito_user_pool" "main" {
     }
   }
 
+  schema {
+    name                     = "is_premium"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = true
+    required                 = false
+
+    string_attribute_constraints {
+      min_length = 4  # "true"
+      max_length = 5  # "false"
+    }
+  }
+
   account_recovery_setting {
     recovery_mechanism {
       name     = "verified_email"
@@ -85,6 +98,13 @@ resource "aws_cognito_user_pool_client" "main" {
 
   callback_urls = var.cognito.callback_urls
   logout_urls   = var.cognito.logout_urls
+
+  # Expose custom:is_premium in the ID token so the frontend can read it
+  read_attributes = [
+    "email",
+    "preferred_username",
+    "custom:is_premium",
+  ]
 
   access_token_validity  = 60
   id_token_validity      = 60
