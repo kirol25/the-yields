@@ -126,7 +126,7 @@
 <script setup>
 import { ref, defineComponent, h } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { APP_NAME } from '@/config.js'
+import { APP_NAME } from '../config.js'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 

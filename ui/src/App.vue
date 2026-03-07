@@ -226,7 +226,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { APP_NAME } from '@/config.js'
+import { APP_NAME } from './config.js'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
