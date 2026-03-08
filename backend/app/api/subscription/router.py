@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel
 
 from app import settings
+from app.api.auth import invalidate_premium_cache
 from app.api.finance.dependencies import AuthContextDep
 
 router = APIRouter(prefix="/api/subscription", tags=["subscription"])
@@ -142,6 +143,7 @@ async def stripe_webhook(request: Request) -> dict[str, str]:
         email = data.get("client_reference_id") or data.get("customer_email")
         if email:
             _set_premium(email, True)
+            invalidate_premium_cache(email)
 
     elif event_type in (
         "customer.subscription.deleted",
@@ -152,6 +154,7 @@ async def stripe_webhook(request: Request) -> dict[str, str]:
         email = customer.get("email")
         if email:
             _set_premium(email, False)
+            invalidate_premium_cache(email)
 
     elif event_type == "invoice.payment_failed":
         # Optionally revoke premium after repeated failures
