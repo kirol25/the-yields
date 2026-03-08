@@ -7,6 +7,12 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
+    # --- Free tier ---
+    FREE_TIER_LIMIT: int = Field(
+        5,
+        description="Max tickers/accounts per section for free users",
+    )
+
     # --- CORS settings ---
     CORS_ORIGINS: str = Field(
         "http://localhost:5173",
