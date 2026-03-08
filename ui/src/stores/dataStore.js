@@ -12,7 +12,8 @@ export const useDataStore = defineStore('data', () => {
   const loading = ref(false)
   const initializing = ref(true)
 
-  function toastError(message) {
+  function toastError(message, error) {
+    if (error?._handled) return
     useToastStore().add(message, 'error')
   }
 
@@ -24,8 +25,8 @@ export const useDataStore = defineStore('data', () => {
       const sorted = withCurrent.slice().sort((a, b) => b - a)
       years.value = sorted
       if (!sorted.includes(currentYear.value)) currentYear.value = sorted[0]
-    } catch {
-      toastError('Failed to load years. Please refresh.')
+    } catch (e) {
+      toastError('Failed to load years. Please refresh.', e)
     }
   }
 
@@ -37,8 +38,8 @@ export const useDataStore = defineStore('data', () => {
       currentYear.value = year
       allYearsData.value[year] = data
       localStorage.setItem('last_year', year)
-    } catch {
-      toastError(`Failed to load data for ${year}.`)
+    } catch (e) {
+      toastError(`Failed to load data for ${year}.`, e)
     } finally {
       loading.value = false
       initializing.value = false
@@ -53,8 +54,8 @@ export const useDataStore = defineStore('data', () => {
         ),
       )
       allYearsData.value = Object.fromEntries(results)
-    } catch {
-      toastError('Failed to load historical data.')
+    } catch (e) {
+      toastError('Failed to load historical data.', e)
     }
   }
 

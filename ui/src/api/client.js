@@ -24,11 +24,14 @@ client.interceptors.response.use(
     const status = error.response?.status
 
     if (status === 401) {
+      error._handled = true
       useAuthStore().logout()
       router.push('/login')
     } else if (status === 429) {
+      error._handled = true
       useToastStore().add('Too many requests — please slow down.', 'error')
     } else if (status >= 500) {
+      error._handled = true
       useToastStore().add('Server error — please try again later.', 'error')
     }
 
