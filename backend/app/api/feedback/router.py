@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Header, status
+from fastapi import APIRouter, Header, Request, status
 
 from app.api.feedback import service
 from app.api.feedback.schemas import FeedbackPayload
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["feedback"])
 
@@ -16,7 +17,9 @@ router = APIRouter(prefix="/api", tags=["feedback"])
     summary="Submit feedback",
     description="Sends the feedback message via AWS SES to the configured recipient.",
 )
+@limiter.limit("5/hour")
 def submit_feedback(
+    request: Request,
     payload: FeedbackPayload,
     x_user_email: str | None = Header(default=None),
 ) -> dict[str, str]:

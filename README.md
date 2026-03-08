@@ -100,17 +100,28 @@ Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3:
 }
 ```
 
+## Authentication
+
+**Production**: requests must include `Authorization: Bearer <access_token>`. The backend verifies tokens locally via Cognito's JWKS endpoint (no AWS call on the hot path). The `is_premium` flag is cached per user for 5 minutes.
+
+**Dev mode** (`COGNITO_REGION` unset): the `X-User-Email` header is trusted directly; `is_premium` is always `false`.
+
 ## API endpoints
 
-All requests require an `X-User-Email` header identifying the authenticated user.
-
-| Method   | Path                              | Description                          |
-|----------|-----------------------------------|--------------------------------------|
-| `GET`    | `/api/years`                      | List years with data                 |
-| `GET`    | `/api/data/{year}`                | Get dividend/yield data for a year   |
-| `PUT`    | `/api/data/{year}`                | Save dividend/yield data for a year  |
-| `DELETE` | `/api/data`                       | Delete **all** data for the user (account deletion) |
-| `DELETE` | `/api/data/{year}/{section}/{key}`| Delete a single entry                |
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/years` | List years with data (free: current year only) |
+| `GET` | `/api/data/{year}` | Get dividend/yield data for a year |
+| `PUT` | `/api/data/{year}` | Save dividend/yield data |
+| `DELETE` | `/api/data` | Delete **all** data for the user (account deletion) |
+| `DELETE` | `/api/data/{year}/{section}/{key}` | Delete a single entry |
+| `GET` | `/api/settings` | Get user settings |
+| `PUT` | `/api/settings` | Save user settings |
+| `POST` | `/api/feedback` | Submit feedback via SES (5/hour limit) |
+| `POST` | `/api/subscription/checkout` | Create Stripe Checkout session |
+| `POST` | `/api/subscription/portal` | Create Stripe Billing Portal session |
+| `POST` | `/api/subscription/webhook` | Stripe webhook receiver |
+| `GET` | `/monitoring/health` | Health check |
 
 Interactive docs available at `http://localhost:9002/docs`.
 
