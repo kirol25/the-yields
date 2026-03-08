@@ -112,13 +112,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import axios from 'axios'
-import { API_BASE } from '../config.js'
-import { useAuthStore } from '../stores/authStore.js'
+import client from '../api/client.js'
 import { useSubscription } from '../composables/useSubscription.js'
 
 const { t, tm } = useI18n()
-const auth = useAuthStore()
 const { isPremium } = useSubscription()
 
 const stripeEnabled = import.meta.env.VITE_STRIPE_ENABLED === 'true'
@@ -130,11 +127,7 @@ async function checkout(plan) {
   loading.value = plan
   error.value = ''
   try {
-    const { data } = await axios.post(
-      `${API_BASE}/api/subscription/checkout`,
-      { plan },
-      { headers: auth.getAuthHeaders() },
-    )
+    const { data } = await client.post('/api/subscription/checkout', { plan })
     window.location.href = data.url
   } catch {
     error.value = t('subscriptions.checkoutError')
@@ -146,11 +139,7 @@ async function openPortal() {
   portalLoading.value = true
   error.value = ''
   try {
-    const { data } = await axios.post(
-      `${API_BASE}/api/subscription/portal`,
-      {},
-      { headers: auth.getAuthHeaders() },
-    )
+    const { data } = await client.post('/api/subscription/portal', {})
     window.location.href = data.url
   } catch {
     error.value = t('subscriptions.checkoutError')
