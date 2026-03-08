@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from 'axios'
-import { API_BASE } from '../config.js'
-import { useAuthStore } from './authStore.js'
+import client from '../api/client.js'
 import { useToastStore } from './toastStore.js'
 
 export const useDataStore = defineStore('data', () => {
@@ -10,13 +8,9 @@ export const useDataStore = defineStore('data', () => {
   const currentYear = ref(storedYear || new Date().getFullYear())
   const years = ref([])
   const yearData = ref({ dividends: {}, yields: {} })
-  const allYearsData = ref({}) // { 2024: { dividends: {}, yields: {} }, ... }
+  const allYearsData = ref({})
   const loading = ref(false)
-  const initializing = ref(true) // true until the first loadYear completes
-
-  function userHeaders() {
-    return useAuthStore().getAuthHeaders()
-  }
+  const initializing = ref(true)
 
   function toastError(message) {
     useToastStore().add(message, 'error')
@@ -24,15 +18,12 @@ export const useDataStore = defineStore('data', () => {
 
   async function fetchYears() {
     try {
-      const { data } = await axios.get(`${API_BASE}/api/years`, { headers: userHeaders() })
+      const { data } = await client.get('/api/years')
       const base = data.length ? data : [currentYear.value]
       const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
       const sorted = withCurrent.slice().sort((a, b) => b - a)
       years.value = sorted
-      // Validate stored year; fall back to most recent if it no longer exists
-      if (!sorted.includes(currentYear.value)) {
-        currentYear.value = sorted[0]
-      }
+      if (!sorted.includes(currentYear.value)) currentYear.value = sorted[0]
     } catch {
       toastError('Failed to load years. Please refresh.')
     }
@@ -41,7 +32,7 @@ export const useDataStore = defineStore('data', () => {
   async function loadYear(year) {
     loading.value = true
     try {
-      const { data } = await axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() })
+      const { data } = await client.get(`/api/data/${year}`)
       yearData.value = data
       currentYear.value = year
       allYearsData.value[year] = data
@@ -58,7 +49,7 @@ export const useDataStore = defineStore('data', () => {
     try {
       const results = await Promise.all(
         years.value.map((year) =>
-          axios.get(`${API_BASE}/api/data/${year}`, { headers: userHeaders() }).then((r) => [year, r.data]),
+          client.get(`/api/data/${year}`).then((r) => [year, r.data]),
         ),
       )
       allYearsData.value = Object.fromEntries(results)
@@ -69,7 +60,7 @@ export const useDataStore = defineStore('data', () => {
 
   async function saveData() {
     try {
-      await axios.put(`${API_BASE}/api/data/${currentYear.value}`, yearData.value, { headers: userHeaders() })
+      await client.put(`/api/data/${currentYear.value}`, yearData.value)
       await fetchYears()
       await loadAllYears()
     } catch {
@@ -81,14 +72,10 @@ export const useDataStore = defineStore('data', () => {
     try {
       await Promise.all(
         keys.map((key) =>
-          axios.delete(`${API_BASE}/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`, {
-            headers: userHeaders(),
-          }),
+          client.delete(`/api/data/${currentYear.value}/${section}/${encodeURIComponent(key)}`),
         ),
       )
-      for (const key of keys) {
-        delete yearData.value[section][key]
-      }
+      for (const key of keys) delete yearData.value[section][key]
       await loadAllYears()
     } catch {
       toastError('Failed to delete entries. Please try again.')
