@@ -3,7 +3,7 @@
     "dashboard": "Dashboard",
     "dividends": "Dividenden",
     "yields": "Zinsen",
-    "subscriptions": "Preise",
+    "subscriptions": "Abonnement",
     "features": "Features",
     "howItWorks": "So funktioniert's"
   },
@@ -205,8 +205,8 @@
     "selfHosted": "Self-hostbar"
   },
   "subscriptions": {
-    "title": "Einfache, transparente Preise",
-    "badge": "Preise",
+    "title": "Einfaches, transparentes Abonnement",
+    "badge": "Abonnement",
     "free": {
       "name": "Kostenlos",
       "price": "€0",
