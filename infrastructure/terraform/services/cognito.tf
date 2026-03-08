@@ -46,8 +46,8 @@ resource "aws_cognito_user_pool" "main" {
     required                 = false
 
     string_attribute_constraints {
-      min_length = 4  # "true"
-      max_length = 5  # "false"
+      min_length = 4 # "true"
+      max_length = 5 # "false"
     }
   }
 
