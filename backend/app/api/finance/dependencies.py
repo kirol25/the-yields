@@ -24,8 +24,9 @@ def get_auth_context(
     Production (COGNITO_REGION set): verify the ``Authorization: Bearer``
     token against Cognito via GetUser.
 
-    Dev mode (COGNITO_REGION empty): trust the ``X-User-Email`` header after
-    format validation; ``is_premium`` is always ``False``.
+    Dev mode is only enabled when ``ALLOW_INSECURE_DEV_AUTH`` is true.
+    In that mode, trust the ``X-User-Email`` header after format validation;
+    ``is_premium`` is always ``False``.
     """
     if settings.COGNITO_REGION:
         if not authorization or not authorization.startswith("Bearer "):
@@ -35,7 +36,13 @@ def get_auth_context(
             )
         return verify_access_token(authorization.removeprefix("Bearer "))
 
-    # Dev mode — trust X-User-Email
+    if not settings.ALLOW_INSECURE_DEV_AUTH:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Authentication is not configured on this server",
+        )
+
+    # Explicit dev mode — trust X-User-Email
     if not x_user_email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
