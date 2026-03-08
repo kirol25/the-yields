@@ -3,7 +3,7 @@
     "dashboard": "Dashboard",
     "dividends": "Dividends",
     "yields": "Yields",
-    "subscriptions": "Pricing",
+    "subscriptions": "Subscription",
     "features": "Features",
     "howItWorks": "How it works"
   },
@@ -205,8 +205,8 @@
     "selfHosted": "Self-hostable"
   },
   "subscriptions": {
-    "title": "Simple, transparent pricing",
-    "badge": "Pricing",
+    "title": "Simple, transparent subscription plans",
+    "badge": "Subscription",
     "free": {
       "name": "Free",
       "price": "€0",
