@@ -2,6 +2,8 @@ from typing import Any, Literal
 
 from fastapi import HTTPException, status
 
+from app.api.finance.schemas import YearPayload
+from app.api.finance.utils import assert_ticker_limit, assert_year_allowed, current_year
 from app.utils import YieldRepositoryType
 
 
@@ -9,51 +11,37 @@ class YieldService:
     """Business logic layer between the HTTP router and the data repository."""
 
     def __init__(self, repository: YieldRepositoryType) -> None:
-        """Initialise the service with a repository instance.
-
-        Args:
-            repository: The repository responsible for reading and writing data.
-        """
         self.repository = repository
 
-    def get_years(self) -> list[int]:
-        """Return all years for which data is available.
+    def get_years(self, is_premium: bool) -> list[int]:
+        """Return available years, filtered to the current year for free users."""
+        years = self.repository.list_years()
+        if not is_premium:
+            years = [y for y in years if y == current_year()]
+        return years
 
-        Returns:
-            Sorted list of integer years.
+    def get_data(self, year: int, is_premium: bool) -> dict[str, Any]:
+        """Retrieve dividend and yield data for *year*.
+
+        Raises 403 if a free user requests a non-current year.
         """
-        return self.repository.list_years()
-
-    def get_data(self, year: int) -> dict[str, Any]:
-        """Retrieve dividend and yield data for the given year.
-
-        Args:
-            year: The four-digit year to retrieve.
-
-        Returns:
-            Parsed year data, or an empty scaffold if nothing is recorded yet.
-        """
+        assert_year_allowed(year, is_premium)
         return self.repository.read_year(year)
 
-    def save_data(self, year: int, payload: dict[str, Any]) -> dict[str, str]:
-        """Persist dividend and yield data for the given year.
+    def save_data(
+        self, year: int, payload: YearPayload, is_premium: bool
+    ) -> dict[str, str]:
+        """Persist dividend and yield data for *year*.
 
-        Args:
-            year: The four-digit year to save.
-            payload: The full dividend/yield mapping to write.
-
-        Returns:
-            A status confirmation dict.
+        Raises 403 if a free user exceeds the tier limits.
         """
-        self.repository.write_year(year, payload)
+        assert_year_allowed(year, is_premium)
+        assert_ticker_limit(payload, is_premium)
+        self.repository.write_year(year, payload.model_dump())
         return {"status": "ok"}
 
     def delete_all_data(self) -> dict[str, str]:
-        """Permanently delete all data for the current user.
-
-        Returns:
-            A status confirmation dict.
-        """
+        """Permanently delete all data for the current user."""
         self.repository.delete_all_data()
         return {"status": "ok"}
 
@@ -67,21 +55,18 @@ class YieldService:
         return {"status": "ok"}
 
     def delete_entry(
-        self, year: int, section: Literal["dividends", "yields"], key: str
-    ) -> dict[str, str]:  # noqa: E501
-        """Delete a single entry from a section of the given year's data.
+        self,
+        year: int,
+        section: Literal["dividends", "yields"],
+        key: str,
+        is_premium: bool,
+    ) -> dict[str, str]:
+        """Delete *key* from *section* in *year*.
 
-        Args:
-            year: The four-digit year to modify.
-            section: Either ``"dividends"`` or ``"yields"``.
-            key: The ticker symbol or account name to remove.
-
-        Returns:
-            A status confirmation dict.
-
-        Raises:
-            HTTPException: 404 if the entry does not exist.
+        Raises 403 if a free user requests a non-current year.
+        Raises 404 if the entry does not exist.
         """
+        assert_year_allowed(year, is_premium)
         if not self.repository.delete_entry(year, section, key):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

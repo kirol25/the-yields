@@ -1,41 +1,24 @@
-from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Path, Request, status
 
+from app import settings
 from app.api.finance.dependencies import AuthContextDep, ServiceDep
+from app.api.finance.schemas import SettingsPayload, YearPayload
 from app.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["finance"])
 
-FREE_TIER_LIMIT = 5  # max tickers/accounts per section for free users
-
-
-def _current_year() -> int:
-    return datetime.now(UTC).year
-
-
-def _assert_year_allowed(year: int, is_premium: bool) -> None:
-    """Raise 403 if a free user attempts to access a non-current year."""
-    if not is_premium and year != _current_year():
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Multi-year access requires a premium subscription",
-        )
-
-
-def _assert_ticker_limit(payload: dict[str, Any], is_premium: bool) -> None:
-    """Raise 403 if a free user's payload exceeds the per-section ticker limit."""
-    if is_premium:
-        return
-    dividends = payload.get("dividends", {})
-    yields = payload.get("yields", {})
-    if len(dividends) > FREE_TIER_LIMIT or len(yields) > FREE_TIER_LIMIT:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Free plan: max {FREE_TIER_LIMIT} tickers or accounts per section",
-        )
-
+YearPath = Annotated[int, Path(ge=2000, le=2100, description="Four-digit year")]
+KeyPath = Annotated[
+    str,
+    Path(
+        min_length=1,
+        max_length=100,
+        pattern=r"^[A-Za-z0-9 .&+_\-]+$",
+        description="Ticker symbol or account name",
+    ),
+]
 
 # ── routes ────────────────────────────────────────────────────────────────────
 
@@ -47,19 +30,11 @@ def _assert_ticker_limit(payload: dict[str, Any], is_premium: bool) -> None:
     },
     status_code=status.HTTP_200_OK,
     summary="List available years",
-    description="Scans the data directory and returns a sorted list of years for which"
-    " a `YYYY.json` file exists.",
+    description="Returns a sorted list of years for which data exists."
+    " Free users only receive the current year.",
 )
 def get_years(ctx: AuthContextDep, service: ServiceDep) -> list[int]:
-    """Return all years that have a corresponding data file on disk.
-
-    Free users only receive the current year even if past files exist.
-    """
-    years = service.get_years()
-    if not ctx["is_premium"]:
-        current = _current_year()
-        years = [y for y in years if y == current]
-    return years
+    return service.get_years(ctx["is_premium"])
 
 
 @router.get(
@@ -71,15 +46,13 @@ def get_years(ctx: AuthContextDep, service: ServiceDep) -> list[int]:
     },
     status_code=status.HTTP_200_OK,
     summary="Get year data",
-    description="Reads and returns the dividend and yield data for the given year."
-    " Returns empty collections if no file exists yet."
+    description="Returns dividend and yield data for the given year."
     " Free users may only access the current year.",
 )
-def get_data(year: int, ctx: AuthContextDep, service: ServiceDep) -> dict[str, Any]:
-    """Load and return the JSON data for *year* or an empty scaffold if the file
-    is missing. Free users are restricted to the current year."""
-    _assert_year_allowed(year, ctx["is_premium"])
-    return service.get_data(year)
+def get_data(
+    year: YearPath, ctx: AuthContextDep, service: ServiceDep
+) -> dict[str, Any]:
+    return service.get_data(year, ctx["is_premium"])
 
 
 @router.put(
@@ -87,27 +60,22 @@ def get_data(year: int, ctx: AuthContextDep, service: ServiceDep) -> dict[str, A
     responses={
         status.HTTP_200_OK: {"description": "Data saved successfully"},
         status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
-        status.HTTP_404_NOT_FOUND: {"description": "Year not found"},
     },
     status_code=status.HTTP_200_OK,
     summary="Save year data",
-    description="Writes the provided dividend and yield payload to `YYYY.json`,"
-    " creating the file if it does not exist."
+    description="Writes the provided dividend and yield payload to `YYYY.json`."
     " Free users are restricted to the current year and up to"
-    f" {FREE_TIER_LIMIT} tickers/accounts per section.",
+    f" {settings.FREE_TIER_LIMIT} tickers/accounts per section.",
 )
 @limiter.limit("120/minute")
 def put_data(
     request: Request,
-    year: int,
-    payload: dict[str, Any],
+    year: YearPath,
+    payload: YearPayload,
     ctx: AuthContextDep,
     service: ServiceDep,
 ) -> dict[str, str]:
-    """Persist *payload* as the data file for *year* and confirm success."""
-    _assert_year_allowed(year, ctx["is_premium"])
-    _assert_ticker_limit(payload, ctx["is_premium"])
-    return service.save_data(year, payload)
+    return service.save_data(year, payload, ctx["is_premium"])
 
 
 @router.get(
@@ -129,10 +97,10 @@ def get_settings(service: ServiceDep) -> dict[str, Any]:
 @limiter.limit("20/minute")
 def put_settings(
     request: Request,
-    payload: dict[str, Any],
+    payload: SettingsPayload,
     service: ServiceDep,
 ) -> dict[str, str]:
-    return service.save_settings(payload)
+    return service.save_settings(payload.model_dump())
 
 
 @router.delete(
@@ -142,11 +110,9 @@ def put_settings(
     },
     status_code=status.HTTP_200_OK,
     summary="Delete all user data",
-    description="Permanently deletes all data files for the authenticated user."
-    " Called as part of the account deletion flow.",
+    description="Permanently deletes all data files for the authenticated user.",
 )
 def delete_all_data(service: ServiceDep) -> dict[str, str]:
-    """Permanently delete all data for the authenticated user."""
     return service.delete_all_data()
 
 
@@ -164,12 +130,10 @@ def delete_all_data(service: ServiceDep) -> dict[str, str]:
 @limiter.limit("60/minute")
 def delete_entry(
     request: Request,
-    year: int,
+    year: YearPath,
     section: Literal["dividends", "yields"],
-    key: str,
+    key: KeyPath,
     ctx: AuthContextDep,
     service: ServiceDep,
 ) -> dict[str, str]:
-    """Delete *key* from *section* in the data file for *year*."""
-    _assert_year_allowed(year, ctx["is_premium"])
-    return service.delete_entry(year, section, key)
+    return service.delete_entry(year, section, key, ctx["is_premium"])
