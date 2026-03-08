@@ -2,16 +2,16 @@
 # SES Domain Identities
 # ============================================
 
-resource "aws_sesv2_email_identity" "domains" {
-  for_each = var.ses.enabled ? toset(var.ses.domains) : []
+resource "aws_sesv2_email_identity" "domain" {
+  count = var.ses.enabled ? 1 : 0
 
-  email_identity = each.value
+  email_identity = var.ses.domain
 
   dkim_signing_attributes {
     next_signing_key_length = "RSA_2048_BIT"
   }
 
   tags = {
-    Name = each.value
+    Name = var.ses.domain
   }
 }
