@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { useAuthStore } from '../stores/authStore.js'
+import { useSettingsStore } from '../stores/settingsStore.js'
 import { useToastStore } from '../stores/toastStore.js'
 import { API_BASE } from '../config.js'
 import router from '../router/index.js'
+import { localizePath } from '../router/locale.js'
 
 const client = axios.create({ baseURL: API_BASE })
 
@@ -26,7 +28,7 @@ client.interceptors.response.use(
     if (status === 401) {
       error._handled = true
       useAuthStore().logout()
-      router.push('/login')
+      router.push(localizePath('/login', useSettingsStore().locale))
     } else if (status === 429) {
       error._handled = true
       useToastStore().add('Too many requests — please slow down.', 'error')
