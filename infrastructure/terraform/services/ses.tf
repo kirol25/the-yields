@@ -17,6 +17,29 @@ resource "aws_sesv2_email_identity" "domain" {
 }
 
 # ============================================
+# Sending authorization policy — allows Cognito to use this identity
+# ============================================
+
+resource "aws_sesv2_email_identity_policy" "cognito" {
+  count = var.ses.enabled && var.cognito.from_email_address != null ? 1 : 0
+
+  email_identity = aws_sesv2_email_identity.domain[0].email_identity
+  policy_name    = "CognitoSendingPolicy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "cognito-idp.amazonaws.com" }
+        Action    = ["ses:SendEmail", "ses:SendRawEmail"]
+        Resource  = aws_sesv2_email_identity.domain[0].arn
+      }
+    ]
+  })
+}
+
+# ============================================
 # Custom MAIL FROM domain
 # ============================================
 
