@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { i18n } from '../i18n.js'
 import { useToastStore } from './toastStore.js'
 import { useSettingsStore } from './settingsStore.js'
-import { API_BASE } from '../config.js'
+import client from '../api/client.js'
 
 const REGION = import.meta.env.VITE_COGNITO_REGION
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
@@ -52,9 +52,9 @@ async function cognitoRequest(action, body) {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref(localStorage.getItem('access_token'))
-  const idToken = ref(localStorage.getItem('id_token'))
-  const refreshToken = ref(localStorage.getItem('refresh_token'))
+  const accessToken = ref(sessionStorage.getItem('access_token'))
+  const idToken = ref(sessionStorage.getItem('id_token'))
+  const refreshToken = ref(sessionStorage.getItem('refresh_token'))
   const pendingEmail = ref(sessionStorage.getItem('pending_email') ?? '')
 
   const isAuthenticated = computed(() => !!accessToken.value)
@@ -64,9 +64,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = AccessToken
     idToken.value = IdToken
     if (RefreshToken) refreshToken.value = RefreshToken
-    localStorage.setItem('access_token', AccessToken)
-    localStorage.setItem('id_token', IdToken)
-    if (RefreshToken) localStorage.setItem('refresh_token', RefreshToken)
+    sessionStorage.setItem('access_token', AccessToken)
+    sessionStorage.setItem('id_token', IdToken)
+    if (RefreshToken) sessionStorage.setItem('refresh_token', RefreshToken)
   }
 
   async function signUp(email, password, name) {
@@ -206,9 +206,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     idToken.value = null
     refreshToken.value = null
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('id_token')
-    localStorage.removeItem('refresh_token')
+    sessionStorage.removeItem('access_token')
+    sessionStorage.removeItem('id_token')
+    sessionStorage.removeItem('refresh_token')
     // Clear user-specific profile so the next account starts fresh
     const settings = useSettingsStore()
     settings.profile.name = ''
@@ -219,10 +219,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function deleteAccount() {
     // Best-effort: wipe backend data. Never block account deletion on this.
     try {
-      await fetch(`${API_BASE}/api/data`, {
-        method: 'DELETE',
-        headers: getAuthHeaders(),
-      })
+      await client.delete('/api/data')
     } catch {
       // network error or backend unreachable — proceed anyway
     }
