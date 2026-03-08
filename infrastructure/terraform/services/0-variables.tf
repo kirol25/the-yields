@@ -17,3 +17,11 @@ variable "cognito" {
     logout_urls         = list(string)
   })
 }
+
+variable "ses" {
+  description = "Configuration for SES domain identities"
+  type = object({
+    enabled = bool
+    domains = list(string)
+  })
+}
