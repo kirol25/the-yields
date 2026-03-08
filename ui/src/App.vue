@@ -60,13 +60,12 @@
           >
             {{ t('nav.howItWorks') }}
           </button>
-          <RouterLink
-            to="/subscriptions"
-            class="px-3 py-1.5 text-sm font-medium hover:bg-gray-800 rounded-lg transition-colors"
-            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400 hover:text-gray-100'"
+          <button
+            @click="scrollToSection('subscription')"
+            class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
           >
             {{ t('nav.subscriptions') }}
-          </RouterLink>
+          </button>
           <RouterLink
             to="/login"
             class="ml-2 px-4 py-1.5 text-sm font-medium text-gray-900 bg-emerald-400 hover:bg-emerald-300 rounded-lg transition-colors"
