@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 
 from app.api.finance.dependencies import AuthContextDep, ServiceDep
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["finance"])
 
@@ -95,7 +96,9 @@ def get_data(year: int, ctx: AuthContextDep, service: ServiceDep) -> dict[str, A
     " Free users are restricted to the current year and up to"
     f" {FREE_TIER_LIMIT} tickers/accounts per section.",
 )
+@limiter.limit("120/minute")
 def put_data(
+    request: Request,
     year: int,
     payload: dict[str, Any],
     ctx: AuthContextDep,
@@ -123,7 +126,12 @@ def get_settings(service: ServiceDep) -> dict[str, Any]:
     summary="Save user settings",
     description="Persists the user's goals and steuerfreibetrag.",
 )
-def put_settings(payload: dict[str, Any], service: ServiceDep) -> dict[str, str]:
+@limiter.limit("20/minute")
+def put_settings(
+    request: Request,
+    payload: dict[str, Any],
+    service: ServiceDep,
+) -> dict[str, str]:
     return service.save_settings(payload)
 
 
@@ -153,7 +161,9 @@ def delete_all_data(service: ServiceDep) -> dict[str, str]:
     summary="Delete an entry",
     description="Removes a single dividend or yield entry from the given year's data file.",  # noqa: E501
 )
+@limiter.limit("60/minute")
 def delete_entry(
+    request: Request,
     year: int,
     section: Literal["dividends", "yields"],
     key: str,
