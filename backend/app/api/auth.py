@@ -1,33 +1,116 @@
+import time
+
 import boto3
+import jwt
 from botocore.exceptions import ClientError
 from fastapi import HTTPException, status
+from jwt import PyJWKClient
 
 from app import settings
 
+# ---------------------------------------------------------------------------
+# JWKS client — fetches Cognito's public keys once and caches them in-process
+# ---------------------------------------------------------------------------
+
+_jwks_client: PyJWKClient | None = None
+
+
+def _get_jwks_client() -> PyJWKClient:
+    global _jwks_client
+    if _jwks_client is None:
+        jwks_uri = (
+            f"https://cognito-idp.{settings.COGNITO_REGION}.amazonaws.com"
+            f"/{settings.COGNITO_USER_POOL_ID}/.well-known/jwks.json"
+        )
+        _jwks_client = PyJWKClient(jwks_uri, cache_keys=True)
+    return _jwks_client
+
+
+# ---------------------------------------------------------------------------
+# is_premium cache — avoids an AWS call on every request.
+# Populated lazily via admin_get_user; TTL = 5 minutes.
+# ---------------------------------------------------------------------------
+
+_PREMIUM_TTL = 300  # seconds
+_premium_cache: dict[str, tuple[bool, float]] = {}  # email -> (is_premium, expires_at)
+
+
+def _fetch_is_premium(email: str) -> bool:
+    """Call Cognito admin_get_user to determine whether the user is premium."""
+    if not settings.COGNITO_USER_POOL_ID:
+        return False
+    try:
+        client = boto3.client("cognito-idp", region_name=settings.COGNITO_REGION)
+        response = client.admin_get_user(
+            UserPoolId=settings.COGNITO_USER_POOL_ID,
+            Username=email,
+        )
+        attrs = {a["Name"]: a["Value"] for a in response.get("UserAttributes", [])}
+        return attrs.get("custom:is_premium", "false").lower() == "true"
+    except ClientError:
+        return False
+
+
+def _get_is_premium(email: str) -> bool:
+    """Return is_premium for *email*, hitting the cache when fresh."""
+    now = time.monotonic()
+    cached = _premium_cache.get(email)
+    if cached and now < cached[1]:
+        return cached[0]
+    is_premium = _fetch_is_premium(email)
+    _premium_cache[email] = (is_premium, now + _PREMIUM_TTL)
+    return is_premium
+
+
+def invalidate_premium_cache(email: str) -> None:
+    """Evict *email* from the premium cache (call after subscription changes)."""
+    _premium_cache.pop(email, None)
+
+
+# ---------------------------------------------------------------------------
+# Token verification — local RS256 check via JWKS, zero AWS calls on hot path
+# ---------------------------------------------------------------------------
+
 
 def verify_access_token(token: str) -> dict:
-    """Verify a Cognito access token by calling GetUser.
+    """Verify a Cognito access token locally via JWKS.
 
     Returns ``{"email": str, "is_premium": bool}``.
     Raises HTTP 401 if the token is invalid or expired.
-    Raises HTTP 502 if the Cognito service is unreachable.
     """
-    client = boto3.client("cognito-idp", region_name=settings.COGNITO_REGION)
     try:
-        response = client.get_user(AccessToken=token)
-    except ClientError as exc:
-        code = exc.response["Error"]["Code"]
-        if code in ("NotAuthorizedException", "UserNotFoundException"):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid or expired access token",
-            )
+        client = _get_jwks_client()
+        signing_key = client.get_signing_key_from_jwt(token)
+        claims = jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["RS256"],
+            # Cognito access tokens have no aud claim
+            options={"verify_aud": False},
+        )
+    except jwt.ExpiredSignatureError:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Authentication service unavailable",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Access token has expired",
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token",
         )
 
-    attrs = {a["Name"]: a["Value"] for a in response.get("UserAttributes", [])}
-    email = attrs.get("email", "")
-    is_premium = attrs.get("custom:is_premium", "false").lower() == "true"
-    return {"email": email, "is_premium": is_premium}
+    if claims.get("token_use") != "access":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token type — access token required",
+        )
+
+    # username = login identifier (email, since username_attributes = ["email"])
+    email = claims.get("username") or claims.get("cognito:username", "")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token missing username claim",
+        )
+
+    return {"email": email, "is_premium": _get_is_premium(email)}
