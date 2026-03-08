@@ -64,8 +64,8 @@ export const useDataStore = defineStore('data', () => {
       await client.put(`/api/data/${currentYear.value}`, yearData.value)
       await fetchYears()
       await loadAllYears()
-    } catch {
-      toastError('Failed to save. Please try again.')
+    } catch (e) {
+      toastError('Failed to save. Please try again.', e)
     }
   }
 
@@ -78,8 +78,8 @@ export const useDataStore = defineStore('data', () => {
       )
       for (const key of keys) delete yearData.value[section][key]
       await loadAllYears()
-    } catch {
-      toastError('Failed to delete entries. Please try again.')
+    } catch (e) {
+      toastError('Failed to delete entries. Please try again.', e)
       await loadYear(currentYear.value)
     }
   }
