@@ -1,10 +1,18 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { i18n } from '../i18n.js'
-import { API_BASE } from '../config.js'
-import { useAuthStore } from './authStore.js'
+import client from '../api/client.js'
 
 const STORAGE_KEY = 'yield-settings'
+const SAVE_DEBOUNCE_MS = 800
+
+function debounce(fn, delay) {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  }
+}
 
 export const useSettingsStore = defineStore('settings', () => {
   const CURRENCIES = [
@@ -24,9 +32,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const currency = ref(saved.currency || 'USD')
   const locale = ref(saved.locale || 'de')
   const theme = ref(saved.theme || 'dark')
-  const dividendGoal      = ref(typeof saved.dividendGoal      === 'object' && saved.dividendGoal      !== null ? saved.dividendGoal      : {})
-  const yieldGoal         = ref(typeof saved.yieldGoal         === 'object' && saved.yieldGoal         !== null ? saved.yieldGoal         : {})
-  const steuerfreibetrag  = ref(typeof saved.steuerfreibetrag  === 'object' && saved.steuerfreibetrag  !== null ? saved.steuerfreibetrag  : {})
+  const dividendGoal     = ref(typeof saved.dividendGoal     === 'object' && saved.dividendGoal     !== null ? saved.dividendGoal     : {})
+  const yieldGoal        = ref(typeof saved.yieldGoal        === 'object' && saved.yieldGoal        !== null ? saved.yieldGoal        : {})
+  const steuerfreibetrag = ref(typeof saved.steuerfreibetrag === 'object' && saved.steuerfreibetrag !== null ? saved.steuerfreibetrag : {})
 
   function setLocale(code) {
     locale.value = code
@@ -44,7 +52,6 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function setTheme(t) {
     theme.value = t
-    // Remove previous system listener if any
     if (_mqListener) {
       _mq.removeEventListener('change', _mqListener)
       _mqListener = null
@@ -83,55 +90,44 @@ export const useSettingsStore = defineStore('settings', () => {
     }).format(amount)
   }
 
-  function _userHeaders() {
-    return useAuthStore().getAuthHeaders()
+  async function _saveToServer() {
+    try {
+      await client.put('/api/settings', {
+        dividendGoal: dividendGoal.value,
+        yieldGoal: yieldGoal.value,
+        steuerfreibetrag: steuerfreibetrag.value,
+      })
+    } catch { /* silent — local values remain authoritative */ }
   }
+
+  const _debouncedSaveToServer = debounce(_saveToServer, SAVE_DEBOUNCE_MS)
 
   async function loadFromServer() {
     try {
-      const res = await fetch(`${API_BASE}/api/settings`, { headers: _userHeaders() })
-      if (!res.ok) return
-      const data = await res.json()
-      if (data.dividendGoal && typeof data.dividendGoal === 'object')
-        dividendGoal.value = data.dividendGoal
-      if (data.yieldGoal && typeof data.yieldGoal === 'object')
-        yieldGoal.value = data.yieldGoal
-      if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object')
-        steuerfreibetrag.value = data.steuerfreibetrag
+      const { data } = await client.get('/api/settings')
+      if (data.dividendGoal     && typeof data.dividendGoal     === 'object') dividendGoal.value     = data.dividendGoal
+      if (data.yieldGoal        && typeof data.yieldGoal        === 'object') yieldGoal.value        = data.yieldGoal
+      if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object') steuerfreibetrag.value = data.steuerfreibetrag
       save()
     } catch { /* silent — local values remain */ }
-  }
-
-  async function _saveToServer() {
-    try {
-      await fetch(`${API_BASE}/api/settings`, {
-        method: 'PUT',
-        headers: { ..._userHeaders(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          dividendGoal: dividendGoal.value,
-          yieldGoal: yieldGoal.value,
-          steuerfreibetrag: steuerfreibetrag.value,
-        }),
-      })
-    } catch { /* silent */ }
   }
 
   function setDividendGoal(year, amount) {
     dividendGoal.value = { ...dividendGoal.value, [year]: Math.max(amount, 0) }
     save()
-    _saveToServer()
+    _debouncedSaveToServer()
   }
 
   function setYieldGoal(year, amount) {
     yieldGoal.value = { ...yieldGoal.value, [year]: Math.max(amount, 0) }
     save()
-    _saveToServer()
+    _debouncedSaveToServer()
   }
 
   function setSteuerfreibetrag(year, amount) {
     steuerfreibetrag.value = { ...steuerfreibetrag.value, [year]: Math.min(Math.max(amount, 0), 2000) }
     save()
-    _saveToServer()
+    _debouncedSaveToServer()
   }
 
   return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer }
