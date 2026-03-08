@@ -32,7 +32,7 @@
           <a href="https://www.ionos.de/terms-gtc/datenschutzerklaerung/" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">ionos.de/terms-gtc/datenschutzerklaerung</a>.
         </p>
         <p>
-          <span class="text-gray-100 font-medium">Amazon Web Services (AWS):</span> Authentifizierung und Datenspeicherung erfolgen über AWS-Dienste (Amazon Cognito, Amazon S3). AWS ist gemäß Art. 46 DSGVO zertifiziert. Weitere Informationen finden Sie unter
+          <span class="text-gray-100 font-medium">Amazon Web Services (AWS):</span> Authentifizierung, E-Mail-Versand und Datenspeicherung erfolgen über AWS-Dienste (Amazon Cognito, Amazon SES, Amazon S3). AWS ist gemäß Art. 46 DSGVO zertifiziert. Weitere Informationen finden Sie unter
           <a href="https://aws.amazon.com/de/privacy/" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">aws.amazon.com/de/privacy</a>.
         </p>
         <p><span class="text-gray-100 font-medium">Server-Logfiles:</span> Der Hosting-Anbieter erhebt automatisch Server-Logdaten (IP-Adresse, Browsertyp, Betriebssystem, Zeitpunkt des Zugriffs). Diese Daten sind nicht bestimmten Personen zuordenbar und werden nicht mit anderen Datenquellen zusammengeführt.</p>
@@ -65,7 +65,11 @@
 
       <section class="space-y-3">
         <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">8. Cookies und lokaler Speicher</h2>
-        <p>Diese Anwendung setzt keine Tracking-Cookies ein. Es werden ausschließlich technisch notwendige Session-Tokens (zur Authentifizierung) sowie Einstellungen (Sprache, Währung) im lokalen Speicher Ihres Browsers (localStorage / sessionStorage) abgelegt.</p>
+        <p>Diese Anwendung setzt keine Tracking-Cookies ein. Es werden ausschließlich technisch notwendige Daten im Browser-Speicher abgelegt:</p>
+        <ul class="space-y-1 pl-4 list-disc text-gray-400">
+          <li><span class="text-gray-300">Authentifizierungs-Tokens</span> (sessionStorage) — werden beim Schließen des Browser-Tabs automatisch gelöscht.</li>
+          <li><span class="text-gray-300">Einstellungen</span> (localStorage, z. B. Sprache, Währung) — bleiben bis zur manuellen Löschung erhalten.</li>
+        </ul>
         <p>Diese Daten verlassen Ihren Browser nicht und dienen ausschließlich dem Betrieb der Anwendung.</p>
       </section>
 
@@ -136,7 +140,11 @@
 
       <section class="space-y-3">
         <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">8. Cookies and Local Storage</h2>
-        <p>This application does not use tracking cookies. Only technically necessary session tokens (for authentication) and preferences (language, currency) are stored in your browser's local storage (localStorage / sessionStorage).</p>
+        <p>This application does not use tracking cookies. Only technically necessary data is stored in your browser:</p>
+        <ul class="space-y-1 pl-4 list-disc text-gray-400">
+          <li><span class="text-gray-300">Authentication tokens</span> (sessionStorage) — automatically deleted when the browser tab is closed.</li>
+          <li><span class="text-gray-300">Preferences</span> (localStorage, e.g. language, currency) — retained until manually cleared.</li>
+        </ul>
         <p>This data does not leave your browser and is used solely to operate the application.</p>
       </section>
 
