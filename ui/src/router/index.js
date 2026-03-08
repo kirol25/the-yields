@@ -20,15 +20,15 @@ const routes = [
   { path: '/settings',   component: () => import('../views/Settings.vue') },
   { path: '/subscriptions', component: () => import('../views/Subscriptions.vue'), meta: { public: true } },
   { path: '/subscription/success', component: () => import('../views/SubscriptionSuccess.vue'), meta: { public: true } },
-  { path: '/impressum',  component: () => import('../views/Impressum.vue'), meta: { public: true } },
-  { path: '/datenschutz', component: () => import('../views/Datenschutz.vue'), meta: { public: true } },
+  { path: '/impressum',  alias: '/legal-notice', component: () => import('../views/Impressum.vue'), meta: { public: true } },
+  { path: '/datenschutz', alias: '/privacy-policy', component: () => import('../views/Datenschutz.vue'), meta: { public: true } },
 
   // Password reset (guest only)
   { path: '/forgot-password', component: () => import('../views/ForgotPassword.vue'), meta: { guestOnly: true } },
   { path: '/reset-password',  component: () => import('../views/ResetPassword.vue'),  meta: { guestOnly: true } },
 
   // Public pages
-  { path: '/terms',     component: () => import('../views/Terms.vue'),    meta: { public: true } },
+  { path: '/terms',     alias: '/nutzungsbedingungen', component: () => import('../views/Terms.vue'), meta: { public: true } },
   { path: '/feedback',  component: () => import('../views/Feedback.vue'), meta: { public: true } },
 
   // 404 catch-all — must be last

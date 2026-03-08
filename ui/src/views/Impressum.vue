@@ -1,63 +1,67 @@
 <template>
-  <div class="max-w-2xl mx-auto py-4 space-y-8 text-sm text-gray-300 leading-relaxed">
-    <h1 class="text-2xl font-bold text-gray-100">Impressum</h1>
-
-    <section class="space-y-1">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Angaben gemäß § 5 TMG</h2>
-      <p class="font-medium text-gray-100">[Project Maintainer]</p>
-      <p>[Straße und Hausnummer]</p>
-      <p>[PLZ] [Stadt]</p>
-      <p>Deutschland</p>
+  <div class="max-w-3xl mx-auto py-4 space-y-8 text-sm text-gray-300 leading-relaxed">
+    <section
+      v-if="missingFields.length"
+      class="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-4 text-amber-100"
+    >
+      <p class="font-semibold">{{ t('legalMeta.completeBeforeLaunch') }}</p>
+      <p class="mt-2 text-sm text-amber-50/90">{{ missingFields.join(', ') }}</p>
+      <p class="mt-2 text-xs text-amber-50/70">{{ t('legalMeta.updateIn') }}</p>
     </section>
 
-    <section class="space-y-1">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Kontakt</h2>
-      <p>E-Mail: <a href="mailto:[ihre-email@example.com]" class="text-emerald-400 hover:text-emerald-300">[ihre-email@example.com]</a></p>
+    <h1 class="text-2xl font-bold text-gray-100">{{ t('legalNoticePage.title') }}</h1>
+
+    <section class="space-y-2">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('legalNoticePage.noticeTitle') }}</h2>
+      <p class="font-medium text-gray-100">{{ LEGAL.operatorName }}</p>
+      <p>{{ address.street }}</p>
+      <p>{{ address.cityLine }}</p>
+      <p>{{ address.country }}</p>
     </section>
 
-    <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">EU-Streitschlichtung</h2>
+    <section class="space-y-2">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('legalNoticePage.contactTitle') }}</h2>
       <p>
-        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
-        <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">
-          https://ec.europa.eu/consumers/odr/
+        {{ t('legalNoticePage.emailLabel') }}:
+        <a :href="`mailto:${LEGAL.email}`" class="text-emerald-400 hover:text-emerald-300">
+          {{ LEGAL.email }}
         </a>
       </p>
-      <p>Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
+      <p v-if="LEGAL.phone">{{ t('legalNoticePage.phoneLabel') }}: {{ LEGAL.phone }}</p>
+    </section>
+
+    <section v-if="LEGAL.vatId || LEGAL.commercialRegister" class="space-y-2">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('legalNoticePage.additionalTitle') }}</h2>
+      <p v-if="LEGAL.vatId">{{ t('legalNoticePage.vatLabel') }}: {{ LEGAL.vatId }}</p>
+      <p v-if="LEGAL.commercialRegister">{{ t('legalNoticePage.registerLabel') }}: {{ LEGAL.commercialRegister }}</p>
+    </section>
+
+    <section class="space-y-2">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('legalNoticePage.responsibleTitle') }}</h2>
+      <p>{{ LEGAL.responsibleForContent }}</p>
+      <p>{{ address.street }}</p>
+      <p>{{ address.cityLine }}</p>
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Verbraucherstreitbeilegung / Universalschlichtungsstelle</h2>
-      <p>
-        Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer
-        Verbraucherschlichtungsstelle teilzunehmen.
-      </p>
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('legalNoticePage.disputeTitle') }}</h2>
+      <p>{{ t('legalNoticePage.disputeBody') }}</p>
+      <p class="text-gray-400">{{ t('legalNoticePage.odrNote') }}</p>
     </section>
 
-    <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Haftung für Inhalte</h2>
-      <p>
-        Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen Seiten nach den
-        allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht
-        verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen
-        zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
-      </p>
-      <p>
-        Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen
-        Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt
-        der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden
-        Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.
-      </p>
-    </section>
-
-    <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Urheberrecht</h2>
-      <p>
-        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem
-        deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung
-        außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen
-        Autors bzw. Erstellers.
-      </p>
-    </section>
+    <p class="text-xs text-gray-600 pt-4 border-t border-gray-800">
+      {{ t('legalMeta.lastUpdated', { date: lastUpdated }) }}
+    </p>
   </div>
 </template>
+
+<script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { LEGAL, getLegalAddress, getMissingLegalFields } from '../legal.js'
+
+const { t, locale } = useI18n()
+const address = computed(() => getLegalAddress(locale.value))
+const missingFields = computed(() => getMissingLegalFields(locale.value))
+const lastUpdated = computed(() => (locale.value === 'de' ? LEGAL.lastUpdatedDe : LEGAL.lastUpdatedEn))
+</script>
