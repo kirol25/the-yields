@@ -11,21 +11,21 @@
           <RouterLink
             to="/dashboard"
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="$route.path === '/dashboard' ? 'text-emerald-400' : 'text-gray-400'"
+            :class="normalizedPath === '/dashboard' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.dashboard') }}
           </RouterLink>
           <RouterLink
             to="/dividends"
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="$route.path === '/dividends' ? 'text-emerald-400' : 'text-gray-400'"
+            :class="normalizedPath === '/dividends' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.dividends') }}
           </RouterLink>
           <RouterLink
             to="/yields"
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="$route.path === '/yields' ? 'text-emerald-400' : 'text-gray-400'"
+            :class="normalizedPath === '/yields' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.yields') }}
           </RouterLink>
@@ -33,7 +33,7 @@
             v-if="!isPremium"
             to="/subscriptions"
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="$route.path === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
+            :class="normalizedPath === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
           >
             {{ t('nav.subscriptions') }}
           </RouterLink>
@@ -124,7 +124,7 @@
               :to="link.to"
               @click="closeMobileMenu"
               class="block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
-              :class="$route.path === link.to ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
+              :class="normalizedPath === link.to ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
             >
               {{ link.label }}
             </RouterLink>
@@ -146,7 +146,7 @@
               to="/subscriptions"
               @click="closeMobileMenu"
               class="block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
-              :class="$route.path === '/subscriptions' ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
+              :class="normalizedPath === '/subscriptions' ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
             >
               {{ t('nav.subscriptions') }}
             </RouterLink>
@@ -250,6 +250,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { APP_NAME } from './config.js'
 import { useRoute, useRouter } from 'vue-router'
+import { localizePath, stripLocalePrefix } from './router/locale.js'
 import { useDataStore } from './stores/dataStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
@@ -271,15 +272,10 @@ const mobileMenuOpen = ref(false)
 function closeMobileMenu() { mobileMenuOpen.value = false }
 function setLanguage(code) {
   settings.setLocale(code)
-  const localizedPath = getLocalizedPath(code)
+  const localizedPath = localizePath(route.path, code)
   if (localizedPath !== route.path) {
     router.push({ path: localizedPath, query: route.query, hash: route.hash })
   }
-}
-
-function getLocalizedPath(code) {
-  const strippedPath = route.path.replace(/^\/(de|en)(?=\/|$)/, '') || '/'
-  return strippedPath === '/' ? `/${code}` : `/${code}${strippedPath}`
 }
 
 function onKeyDown(e) { if (e.key === 'Escape') closeMobileMenu() }
@@ -288,18 +284,20 @@ onUnmounted(() => { document.removeEventListener('keydown', onKeyDown) })
 
 watch(() => route.path, () => { mobileMenuOpen.value = false })
 
+const normalizedPath = computed(() => stripLocalePrefix(route.path))
+
 function scrollToSection(id) {
-  if (route.path === '/') {
+  if (normalizedPath.value === '/') {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   } else {
-    router.push({ path: '/', hash: `#${id}` })
+    router.push({ path: localizePath('/', settings.locale), hash: `#${id}` })
   }
 }
 
 // Apply persisted theme immediately (also wires up system listener if needed)
 settings.setTheme(settings.theme)
 
-const isLanding = computed(() => ['/', '/login', '/register', '/confirm', '/forgot-password', '/reset-password'].includes(route.path))
+const isLanding = computed(() => ['/', '/login', '/register', '/confirm', '/forgot-password', '/reset-password'].includes(normalizedPath.value))
 
 const initials = computed(() => {
   const name = (settings.profile.name || auth.user?.name || '').trim()

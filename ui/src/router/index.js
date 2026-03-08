@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
+import { getLocaleFromPath, localizePath } from './locale.js'
 
 const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
 
@@ -69,21 +70,31 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
   const settings = useSettingsStore()
-  const localeMatch = to.path.match(/^\/(de|en)(?:\/|$)/)
+  const pathLocale = getLocaleFromPath(to.path)
+  const activeLocale = pathLocale ?? settings.locale
 
-  if (localeMatch && settings.locale !== localeMatch[1]) {
-    settings.setLocale(localeMatch[1])
+  if (!pathLocale) {
+    return {
+      path: localizePath(to.path, activeLocale),
+      query: to.query,
+      hash: to.hash,
+      replace: true,
+    }
   }
 
-  if (to.meta.registrationOnly && !REGISTRATION_ENABLED) return '/login'
+  if (settings.locale !== pathLocale) {
+    settings.setLocale(pathLocale)
+  }
+
+  if (to.meta.registrationOnly && !REGISTRATION_ENABLED) return localizePath('/login', activeLocale)
 
   if (to.meta.guestOnly) {
-    return auth.isAuthenticated ? '/dashboard' : true
+    return auth.isAuthenticated ? localizePath('/dashboard', activeLocale) : true
   }
 
   if (to.meta.public) return true
 
-  if (!auth.isAuthenticated) return '/login'
+  if (!auth.isAuthenticated) return localizePath('/login', activeLocale)
 })
 
 export default router
