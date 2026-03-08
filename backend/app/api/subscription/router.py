@@ -5,7 +5,9 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel
 
 from app import settings
+from app.api.auth import invalidate_premium_cache
 from app.api.finance.dependencies import AuthContextDep
+from app.limiter import limiter
 
 router = APIRouter(prefix="/api/subscription", tags=["subscription"])
 
@@ -52,7 +54,9 @@ class CheckoutRequest(BaseModel):
     description="Creates a Stripe Checkout session for the given plan and returns "
     "the hosted checkout URL. Requires STRIPE_SECRET_KEY to be configured.",
 )
+@limiter.limit("10/minute")
 def create_checkout_session(
+    request: Request,
     body: CheckoutRequest,
     ctx: AuthContextDep,
 ) -> dict[str, str]:
@@ -86,7 +90,8 @@ def create_checkout_session(
     description="Returns a Stripe Billing Portal URL so the user can manage or "
     "cancel their subscription.",
 )
-def create_portal_session(ctx: AuthContextDep) -> dict[str, str]:
+@limiter.limit("10/minute")
+def create_portal_session(request: Request, ctx: AuthContextDep) -> dict[str, str]:
     if not STRIPE_ENABLED:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -142,6 +147,7 @@ async def stripe_webhook(request: Request) -> dict[str, str]:
         email = data.get("client_reference_id") or data.get("customer_email")
         if email:
             _set_premium(email, True)
+            invalidate_premium_cache(email)
 
     elif event_type in (
         "customer.subscription.deleted",
@@ -152,6 +158,7 @@ async def stripe_webhook(request: Request) -> dict[str, str]:
         email = customer.get("email")
         if email:
             _set_premium(email, False)
+            invalidate_premium_cache(email)
 
     elif event_type == "invoice.payment_failed":
         # Optionally revoke premium after repeated failures
