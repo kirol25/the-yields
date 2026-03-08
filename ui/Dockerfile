@@ -12,12 +12,16 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/scripts/entrypoint.sh /entrypoint.sh
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+USER root
+RUN chmod +x /entrypoint.sh \
+    && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d /entrypoint.sh
+USER nginx
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
