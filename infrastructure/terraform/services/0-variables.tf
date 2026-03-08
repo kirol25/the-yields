@@ -20,9 +20,9 @@ variable "cognito" {
 }
 
 variable "ses" {
-  description = "Configuration for SES domain identities"
+  description = "Configuration for SES domain identity"
   type = object({
     enabled = bool
-    domains = list(string)
+    domain  = string
   })
 }

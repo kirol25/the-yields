@@ -49,8 +49,6 @@ module "api" {
   # --- SES ---
   ses = {
     enabled = true
-    domains = [
-      "the-yields.com",
-    ]
+    domain  = "the-yields.com"
   }
 }

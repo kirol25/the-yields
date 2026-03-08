@@ -57,7 +57,7 @@ resource "aws_cognito_user_pool" "main" {
     content {
       email_sending_account  = "DEVELOPER"
       from_email_address     = var.cognito.from_email_address
-      source_arn             = aws_sesv2_email_identity.domains[split("@", var.cognito.from_email_address)[1]].arn
+      source_arn             = aws_sesv2_email_identity.domain[0].arn
     }
   }
 
