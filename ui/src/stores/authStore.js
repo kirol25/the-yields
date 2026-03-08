@@ -101,15 +101,24 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signIn(email, password) {
-    const data = await cognitoRequest('InitiateAuth', {
-      AuthFlow: 'USER_PASSWORD_AUTH',
-      ClientId: CLIENT_ID,
-      AuthParameters: {
-        USERNAME: email,
-        PASSWORD: password,
-      },
-    })
-    setTokens(data.AuthenticationResult)
+    try {
+      const data = await cognitoRequest('InitiateAuth', {
+        AuthFlow: 'USER_PASSWORD_AUTH',
+        ClientId: CLIENT_ID,
+        AuthParameters: {
+          USERNAME: email,
+          PASSWORD: password,
+        },
+      })
+      setTokens(data.AuthenticationResult)
+    } catch (err) {
+      if (err.type === 'UserNotConfirmedException') {
+        pendingEmail.value = email
+        sessionStorage.setItem('pending_email', email)
+        await resendCode(email)
+      }
+      throw err
+    }
   }
 
   function isExpiredTokenError(err) {
