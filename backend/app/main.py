@@ -4,18 +4,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from app import settings
 from app.api import router
-from app.config import _description, get_settings
+from app.config import description
 from app.limiter import limiter
 from app.logging_config import configure_logging
 from app.middleware.logging import RequestLoggingMiddleware
 from app.version import __version__
 
+# Configure logging before anything else to ensure all logs are captured
 configure_logging()
 
-settings = get_settings()
+# The FastAPI application instance
+app = FastAPI(title="The Yield API", version=__version__, description=description)
 
-app = FastAPI(title="The Yield API", version=__version__, description=_description)
+# Global middleware and exception handlers
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(RequestLoggingMiddleware)
