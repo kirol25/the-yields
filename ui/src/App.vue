@@ -212,29 +212,27 @@
         <!-- Bottom bar -->
         <div class="border-t border-gray-800 pt-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p class="text-xs text-gray-600">© {{ new Date().getFullYear() }} {{ APP_NAME }}. {{ t('common.allRightsReserved') }}</p>
-          <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-            <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gray-600">
-              <svg class="h-3.5 w-3.5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.25 7h-2.02a12.2 12.2 0 0 0-1.18-4.06A6.52 6.52 0 0 1 15.25 9Zm-5.25 7a10.7 10.7 0 0 1-1.72-5h3.44A10.7 10.7 0 0 1 10 16Zm-1.72-7a10.7 10.7 0 0 1 1.72-5 10.7 10.7 0 0 1 1.72 5H8.28Zm-3.33 2h2.02c.17 1.46.57 2.84 1.18 4.06A6.52 6.52 0 0 1 4.95 11Zm0-2a6.52 6.52 0 0 1 3.1-4.06A12.2 12.2 0 0 0 6.87 9H4.95Zm7.1 6.06c.61-1.22 1.01-2.6 1.18-4.06h2.02a6.52 6.52 0 0 1-3.2 4.06Z" clip-rule="evenodd" />
-              </svg>
-              <span>{{ t('languageSwitcher.label') }}</span>
-            </div>
-            <div
-              class="inline-flex rounded-full border border-gray-700/80 bg-gray-800/70 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
-              role="group"
-              :aria-label="t('languageSwitcher.label')"
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <svg class="h-4 w-4 text-gray-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm5.25 7h-2.02a12.2 12.2 0 0 0-1.18-4.06A6.52 6.52 0 0 1 15.25 9Zm-5.25 7a10.7 10.7 0 0 1-1.72-5h3.44A10.7 10.7 0 0 1 10 16Zm-1.72-7a10.7 10.7 0 0 1 1.72-5 10.7 10.7 0 0 1 1.72 5H8.28Zm-3.33 2h2.02c.17 1.46.57 2.84 1.18 4.06A6.52 6.52 0 0 1 4.95 11Zm0-2a6.52 6.52 0 0 1 3.1-4.06A12.2 12.2 0 0 0 6.87 9H4.95Zm7.1 6.06c.61-1.22 1.01-2.6 1.18-4.06h2.02a6.52 6.52 0 0 1-3.2 4.06Z" clip-rule="evenodd" />
+            </svg>
+            <button
+              type="button"
+              class="transition-colors"
+              :class="settings.locale === 'de' ? 'text-gray-100' : 'hover:text-gray-200'"
+              @click="setLanguage('de')"
             >
-              <button
-                v-for="lang in settings.LANGUAGES"
-                :key="lang.code"
-                type="button"
-                class="min-w-[3.25rem] rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
-                :class="settings.locale === lang.code ? 'bg-emerald-400 text-gray-950 shadow-sm' : 'text-gray-400 hover:bg-gray-700/70 hover:text-gray-100'"
-                @click="setLanguage(lang.code)"
-              >
-                {{ t(`languages.${lang.code}`) }}
-              </button>
-            </div>
+              {{ t('languages.de') }}
+            </button>
+            <span class="text-gray-700">·</span>
+            <button
+              type="button"
+              class="transition-colors"
+              :class="settings.locale === 'en' ? 'text-gray-100' : 'hover:text-gray-200'"
+              @click="setLanguage('en')"
+            >
+              {{ t('languages.en') }}
+            </button>
           </div>
         </div>
 
@@ -273,6 +271,15 @@ const mobileMenuOpen = ref(false)
 function closeMobileMenu() { mobileMenuOpen.value = false }
 function setLanguage(code) {
   settings.setLocale(code)
+  const localizedPath = getLocalizedPath(code)
+  if (localizedPath !== route.path) {
+    router.push({ path: localizedPath, query: route.query, hash: route.hash })
+  }
+}
+
+function getLocalizedPath(code) {
+  const strippedPath = route.path.replace(/^\/(de|en)(?=\/|$)/, '') || '/'
+  return strippedPath === '/' ? `/${code}` : `/${code}${strippedPath}`
 }
 
 function onKeyDown(e) { if (e.key === 'Escape') closeMobileMenu() }
