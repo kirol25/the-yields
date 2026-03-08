@@ -41,6 +41,14 @@
         >
           {{ t('profile.upgrade') }} →
         </RouterLink>
+        <button
+          v-else
+          @click="openPortal"
+          :disabled="portalLoading"
+          class="text-xs font-medium text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50"
+        >
+          {{ portalLoading ? t('subscriptions.redirecting') : t('subscriptions.manageSubscription') }}
+        </button>
       </div>
 
       <hr class="border-gray-800" />
@@ -184,6 +192,7 @@ import { useSettingsStore } from '../stores/settingsStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 import { useToastStore } from '../stores/toastStore.js'
 import { useSubscription } from '../composables/useSubscription.js'
+import client from '../api/client.js'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
@@ -192,6 +201,19 @@ const toast = useToastStore()
 const router = useRouter()
 
 const { isPremium } = useSubscription()
+
+const portalLoading = ref(false)
+
+async function openPortal() {
+  portalLoading.value = true
+  try {
+    const { data } = await client.post('/api/subscription/portal', {})
+    window.location.href = data.url
+  } catch {
+    toast.add(t('subscriptions.checkoutError'), 'error')
+    portalLoading.value = false
+  }
+}
 
 const nameInput = ref(settings.profile.name)
 const savedName = ref(settings.profile.name)
