@@ -83,7 +83,7 @@ def get_settings() -> Settings:
 
 
 # --- App description for API docs ---
-_description = """
+description = """
 # The Yield API
 
 ## Overview
