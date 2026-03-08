@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from jwt import PyJWKClient
 
 from app import settings
+from app.logging_config import logger
 
 # ---------------------------------------------------------------------------
 # JWKS client — fetches Cognito's public keys once and caches them in-process
@@ -47,7 +48,8 @@ def _fetch_is_premium(email: str) -> bool:
         )
         attrs = {a["Name"]: a["Value"] for a in response.get("UserAttributes", [])}
         return attrs.get("custom:is_premium", "false").lower() == "true"
-    except ClientError:
+    except ClientError as exc:
+        logger.warning("premium_fetch_failed", user=email, error=str(exc))
         return False
 
 
@@ -59,12 +61,14 @@ def _get_is_premium(email: str) -> bool:
         return cached[0]
     is_premium = _fetch_is_premium(email)
     _premium_cache[email] = (is_premium, now + _PREMIUM_TTL)
+    logger.debug("premium_cache_refreshed", user=email, is_premium=is_premium)
     return is_premium
 
 
 def invalidate_premium_cache(email: str) -> None:
     """Evict *email* from the premium cache (call after subscription changes)."""
     _premium_cache.pop(email, None)
+    logger.info("premium_cache_invalidated", user=email)
 
 
 # ---------------------------------------------------------------------------
@@ -89,17 +93,20 @@ def verify_access_token(token: str) -> dict:
             options={"verify_aud": False},
         )
     except jwt.ExpiredSignatureError:
+        logger.warning("auth_token_expired")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Access token has expired",
         )
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as exc:
+        logger.warning("auth_token_invalid", error=str(exc))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid access token",
         )
 
     if claims.get("token_use") != "access":
+        logger.warning("auth_wrong_token_type", token_use=claims.get("token_use"))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token type — access token required",
@@ -108,6 +115,7 @@ def verify_access_token(token: str) -> dict:
     # username = login identifier (email, since username_attributes = ["email"])
     email = claims.get("username") or claims.get("cognito:username", "")
     if not email:
+        logger.warning("auth_missing_username_claim")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token missing username claim",
