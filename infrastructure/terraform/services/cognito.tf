@@ -51,6 +51,16 @@ resource "aws_cognito_user_pool" "main" {
     }
   }
 
+  dynamic "email_configuration" {
+    for_each = var.cognito.from_email_address != null && var.ses.enabled ? [1] : []
+
+    content {
+      email_sending_account  = "DEVELOPER"
+      from_email_address     = var.cognito.from_email_address
+      source_arn             = aws_sesv2_email_identity.domains[split("@", var.cognito.from_email_address)[1]].arn
+    }
+  }
+
   account_recovery_setting {
     recovery_mechanism {
       name     = "verified_email"

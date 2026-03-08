@@ -15,6 +15,7 @@ variable "cognito" {
     password_min_length = number
     callback_urls       = list(string)
     logout_urls         = list(string)
+    from_email_address  = optional(string)
   })
 }
 
