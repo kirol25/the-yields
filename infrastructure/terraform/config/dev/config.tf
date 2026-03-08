@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket       = "the-yields-terraform-state-bucket"
+    bucket       = "the-yield-terraform-state-bucket"
     key          = "dev.tfstate"
     region       = "eu-central-1"
     encrypt      = true
@@ -22,7 +22,7 @@ provider "aws" {
     tags = {
       Creator = "Terraform"
       Stage   = "dev"
-      Project = "the-yields"
+      Project = "the-yield"
     }
   }
 }
@@ -35,7 +35,7 @@ module "api" {
   source = "../../services"
 
   stage        = "dev"
-  project_name = "the-yields"
+  project_name = "the-yield"
 
   # --- Cognito ---
   cognito = {
@@ -43,5 +43,12 @@ module "api" {
     password_min_length = 8
     callback_urls       = ["https://checkmeineimmo.de/auth/callback", "http://localhost:5173/auth/callback"]
     logout_urls         = ["https://checkmeineimmo.de/auth/logout", "http://localhost:5173/auth/logout"]
+    from_email_address  = "welcome@the-yields.com"
+  }
+
+  # --- SES ---
+  ses = {
+    enabled = true
+    domain  = "the-yields.com"
   }
 }
