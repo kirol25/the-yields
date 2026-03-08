@@ -15,6 +15,9 @@
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <p class="text-sm text-gray-400 leading-relaxed">
             {{ t('cookie.message') }}
+            <RouterLink to="/datenschutz" class="text-emerald-400 hover:text-emerald-300">
+              {{ t('cookie.learnMore') }}
+            </RouterLink>
           </p>
           <button
             @click="accept"
@@ -33,10 +36,10 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const visible = ref(localStorage.getItem('cookie-consent') !== 'accepted')
+const visible = ref(localStorage.getItem('storage-notice-dismissed') !== 'true')
 
 function accept() {
-  localStorage.setItem('cookie-consent', 'accepted')
+  localStorage.setItem('storage-notice-dismissed', 'true')
   visible.value = false
 }
 </script>
