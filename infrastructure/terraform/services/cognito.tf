@@ -55,9 +55,9 @@ resource "aws_cognito_user_pool" "main" {
     for_each = var.cognito.from_email_address != null && var.ses.enabled ? [1] : []
 
     content {
-      email_sending_account  = "DEVELOPER"
-      from_email_address     = var.cognito.from_email_address
-      source_arn             = aws_sesv2_email_identity.domain[0].arn
+      email_sending_account = "DEVELOPER"
+      from_email_address    = var.cognito.from_email_address
+      source_arn            = aws_sesv2_email_identity.domain[0].arn
     }
   }
 
