@@ -22,15 +22,26 @@ function parseIdToken(token) {
   }
 }
 
+const COGNITO_TIMEOUT_MS = 10_000
+
 async function cognitoRequest(action, body) {
-  const res = await fetch(`https://cognito-idp.${REGION}.amazonaws.com/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-amz-json-1.1',
-      'X-Amz-Target': `AWSCognitoIdentityProviderService.${action}`,
-    },
-    body: JSON.stringify(body),
-  })
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), COGNITO_TIMEOUT_MS)
+
+  let res
+  try {
+    res = await fetch(`https://cognito-idp.${REGION}.amazonaws.com/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': `AWSCognitoIdentityProviderService.${action}`,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timer)
+  }
 
   // Some Cognito operations (e.g. DeleteUser) return an empty body on success.
   // res.json() on an empty body throws SyntaxError in WebKit — treat that as {}
