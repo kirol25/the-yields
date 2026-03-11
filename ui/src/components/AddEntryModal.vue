@@ -29,7 +29,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             </svg>
             <div class="min-w-0">
-              <p class="text-xs font-medium text-amber-400">{{ t('upsell.tickerLimitTitle', { n: FREE_TIER_LIMIT }) }}</p>
+              <p class="text-xs font-medium text-amber-400">{{ t('upsell.tickerLimitTitle', { n: store.freeTierLimit }) }}</p>
               <p class="text-xs text-amber-300/70 mt-0.5">{{ t('upsell.tickerLimitDesc') }}</p>
               <RouterLink to="/subscriptions" @click="$emit('close')" class="inline-block mt-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
                 {{ t('upsell.upgrade') }} →
@@ -197,8 +197,6 @@ import { useDataStore } from '../stores/dataStore.js'
 import { useMonths } from '../composables/useMonths.js'
 import { useSubscription } from '../composables/useSubscription.js'
 
-const FREE_TIER_LIMIT = 5
-
 const { t } = useI18n()
 const { months } = useMonths()
 const { isPremium } = useSubscription()
@@ -211,9 +209,9 @@ const emit = defineEmits(['close', 'saved'])
 
 const store = useDataStore()
 
-// Free users cannot add more than FREE_TIER_LIMIT new tickers/accounts
+// Free users cannot add more tickers/accounts than the server-defined limit
 const atLimit = computed(
-  () => !isPremium.value && props.existingKeys.length >= FREE_TIER_LIMIT,
+  () => !isPremium.value && props.existingKeys.length >= store.freeTierLimit,
 )
 
 const selectedKey = ref(atLimit.value ? '__new__' : (props.existingKeys[0] ?? '__new__'))
