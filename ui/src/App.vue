@@ -2,7 +2,8 @@
   <div class="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
     <nav class="bg-gray-900 border-b border-gray-800 px-4 sm:px-6 py-4 relative z-50">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <RouterLink to="/" class="text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
+        <RouterLink to="/" class="flex items-center gap-2 text-xl font-bold text-emerald-400 tracking-tight hover:text-emerald-300 transition-colors">
+          <img src="/favicon.svg" alt="" class="w-7 h-7" aria-hidden="true" />
           the-yields
         </RouterLink>
 
