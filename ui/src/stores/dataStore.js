@@ -11,10 +11,20 @@ export const useDataStore = defineStore('data', () => {
   const allYearsData = ref({})
   const loading = ref(false)
   const initializing = ref(true)
+  const freeTierLimit = ref(5) // fallback until /api/config is fetched
 
   function toastError(message, error) {
     if (error?._handled) return
     useToastStore().add(message, 'error')
+  }
+
+  async function fetchMe() {
+    try {
+      const { data } = await client.get('/api/me')
+      freeTierLimit.value = data.free_tier_limit
+    } catch (e) {
+      toastError('Failed to load user context.', e)
+    }
   }
 
   async function fetchYears() {
@@ -84,5 +94,5 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, fetchMe, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
 })
