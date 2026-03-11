@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 
 import boto3
@@ -5,6 +6,8 @@ from fastapi import HTTPException, status
 
 from app.api.feedback.schemas import FeedbackPayload
 from app.config import get_settings
+
+logger = logging.getLogger("the-yields")
 
 _CATEGORY_LABELS = {
     "feedback": "Feedback",
@@ -51,6 +54,7 @@ def _send_email(subject: str, body: str, sender: str) -> None:
             ReplyToAddresses=[sender] if sender != _ANONYMOUS else [],
         )
     except Exception as exc:
+        logger.error("SES send_email failed: %s", exc, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Failed to send feedback email.",

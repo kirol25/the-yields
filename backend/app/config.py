@@ -80,13 +80,13 @@ class Settings(BaseSettings):
         "eu-central-1",
         description="AWS region used for SES",
     )
-    FEEDBACK_TO_EMAIL: str = Field(
-        "contact@the-yields.app",
-        description="Recipient address for feedback submissions",
-    )
     FEEDBACK_FROM_EMAIL: str = Field(
-        "noreply@the-yields.app",
+        "support@the-yields.com",
         description="Verified SES sender address for feedback emails",
+    )
+    FEEDBACK_TO_EMAIL: str = Field(
+        "you@example.com",
+        description="Recipient address for feedback submissions",
     )
 
 
