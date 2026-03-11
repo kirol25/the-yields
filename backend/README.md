@@ -57,7 +57,7 @@ API docs available at `http://localhost:9002/docs`.
 
 **Production** (`COGNITO_REGION` set): every request must include an `Authorization: Bearer <access_token>` header. The token is verified locally via Cognito's JWKS endpoint — no AWS call on the hot path. The `is_premium` flag is resolved from a 5-minute TTL per-user cache backed by `admin_get_user`.
 
-**Dev mode** (`COGNITO_REGION` empty): the `X-User-Email` header is trusted directly after format validation; `is_premium` is always `false`.
+**Dev mode** (`COGNITO_REGION` empty): requests are rejected unless `ALLOW_INSECURE_DEV_AUTH=true`. With that flag enabled, the `X-User-Email` header is trusted directly after format validation; `is_premium` is always `false`.
 
 ## Rate limiting
 
@@ -95,7 +95,7 @@ Exceeded limits return HTTP 429.
 
 ## Configuration
 
-All settings are loaded from environment variables (or a `.env` file):
+All settings are loaded from environment variables and also from `backend/.env` during local runs:
 
 | Variable | Default | Description |
 |---|---|---|
@@ -105,6 +105,7 @@ All settings are loaded from environment variables (or a `.env` file):
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
 | `COGNITO_REGION` | `` | AWS region (e.g. `eu-central-1`). Empty = dev mode |
 | `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID |
+| `ALLOW_INSECURE_DEV_AUTH` | `false` | Allow `X-User-Email` auth only for local development |
 | `STRIPE_SECRET_KEY` | `` | Stripe secret key (`sk_live_...` or `sk_test_...`) |
 | `STRIPE_WEBHOOK_SECRET` | `` | Stripe webhook signing secret (`whsec_...`) |
 | `STRIPE_PRICE_ID_MONTHLY` | `` | Stripe Price ID for monthly plan |
