@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 import boto3
 from fastapi import HTTPException, status
+from pydantic import EmailStr
 
 from app.api.feedback.schemas import FeedbackPayload
 from app.config import get_settings
@@ -19,7 +20,7 @@ _ANONYMOUS = "anonymous"
 
 
 def submit_feedback(
-    payload: FeedbackPayload, email: str | None = None
+    payload: FeedbackPayload, email: EmailStr | None = None
 ) -> dict[str, str]:
     """Send a feedback submission as an email via AWS SES."""
     sender = email or _ANONYMOUS
