@@ -62,8 +62,8 @@ export const useDataStore = defineStore('data', () => {
   async function saveData() {
     try {
       await client.put(`/api/data/${currentYear.value}`, yearData.value)
+      allYearsData.value[currentYear.value] = yearData.value
       await fetchYears()
-      await loadAllYears()
     } catch (e) {
       toastError('Failed to save. Please try again.', e)
     }

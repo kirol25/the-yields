@@ -97,7 +97,9 @@ export const useSettingsStore = defineStore('settings', () => {
         yieldGoal: yieldGoal.value,
         steuerfreibetrag: steuerfreibetrag.value,
       })
-    } catch { /* silent — local values remain authoritative */ }
+    } catch (e) {
+      console.error('[settings] server sync failed — local values kept:', e)
+    }
   }
 
   const _debouncedSaveToServer = debounce(_saveToServer, SAVE_DEBOUNCE_MS)
@@ -109,7 +111,9 @@ export const useSettingsStore = defineStore('settings', () => {
       if (data.yieldGoal        && typeof data.yieldGoal        === 'object') yieldGoal.value        = data.yieldGoal
       if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object') steuerfreibetrag.value = data.steuerfreibetrag
       save()
-    } catch { /* silent — local values remain */ }
+    } catch (e) {
+      console.error('[settings] failed to load from server — using local values:', e)
+    }
   }
 
   function setDividendGoal(year, amount) {
