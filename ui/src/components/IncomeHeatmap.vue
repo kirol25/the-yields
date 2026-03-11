@@ -87,11 +87,12 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
-import { MONTHS } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
 
 const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
+const { months: MONTHS } = useMonths()
 
 const filter = ref('all')
 const filterOptions = computed(() => [
@@ -105,7 +106,7 @@ const grid = computed(() => {
   for (const year of store.years) {
     const data = store.allYearsData[year] || {}
     result[year] = {}
-    for (const m of MONTHS) {
+    for (const m of MONTHS.value) {
       let total = 0
       if (filter.value !== 'yields') {
         for (const entry of Object.values(data.dividends || {})) {

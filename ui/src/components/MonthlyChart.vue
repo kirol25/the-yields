@@ -38,13 +38,14 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
-import { MONTHS as MONTHS_CONFIG } from '../config.js'
+import { useMonths } from '../composables/useMonths.js'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
+const { months: MONTHS_CONFIG } = useMonths()
 const filter = ref('all')
 const plugins = [ChartDataLabels]
 
@@ -63,7 +64,7 @@ function sumByMonth(section) {
   const totals = Array(12).fill(0)
   for (const entry of Object.values(section)) {
     const months = entry.months || {}
-    MONTHS_CONFIG.forEach(({ value }, i) => {
+    MONTHS_CONFIG.value.forEach(({ value }, i) => {
       totals[i] += months[value] || 0
     })
   }
@@ -99,7 +100,7 @@ const chartData = computed(() => {
       borderRadius: 4,
     })
   }
-  return { labels: MONTHS_CONFIG.map((m) => m.short), datasets }
+  return { labels: MONTHS_CONFIG.value.map((m) => m.short), datasets }
 })
 
 const chartOptions = computed(() => {
