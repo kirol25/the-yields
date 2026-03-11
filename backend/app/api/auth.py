@@ -1,8 +1,7 @@
-import time
-
 import boto3
 import jwt
 from botocore.exceptions import ClientError
+from cachetools import TTLCache
 from fastapi import HTTPException, status
 from jwt import PyJWKClient
 
@@ -33,7 +32,8 @@ def _get_jwks_client() -> PyJWKClient:
 # ---------------------------------------------------------------------------
 
 _PREMIUM_TTL = 300  # seconds
-_premium_cache: dict[str, tuple[bool, float]] = {}  # email -> (is_premium, expires_at)
+_PREMIUM_CACHE_MAX = 1024  # max unique users held in memory
+_premium_cache: TTLCache = TTLCache(maxsize=_PREMIUM_CACHE_MAX, ttl=_PREMIUM_TTL)
 
 
 def _fetch_is_premium(email: str) -> bool:
@@ -55,12 +55,10 @@ def _fetch_is_premium(email: str) -> bool:
 
 def _get_is_premium(email: str) -> bool:
     """Return is_premium for *email*, hitting the cache when fresh."""
-    now = time.monotonic()
-    cached = _premium_cache.get(email)
-    if cached and now < cached[1]:
-        return cached[0]
+    if email in _premium_cache:
+        return _premium_cache[email]
     is_premium = _fetch_is_premium(email)
-    _premium_cache[email] = (is_premium, now + _PREMIUM_TTL)
+    _premium_cache[email] = is_premium
     logger.debug("premium_cache_refreshed", user=email, is_premium=is_premium)
     return is_premium
 

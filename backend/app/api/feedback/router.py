@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Header, Request, status
+from pydantic import EmailStr
 
 from app.api.feedback import service
 from app.api.feedback.schemas import FeedbackPayload
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/api", tags=["feedback"])
 def submit_feedback(
     request: Request,
     payload: FeedbackPayload,
-    x_user_email: str | None = Header(default=None),
+    x_user_email: EmailStr | None = Header(default=None),
 ) -> dict[str, str]:
     """Send a feedback submission as an email via AWS SES."""
     service.submit_feedback(payload, x_user_email)
