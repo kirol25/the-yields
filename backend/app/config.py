@@ -36,7 +36,7 @@ class Settings(BaseSettings):
 
     # --- Cognito / Auth settings ---
     COGNITO_REGION: str = Field(
-        "",
+        "eu-central-1",
         description="AWS Cognito region (e.g. eu-central-1). "
         "Leave empty to skip JWT verification in dev mode.",
     )
