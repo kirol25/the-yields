@@ -29,7 +29,8 @@ KeyPath = Annotated[
     summary="Authenticated user context",
     description="Returns the current user's identity and effective plan limits.",
 )
-def get_me(ctx: AuthContextDep) -> dict[str, Any]:
+@limiter.limit("30/minute")
+def get_me(request: Request, ctx: AuthContextDep) -> dict[str, Any]:
     return {
         "email": ctx["email"],
         "is_premium": ctx["is_premium"],
@@ -47,7 +48,8 @@ def get_me(ctx: AuthContextDep) -> dict[str, Any]:
     description="Returns a sorted list of years for which data exists."
     " Free users only receive the current year.",
 )
-def get_years(ctx: AuthContextDep, service: ServiceDep) -> list[int]:
+@limiter.limit("60/minute")
+def get_years(request: Request, ctx: AuthContextDep, service: ServiceDep) -> list[int]:
     return service.get_years(ctx["is_premium"])
 
 
@@ -63,8 +65,9 @@ def get_years(ctx: AuthContextDep, service: ServiceDep) -> list[int]:
     description="Returns dividend and yield data for the given year."
     " Free users may only access the current year.",
 )
+@limiter.limit("120/minute")
 def get_data(
-    year: YearPath, ctx: AuthContextDep, service: ServiceDep
+    request: Request, year: YearPath, ctx: AuthContextDep, service: ServiceDep
 ) -> dict[str, Any]:
     return service.get_data(year, ctx["is_premium"])
 
@@ -98,7 +101,8 @@ def put_data(
     summary="Get user settings",
     description="Returns the user's saved goals and steuerfreibetrag.",
 )
-def get_settings(service: ServiceDep) -> dict[str, Any]:
+@limiter.limit("30/minute")
+def get_settings(request: Request, service: ServiceDep) -> dict[str, Any]:
     return service.get_settings()
 
 
