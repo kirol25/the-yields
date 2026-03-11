@@ -30,10 +30,9 @@ class Settings(BaseSettings):
 
     # --- Storage settings ---
     STORAGE_BACKEND: str = Field(
-        "local", description="Storage backend to use: 'local' or 's3'"
+        "s3", description="Storage backend to use: 'local' or 's3'"
     )
     S3_BUCKET: str = Field("the-yields-data", description="S3 bucket name")
-    S3_PREFIX: str = Field("test-user", description="S3 prefix for storing data")
 
     # --- Cognito / Auth settings ---
     COGNITO_REGION: str = Field(

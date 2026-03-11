@@ -15,11 +15,9 @@ class S3YieldRepository:
         self,
         user_email: str,
         bucket: str = settings.S3_BUCKET,
-        prefix: str = settings.S3_PREFIX,
     ) -> None:
         self.bucket = bucket
-        # Store files under {prefix}/{user_email}/YYYY.json
-        self.prefix = f"{prefix.rstrip('/')}/{user_email}"
+        self.prefix = user_email
         self._s3 = boto3.client("s3")
 
     # ── private ──────────────────────────────────────────────────────────────
