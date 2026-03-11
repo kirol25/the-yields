@@ -36,6 +36,7 @@
       <p>{{ t('privacyPage.accountBody1') }}</p>
       <p>{{ t('privacyPage.accountBody2') }}</p>
       <p>{{ t('privacyPage.accountBody3') }}</p>
+      <p>{{ t('privacyPage.accountBody4') }}</p>
     </section>
 
     <section class="space-y-3">
@@ -48,6 +49,7 @@
           stripe.com/privacy
         </a>.
       </p>
+      <p>{{ t('privacyPage.subscriptionBody4') }}</p>
     </section>
 
     <section class="space-y-3">
