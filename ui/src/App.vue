@@ -331,7 +331,7 @@ watch(
     if (authed) {
       const valid = await auth.ensureValidToken()
       if (!valid) return
-      await settings.loadFromServer()
+      await Promise.all([settings.loadFromServer(), store.fetchMe()])
       await store.fetchYears()
       await Promise.all([store.loadYear(store.currentYear), store.loadAllYears()])
     }
