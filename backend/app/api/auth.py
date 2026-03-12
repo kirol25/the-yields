@@ -1,12 +1,12 @@
 import boto3
 import jwt
-from backend.app.core.logging_config import logger
 from botocore.exceptions import ClientError
 from cachetools import TTLCache
 from fastapi import HTTPException, status
 from jwt import PyJWKClient
 
-from app import settings
+from app.core import settings
+from app.core.logging_config import logger
 
 # ---------------------------------------------------------------------------
 # JWKS client — fetches Cognito's public keys once and caches them in-process

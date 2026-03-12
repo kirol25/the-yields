@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 
-from app import settings
+from app.core import settings
 
 
 class MeResponse(BaseModel):

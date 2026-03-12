@@ -1,5 +1,5 @@
-from app import settings
 from app.api.users.schemas import MeResponse
+from app.core import settings
 
 
 class UserService:
