@@ -2,11 +2,11 @@ import logging
 from datetime import UTC, datetime
 
 import boto3
-from backend.app.core.config import get_settings
 from fastapi import HTTPException, status
 from pydantic import EmailStr
 
 from app.api.feedback.schemas import FeedbackPayload
+from app.core.config import get_settings
 
 logger = logging.getLogger("the-yields")
 

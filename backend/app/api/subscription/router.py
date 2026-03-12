@@ -1,9 +1,9 @@
-from backend.app.core.limiter import limiter
 from fastapi import APIRouter, Request, status
 
 from app.api.finance.dependencies import AuthContextDep
 from app.api.subscription import service
 from app.api.subscription.schemas import CheckoutRequest
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/api/subscription", tags=["subscription"])
 

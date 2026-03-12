@@ -5,7 +5,7 @@ from typing import Any
 import boto3
 from botocore.exceptions import ClientError
 
-from app import settings
+from app.core import settings
 
 
 class S3YieldRepository:
