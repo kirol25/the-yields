@@ -1,6 +1,7 @@
 import re
 from typing import Annotated
 
+from backend.app.core.utils import YieldRepositoryType
 from fastapi import Depends, Header, HTTPException, status
 
 from app import settings
@@ -8,7 +9,6 @@ from app.api.auth import verify_access_token
 from app.api.finance.repository import YieldRepository
 from app.api.finance.s3_repository import S3YieldRepository
 from app.api.finance.service import YieldService
-from app.utils import YieldRepositoryType
 
 # ── dependency factories ──────────────────────────────────────────────────────
 
