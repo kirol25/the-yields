@@ -24,21 +24,6 @@ KeyPath = Annotated[
 
 
 @router.get(
-    "/me",
-    status_code=status.HTTP_200_OK,
-    summary="Authenticated user context",
-    description="Returns the current user's identity and effective plan limits.",
-)
-@limiter.limit("30/minute")
-def get_me(request: Request, ctx: AuthContextDep) -> dict[str, Any]:
-    return {
-        "email": ctx["email"],
-        "is_premium": ctx["is_premium"],
-        "free_tier_limit": settings.FREE_TIER_LIMIT,
-    }
-
-
-@router.get(
     "/years",
     responses={
         status.HTTP_200_OK: {"description": "Years retrieved successfully"},
