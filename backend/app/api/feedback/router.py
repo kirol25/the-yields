@@ -1,9 +1,9 @@
-from backend.app.core.limiter import limiter
 from fastapi import APIRouter, Header, Request, status
 from pydantic import EmailStr
 
 from app.api.feedback import service
 from app.api.feedback.schemas import FeedbackPayload
+from app.core.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["feedback"])
 

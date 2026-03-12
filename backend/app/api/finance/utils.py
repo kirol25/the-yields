@@ -2,8 +2,8 @@ from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 
-from app import settings
 from app.api.finance.schemas import YearPayload
+from app.core import settings
 
 
 def current_year() -> int:

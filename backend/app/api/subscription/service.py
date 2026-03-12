@@ -1,11 +1,11 @@
 import boto3
 import stripe
-from backend.app.core.logging_config import logger
 from botocore.exceptions import ClientError
 from fastapi import HTTPException, status
 
-from app import settings
 from app.api.auth import invalidate_premium_cache
+from app.core import settings
+from app.core.logging_config import logger
 
 STRIPE_ENABLED = bool(settings.STRIPE_SECRET_KEY)
 
