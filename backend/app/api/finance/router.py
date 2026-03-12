@@ -1,11 +1,11 @@
 from typing import Annotated, Any, Literal
 
+from backend.app.core.limiter import limiter
 from fastapi import APIRouter, Path, Request, status
 
 from app import settings
 from app.api.finance.dependencies import AuthContextDep, ServiceDep
 from app.api.finance.schemas import SettingsPayload, YearPayload
-from app.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["finance"])
 

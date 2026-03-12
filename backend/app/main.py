@@ -1,4 +1,7 @@
 import uvicorn
+from backend.app.core.config import description
+from backend.app.core.limiter import limiter
+from backend.app.core.logging_config import configure_logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -6,9 +9,6 @@ from slowapi.errors import RateLimitExceeded
 
 from app import settings
 from app.api import router
-from app.config import description
-from app.limiter import limiter
-from app.logging_config import configure_logging
 from app.middleware.logging import RequestLoggingMiddleware
 from app.version import __version__
 
