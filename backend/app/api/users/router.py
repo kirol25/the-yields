@@ -1,9 +1,9 @@
+from backend.app.core.limiter import limiter
 from fastapi import APIRouter, Request, status
 
 from app.api.finance.dependencies import AuthContextDep
 from app.api.users.schemas import MeResponse
 from app.api.users.service import UserService
-from app.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["users"])
 
