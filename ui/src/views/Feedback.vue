@@ -79,13 +79,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import axios from 'axios'
-import { API_BASE } from '../config.js'
-import { useAuthStore } from '../stores/authStore.js'
+import client from '../api/client.js'
 import { useToastStore } from '../stores/toastStore.js'
 
 const { t } = useI18n()
-const auth = useAuthStore()
 const toast = useToastStore()
 
 const category = ref('feedback')
@@ -103,11 +100,10 @@ async function submit() {
   if (!message.value.trim() || submitting.value) return
   submitting.value = true
   try {
-    await axios.post(
-      `${API_BASE}/api/feedback`,
-      { category: category.value, message: message.value },
-      { headers: { 'X-User-Email': auth.user?.email ?? '' } },
-    )
+    await client.post('/api/feedback', {
+      category: category.value,
+      message: message.value,
+    })
     submitted.value = true
   } catch {
     toast.add(t('feedback.submit') + ' failed. Please try again.', 'error')
