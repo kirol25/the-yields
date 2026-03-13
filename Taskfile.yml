@@ -1,6 +1,6 @@
 version: '3'
 vars:
-  BACKEND_PORT: 9002
+  BACKEND_PORT: 8000
 
 tasks:
   ui:
@@ -20,6 +20,14 @@ tasks:
   dev:
     desc: Start both ui and api concurrently
     deps: [ui, api]
+
+  test:
+    desc: Run backend tests
+    env:
+      PYTHONPATH: backend
+    cmd: |
+      cd backend
+      uv run pytest
 
   format:
     desc: Format code with Ruff and Prettier
