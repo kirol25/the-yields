@@ -4,8 +4,8 @@ import { i18n } from '../i18n.js'
 import { useToastStore } from './toastStore.js'
 import { useSettingsStore } from './settingsStore.js'
 import client from '../api/client.js'
+import { REGION } from '../config.js'
 
-const REGION = import.meta.env.VITE_COGNITO_REGION
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
 
 function parseIdToken(token) {

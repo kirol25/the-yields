@@ -1,6 +1,9 @@
 export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 export const APP_NAME = 'the-yields'
 
+// The AWS region for Cognito authentication
+export const REGION='eu-central-1'
+
 // ── Brand colours ────────────────────────────────────────────────────────────
 // These are the Tailwind CSS custom property values used across the app.
 // Dark-mode values are Tailwind's built-in defaults; light-mode overrides are
