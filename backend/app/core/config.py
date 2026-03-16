@@ -35,11 +35,6 @@ class Settings(BaseSettings):
     S3_BUCKET: str = Field("the-yields-data", description="S3 bucket name")
 
     # --- Cognito / Auth settings ---
-    COGNITO_REGION: str = Field(
-        "eu-central-1",
-        description="AWS Cognito region (e.g. eu-central-1). "
-        "Leave empty to skip JWT verification in dev mode.",
-    )
     COGNITO_USER_POOL_ID: str = Field(
         "",
         description="Cognito User Pool ID — required to update custom:is_premium "
