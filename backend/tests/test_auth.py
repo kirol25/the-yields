@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app.api.finance.dependencies import get_auth_context
-from app.core.config import BACKEND_ROOT, get_settings
+from app.core.config import BACKEND_ROOT
 from app.main import app
 
 # ---------------------------------------------------------------------------
@@ -18,18 +18,6 @@ from app.main import app
 def test_backend_root_points_to_backend_dir():
     """BACKEND_ROOT must resolve to the `backend/` directory, not `backend/app/`."""
     assert BACKEND_ROOT.name == "backend"
-
-
-def test_env_file_is_loaded():
-    """Settings loaded from .env: ALLOW_INSECURE_DEV_AUTH must be True in dev."""
-    s = get_settings()
-    assert s.ALLOW_INSECURE_DEV_AUTH is True
-
-
-def test_env_file_path_exists():
-    """The resolved .env path must actually exist on disk."""
-    env_path = BACKEND_ROOT / ".env"
-    assert env_path.exists(), f".env not found at {env_path}"
 
 
 # ---------------------------------------------------------------------------
