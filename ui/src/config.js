@@ -1,5 +1,12 @@
+// ── Backend ────────────────────────────────────────────────────────────
 export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 export const APP_NAME = 'the-yields'
+
+// The AWS region for Cognito authentication
+export const REGION='eu-central-1'
+
+// ── Feature flags ────────────────────────────────────────────────────────────
+export const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
 
 // ── Brand colours ────────────────────────────────────────────────────────────
 // These are the Tailwind CSS custom property values used across the app.
