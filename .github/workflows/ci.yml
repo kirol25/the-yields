@@ -16,9 +16,9 @@ permissions:
   contents: read
 
 jobs:
-  # ── Frontend ────────────────────────────────────────────────────────────────
-  build-ui:
-    name: Build UI
+  # ── Test ──────────────────────────────────────────────────────────────────
+  test-ui:
+    name: Test UI
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,14 +41,12 @@ jobs:
         env:
           # Placeholder values so Vite can build without real credentials
           VITE_API_BASE: http://localhost:8000
-          VITE_COGNITO_REGION: eu-central-1
           VITE_COGNITO_CLIENT_ID: ci-placeholder
-          VITE_REGISTRATION_ENABLED: "true"
+          VITE_REGISTRATION_ENABLED: "false"
           VITE_STRIPE_ENABLED: "false"
 
-  # ── Backend ─────────────────────────────────────────────────────────────────
-  build-backend:
-    name: Build Backend
+  test-backend:
+    name: Test Backend
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -87,12 +85,101 @@ jobs:
           sleep 3
           curl --fail --silent http://127.0.0.1:8000/monitoring/health
         env:
+          STORAGE_BACKEND: s3
+
+      - name: Run tests
+        run: uv run pytest tests/ -v
+        env:
           STORAGE_BACKEND: local
 
-  # ── Gate ────────────────────────────────────────────────────────────────────
+  # ── Gate ─────────────────────────────────────────────────────────────────────
   healthy:
     name: Healthy
-    needs: [build-ui, build-backend]
+    needs: [test-ui, test-backend]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All checks passed ✓"
+
+  # ── Publish ───────────────────────────────────────────────────────────────────
+  publish-ui:
+    name: Publish UI Image
+    needs: [healthy]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read version
+        id: version
+        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        working-directory: ui
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ui
+          push: true
+          cache-from: type=gha,scope=ui
+          cache-to: type=gha,scope=ui,mode=max
+          build-args: |
+            VITE_API_BASE=${{ secrets.VITE_API_BASE }}
+            VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}
+            VITE_REGISTRATION_ENABLED=${{ vars.VITE_REGISTRATION_ENABLED }}
+            VITE_STRIPE_ENABLED=${{ vars.VITE_STRIPE_ENABLED }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/the-yield-ui:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/the-yield-ui:latest
+
+  publish-backend:
+    name: Publish Backend Image
+    needs: [healthy]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(grep -m1 '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
+        working-directory: backend
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,scope=backend,mode=max
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/the-yield-backend:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/the-yield-backend:latest
