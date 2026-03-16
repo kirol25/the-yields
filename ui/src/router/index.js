@@ -2,8 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { getLocaleFromPath, localizePath } from './locale.js'
-
-const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
+import { REGISTRATION_ENABLED } from '../config.js'
 
 function localizedAliases(paths) {
   const list = Array.isArray(paths) ? paths : [paths]
