@@ -6,7 +6,7 @@ export const APP_NAME = 'the-yields'
 export const REGION='eu-central-1'
 
 // ── Feature flags ────────────────────────────────────────────────────────────
-const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
+export const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
 
 // ── Brand colours ────────────────────────────────────────────────────────────
 // These are the Tailwind CSS custom property values used across the app.
