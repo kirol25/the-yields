@@ -3,6 +3,7 @@ vars:
   BACKEND_PORT: 8000
 
 tasks:
+  # –––– Development ––––––––––––––––––––––––––––––––––––––––––
   ui:
     desc: Start the Vite dev server on :5173
     cmd: |
@@ -21,6 +22,23 @@ tasks:
     desc: Start both ui and api concurrently
     deps: [ui, api]
 
+  # –––– Build ––––––––––––––––––––––––––––––––––––––––––
+  build:ui:
+    desc: Build the UI for production
+    cmd: |
+      cd ui
+      npm run build
+
+  build:api:
+    desc: Build the backend Docker image
+    cmd: |
+      docker build -t the-yield-api ./backend
+
+  build:
+    desc: Build both UI and backend
+    deps: [build:ui, build:api]
+
+  # –––– Test ––––––––––––––––––––––––––––––––––––––––––
   test:
     desc: Run backend tests
     env:
