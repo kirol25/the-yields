@@ -85,8 +85,9 @@
 
 <script setup>
 import { ref, defineComponent, h } from 'vue'
+import { REGISTRATION_ENABLED } from '../config.js'
 
-const registrationEnabled = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
+const registrationEnabled = REGISTRATION_ENABLED
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
