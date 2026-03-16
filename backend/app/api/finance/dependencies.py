@@ -28,7 +28,7 @@ def get_auth_context(
     In that mode, trust the ``X-User-Email`` header after format validation;
     ``is_premium`` is always ``False``.
     """
-    if settings.COGNITO_REGION and not settings.ALLOW_INSECURE_DEV_AUTH:
+    if settings.COGNITO_USER_POOL_ID and not settings.ALLOW_INSECURE_DEV_AUTH:
         if not authorization or not authorization.startswith("Bearer "):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
