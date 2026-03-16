@@ -25,10 +25,10 @@ def test_backend_root_points_to_backend_dir():
 # ---------------------------------------------------------------------------
 
 
-def _build_dev_settings(allow_insecure: bool = True, cognito_region: str = ""):
+def _build_dev_settings(allow_insecure: bool = True, cognito_user_pool_id: str = ""):
     s = MagicMock()
     s.ALLOW_INSECURE_DEV_AUTH = allow_insecure
-    s.COGNITO_REGION = cognito_region
+    s.COGNITO_USER_POOL_ID = cognito_user_pool_id
     return s
 
 
@@ -45,7 +45,7 @@ class TestDevMode:
     """get_auth_context behaviour when ALLOW_INSECURE_DEV_AUTH=True."""
 
     def _settings(self):
-        return _build_dev_settings(allow_insecure=True, cognito_region="")
+        return _build_dev_settings(allow_insecure=True, cognito_user_pool_id="")
 
     def test_valid_email_returns_ctx(self):
         ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
@@ -70,7 +70,9 @@ class TestProdMode:
     """get_auth_context behaviour when ALLOW_INSECURE_DEV_AUTH=False."""
 
     def _settings(self):
-        return _build_dev_settings(allow_insecure=False, cognito_region="eu-central-1")
+        return _build_dev_settings(
+            allow_insecure=False, cognito_user_pool_id="eu-central-1"
+        )
 
     def test_missing_bearer_raises_401(self):
         with pytest.raises(HTTPException) as exc:
@@ -99,7 +101,7 @@ class TestUnconfiguredMode:
     """No Cognito and ALLOW_INSECURE_DEV_AUTH=False → 503."""
 
     def test_raises_503(self):
-        s = _build_dev_settings(allow_insecure=False, cognito_region="")
+        s = _build_dev_settings(allow_insecure=False, cognito_user_pool_id="")
         with pytest.raises(HTTPException) as exc:
             _call_auth(x_user_email="user@example.com", settings_obj=s)
         assert exc.value.status_code == 503
