@@ -14,9 +14,17 @@ updates:
       production-dependencies:
         dependency-type: "production"
 
-  # Backend — pip / pyproject.toml (backend/)
+  # Backend — uv / pyproject.toml (backend/)
   - package-ecosystem: "pip"
     directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+
+  # Terraform (infrastructure/terraform/services/)
+  - package-ecosystem: "terraform"
+    directory: "/infrastructure/terraform/services"
     schedule:
       interval: "weekly"
       day: "monday"
