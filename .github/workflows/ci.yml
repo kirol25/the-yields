@@ -88,10 +88,17 @@ jobs:
           STORAGE_BACKEND: s3
 
       - name: Run tests
-        run: uv run pytest tests/ -v
+        run: uv run pytest tests/ -v --junit-xml=pytest-report.xml
         env:
           STORAGE_BACKEND: local
           ALLOW_INSECURE_DEV_AUTH: "true"
+
+      - name: Publish test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-report
+          path: backend/pytest-report.xml
 
   # ── Gate ─────────────────────────────────────────────────────────────────────
   healthy:
