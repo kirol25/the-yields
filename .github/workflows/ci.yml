@@ -91,6 +91,7 @@ jobs:
         run: uv run pytest tests/ -v
         env:
           STORAGE_BACKEND: local
+          ALLOW_INSECURE_DEV_AUTH: "true"
 
   # ── Gate ─────────────────────────────────────────────────────────────────────
   healthy:
