@@ -13,11 +13,11 @@ class S3YieldRepository:
 
     def __init__(
         self,
-        user_email: str,
+        user_key: str,
         bucket: str = settings.S3_BUCKET,
     ) -> None:
         self.bucket = bucket
-        self.prefix = user_email
+        self.prefix = user_key
         self._s3 = boto3.client("s3")
 
     # ── private ──────────────────────────────────────────────────────────────
