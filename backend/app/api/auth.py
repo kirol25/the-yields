@@ -119,4 +119,6 @@ def verify_access_token(token: str) -> dict:
             detail="Token missing username claim",
         )
 
-    return {"email": email, "is_premium": _get_is_premium(email)}
+    sub = claims.get("sub", "")
+
+    return {"email": email, "sub": sub, "is_premium": _get_is_premium(email)}
