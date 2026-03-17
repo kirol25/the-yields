@@ -61,8 +61,12 @@ def get_repository(
 ) -> YieldRepositoryType:
     """Return the appropriate repository scoped to the requesting user."""
     user_email = ctx["email"]
+
+    # Use sub (UUID) as the S3 prefix when available — data is keyed by sub
+    user_key = ctx.get("sub") or user_email
+
     if settings.STORAGE_BACKEND == "s3":
-        return S3YieldRepository(user_email=user_email)
+        return S3YieldRepository(user_key=user_key)
     return YieldRepository(user_email=user_email)
 
 
