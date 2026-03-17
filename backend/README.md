@@ -101,7 +101,6 @@ All settings are loaded from environment variables and also from `backend/.env` 
 |---|---|---|
 | `STORAGE_BACKEND` | `local` | `local` or `s3` |
 | `S3_BUCKET` | `the-yields-data` | S3 bucket name |
-| `S3_PREFIX` | `test-user` | S3 key prefix |
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
 | `COGNITO_REGION` | `` | AWS region (e.g. `eu-central-1`). Empty = dev mode |
 | `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID |

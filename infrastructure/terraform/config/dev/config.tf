@@ -51,4 +51,10 @@ module "api" {
     enabled = true
     domain  = "the-yields.com"
   }
+
+  # --- S3 ---
+  s3 = {
+    enabled     = true
+    bucket_name = "the-yields-data"
+  }
 }
