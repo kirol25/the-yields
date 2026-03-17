@@ -1,4 +1,19 @@
 # ============================================
+# IAM deployment credentials
+# ============================================
+
+output "app_server_access_key_id" {
+  description = "AWS access key ID for the app server IAM user"
+  value       = var.s3.enabled ? aws_iam_access_key.app_server[0].id : null
+}
+
+output "app_server_secret_access_key" {
+  description = "AWS secret access key for the app server IAM user"
+  value       = var.s3.enabled ? aws_iam_access_key.app_server[0].secret : null
+  sensitive   = true
+}
+
+# ============================================
 # SES DKIM Records (add these to IONOS DNS)
 # ============================================
 
