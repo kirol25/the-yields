@@ -1,11 +1,15 @@
+# ============================================
+# S3 bucket for app data storage
+# ============================================
+
 resource "aws_s3_bucket" "data" {
-  count  = var.s3.enabled ? 1 : 0
+  count = var.s3.enabled ? 1 : 0
 
   bucket = var.s3.bucket_name
 }
 
 resource "aws_s3_bucket_public_access_block" "data" {
-  count  = var.s3.enabled ? 1 : 0
+  count = var.s3.enabled ? 1 : 0
 
   bucket = aws_s3_bucket.data[0].id
 
@@ -16,7 +20,7 @@ resource "aws_s3_bucket_public_access_block" "data" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
-  count  = var.s3.enabled ? 1 : 0
+  count = var.s3.enabled ? 1 : 0
 
   bucket = aws_s3_bucket.data[0].id
 
