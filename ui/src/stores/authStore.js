@@ -262,9 +262,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function getAuthHeaders() {
-    const headers = { 'X-User-Email': user.value?.email ?? '' }
-    if (accessToken.value) headers['Authorization'] = `Bearer ${accessToken.value}`
-    return headers
+    if (idToken.value) return { Authorization: `Bearer ${idToken.value}` }
+    return {}
   }
 
   return {
