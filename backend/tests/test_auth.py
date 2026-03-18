@@ -49,7 +49,7 @@ class TestDevMode:
 
     def test_valid_email_returns_ctx(self):
         ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
-        assert ctx == {"email": "user@example.com", "is_premium": False}
+        assert ctx == {"email": "user@example.com", "sub": "", "is_premium": False}
 
     def test_missing_email_raises_401(self):
         with pytest.raises(HTTPException) as exc:
@@ -64,6 +64,10 @@ class TestDevMode:
     def test_is_premium_always_false_in_dev(self):
         ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
         assert ctx["is_premium"] is False
+
+    def test_sub_is_empty_string_in_dev(self):
+        ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
+        assert ctx["sub"] == ""
 
 
 class TestProdMode:
@@ -84,17 +88,24 @@ class TestProdMode:
             _call_auth(authorization="Token abc", settings_obj=self._settings())
         assert exc.value.status_code == 401
 
-    def test_valid_bearer_calls_verify(self):
+    def test_valid_bearer_calls_verify_and_fetches_premium(self):
         mock_verify = MagicMock(
-            return_value={"email": "u@example.com", "is_premium": False}
+            return_value={"email": "u@example.com", "sub": "test-sub-uuid"}
         )
-        with patch("app.api.finance.dependencies.verify_access_token", mock_verify):
+        mock_get_premium = MagicMock(return_value=True)
+        with (
+            patch("app.api.finance.dependencies.verify_token", mock_verify),
+            patch("app.api.finance.dependencies._get_is_premium", mock_get_premium),
+        ):
             ctx = _call_auth(
                 authorization="Bearer fake.jwt.token",
                 settings_obj=self._settings(),
             )
         mock_verify.assert_called_once_with("fake.jwt.token")
+        mock_get_premium.assert_called_once_with("test-sub-uuid")
         assert ctx["email"] == "u@example.com"
+        assert ctx["sub"] == "test-sub-uuid"
+        assert ctx["is_premium"] is True
 
 
 class TestUnconfiguredMode:
@@ -115,16 +126,20 @@ class TestUnconfiguredMode:
 class TestDevModeEndToEnd:
     """Integration: ensure the /api/me endpoint enforces X-User-Email in dev."""
 
+    def _dev_settings(self):
+        return _build_dev_settings(allow_insecure=True, cognito_user_pool_id="")
+
     def test_missing_email_header_returns_401(self):
-        # Use the real dependency (no override) with dev settings loaded from .env
         app.dependency_overrides.clear()
         client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/api/me")
+        with patch("app.api.finance.dependencies.settings", self._dev_settings()):
+            resp = client.get("/api/me")
         assert resp.status_code == 401
 
     def test_valid_email_header_returns_200(self):
         app.dependency_overrides.clear()
         client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/api/me", headers={"X-User-Email": "user@example.com"})
+        with patch("app.api.finance.dependencies.settings", self._dev_settings()):
+            resp = client.get("/api/me", headers={"X-User-Email": "user@example.com"})
         assert resp.status_code == 200
         assert resp.json()["email"] == "user@example.com"
