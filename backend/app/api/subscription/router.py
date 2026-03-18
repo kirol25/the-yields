@@ -21,7 +21,7 @@ def create_checkout_session(
     body: CheckoutRequest,
     ctx: AuthContextDep,
 ) -> dict[str, str]:
-    return {"url": service.create_checkout_url(body.plan, ctx["email"])}
+    return {"url": service.create_checkout_url(body.plan, ctx["email"], ctx["sub"])}
 
 
 @router.post(

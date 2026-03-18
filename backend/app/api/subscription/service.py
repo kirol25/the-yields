@@ -1,9 +1,8 @@
-import boto3
 import stripe
-from botocore.exceptions import ClientError
 from fastapi import HTTPException, status
 
-from app.api.auth import invalidate_premium_cache
+from app.api.finance.dependencies import invalidate_premium_cache
+from app.api.finance.s3_repository import S3YieldRepository
 from app.core import settings
 from app.core.logging_config import logger
 
@@ -26,24 +25,16 @@ def _require_stripe() -> None:
         )
 
 
-def set_premium(user_email: str, value: bool) -> None:
-    """Update custom:is_premium on the Cognito user."""
-    if not settings.COGNITO_REGION or not settings.COGNITO_USER_POOL_ID:
-        return
-    client = boto3.client("cognito-idp", region_name=settings.COGNITO_REGION)
-    try:
-        client.admin_update_user_attributes(
-            UserPoolId=settings.COGNITO_USER_POOL_ID,
-            Username=user_email,
-            UserAttributes=[
-                {"Name": "custom:is_premium", "Value": "true" if value else "false"}
-            ],
-        )
-    except ClientError as exc:
-        logger.error("set_premium_failed", user=user_email, value=value, error=str(exc))
+def set_premium(sub: str, value: bool) -> None:
+    """Write is_premium into the user's settings.json."""
+    repo = S3YieldRepository(user_key=sub)
+    user_settings = repo.read_settings()
+    user_settings["is_premium"] = value
+    repo.write_settings(user_settings)
+    invalidate_premium_cache(sub)
 
 
-def create_checkout_url(plan: str, email: str) -> str:
+def create_checkout_url(plan: str, email: str, sub: str) -> str:
     """Create a Stripe Checkout session and return the hosted URL."""
     _require_stripe()
     price_id = _PLAN_TO_PRICE.get(plan)
@@ -56,7 +47,7 @@ def create_checkout_url(plan: str, email: str) -> str:
         mode="subscription",
         line_items=[{"price": price_id, "quantity": 1}],
         customer_email=email,
-        client_reference_id=email,
+        client_reference_id=sub,
         success_url=f"{settings.APP_URL}/subscription/success",
         cancel_url=f"{settings.APP_URL}/subscriptions",
     )
@@ -98,32 +89,32 @@ def handle_webhook(payload: bytes, sig_header: str) -> None:
     logger.info("stripe_webhook_received", event_type=event_type, event_id=event["id"])
 
     if event_type == "checkout.session.completed":
-        email = data.get("client_reference_id") or data.get("customer_email")
-        if email:
-            set_premium(email, True)
-            invalidate_premium_cache(email)
-            logger.info("premium_granted", user=email, event_id=event["id"])
+        sub = data.get("client_reference_id")
+        if sub:
+            set_premium(sub, True)
+            # Store sub on the Stripe customer so we can find it on cancellation
+            stripe.Customer.modify(data["customer"], metadata={"sub": sub})
+            logger.info("premium_granted", user=sub, event_id=event["id"])
         else:
-            logger.warning("checkout_completed_no_email", event_id=event["id"])
+            logger.warning("checkout_completed_no_sub", event_id=event["id"])
 
     elif event_type in (
         "customer.subscription.deleted",
         "customer.subscription.paused",
     ):
         customer = stripe.Customer.retrieve(data["customer"])
-        email = customer.get("email")
-        if email:
-            set_premium(email, False)
-            invalidate_premium_cache(email)
+        sub = customer.get("metadata", {}).get("sub")
+        if sub:
+            set_premium(sub, False)
             logger.info(
                 "premium_revoked",
-                user=email,
+                user=sub,
                 event_type=event_type,
                 event_id=event["id"],
             )
         else:
             logger.warning(
-                "subscription_event_no_email",
+                "subscription_event_no_sub",
                 event_type=event_type,
                 event_id=event["id"],
             )
