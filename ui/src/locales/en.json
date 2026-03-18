@@ -250,7 +250,9 @@
     "manageSubscription": "Manage or cancel subscription",
     "successTitle": "You're now Premium!",
     "successSub": "Your subscription is active. All premium features are unlocked.",
-    "successCta": "Go to Dashboard"
+    "successCta": "Go to Dashboard",
+    "disclaimer": "The subscription renews automatically. You can cancel at any time without notice in your account settings or by email. Our",
+    "disclaimerAgb": "Terms and Conditions"
   },
   "landing": {
     "badge": "Personal Finance Tracker",

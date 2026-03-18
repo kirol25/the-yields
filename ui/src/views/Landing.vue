@@ -174,7 +174,7 @@
               to="/register"
               class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block"
             >
-              {{ t('subscriptions.cta') }}
+              {{ t('subscriptions.ctaPaid') }}
             </RouterLink>
           </div>
 
@@ -202,10 +202,14 @@
               to="/register"
               class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block border border-transparent"
             >
-              {{ t('subscriptions.cta') }}
+              {{ t('subscriptions.ctaPaid') }}
             </RouterLink>
           </div>
         </div>
+        <p class="mt-8 pt-6 border-t border-gray-800 text-center text-xs text-gray-500">
+          {{ t('subscriptions.disclaimer') }}
+          <RouterLink to="/terms" class="underline underline-offset-2 hover:text-gray-300 transition-colors">{{ t('subscriptions.disclaimerAgb') }}</RouterLink>.
+        </p>
       </div>
     </section>
 
