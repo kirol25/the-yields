@@ -1,145 +1,107 @@
-"""Tests for the get_auth_context dependency and the config.py .env loading."""
+"""Tests for get_auth_context and config loading."""
 
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
-from fastapi.testclient import TestClient
+from fastapi import HTTPException  # noqa: F401
 
 from app.api.finance.dependencies import get_auth_context
 from app.core.config import BACKEND_ROOT
-from app.main import app
 
 # ---------------------------------------------------------------------------
-# Config / .env loading
+# Config
 # ---------------------------------------------------------------------------
 
 
 def test_backend_root_points_to_backend_dir():
-    """BACKEND_ROOT must resolve to the `backend/` directory, not `backend/app/`."""
+    """BACKEND_ROOT must resolve to the `backend/` directory."""
     assert BACKEND_ROOT.name == "backend"
 
 
 # ---------------------------------------------------------------------------
-# get_auth_context — dev mode (ALLOW_INSECURE_DEV_AUTH=True)
+# Helpers
 # ---------------------------------------------------------------------------
 
 
-def _build_dev_settings(allow_insecure: bool = True, cognito_user_pool_id: str = ""):
+def _settings(cognito_user_pool_id: str = "eu-central-1_TestPool"):
     s = MagicMock()
-    s.ALLOW_INSECURE_DEV_AUTH = allow_insecure
     s.COGNITO_USER_POOL_ID = cognito_user_pool_id
     return s
 
 
-def _call_auth(authorization=None, x_user_email=None, settings_obj=None):
-    """Call get_auth_context with the given header values and patched settings."""
+def _call_auth(authorization=None, settings_obj=None):
     with patch("app.api.finance.dependencies.settings", settings_obj):
-        return get_auth_context(
-            authorization=authorization,
-            x_user_email=x_user_email,
-        )
+        return get_auth_context(authorization=authorization)
 
 
-class TestDevMode:
-    """get_auth_context behaviour when ALLOW_INSECURE_DEV_AUTH=True."""
+# ---------------------------------------------------------------------------
+# Cognito not configured → 503
+# ---------------------------------------------------------------------------
 
-    def _settings(self):
-        return _build_dev_settings(allow_insecure=True, cognito_user_pool_id="")
 
-    def test_valid_email_returns_ctx(self):
-        ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
-        assert ctx == {"email": "user@example.com", "sub": "", "is_premium": False}
-
-    def test_missing_email_raises_401(self):
+class TestUnconfigured:
+    def test_raises_503_when_cognito_not_set(self):
         with pytest.raises(HTTPException) as exc:
-            _call_auth(x_user_email=None, settings_obj=self._settings())
-        assert exc.value.status_code == 401
-
-    def test_invalid_email_raises_400(self):
-        with pytest.raises(HTTPException) as exc:
-            _call_auth(x_user_email="not-an-email", settings_obj=self._settings())
-        assert exc.value.status_code == 400
-
-    def test_is_premium_always_false_in_dev(self):
-        ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
-        assert ctx["is_premium"] is False
-
-    def test_sub_is_empty_string_in_dev(self):
-        ctx = _call_auth(x_user_email="user@example.com", settings_obj=self._settings())
-        assert ctx["sub"] == ""
-
-
-class TestProdMode:
-    """get_auth_context behaviour when ALLOW_INSECURE_DEV_AUTH=False."""
-
-    def _settings(self):
-        return _build_dev_settings(
-            allow_insecure=False, cognito_user_pool_id="eu-central-1"
-        )
-
-    def test_missing_bearer_raises_401(self):
-        with pytest.raises(HTTPException) as exc:
-            _call_auth(authorization=None, settings_obj=self._settings())
-        assert exc.value.status_code == 401
-
-    def test_malformed_bearer_raises_401(self):
-        with pytest.raises(HTTPException) as exc:
-            _call_auth(authorization="Token abc", settings_obj=self._settings())
-        assert exc.value.status_code == 401
-
-    def test_valid_bearer_calls_verify_and_fetches_premium(self):
-        mock_verify = MagicMock(
-            return_value={"email": "u@example.com", "sub": "test-sub-uuid"}
-        )
-        mock_get_premium = MagicMock(return_value=True)
-        with (
-            patch("app.api.finance.dependencies.verify_token", mock_verify),
-            patch("app.api.finance.dependencies._get_is_premium", mock_get_premium),
-        ):
-            ctx = _call_auth(
-                authorization="Bearer fake.jwt.token",
-                settings_obj=self._settings(),
-            )
-        mock_verify.assert_called_once_with("fake.jwt.token")
-        mock_get_premium.assert_called_once_with("test-sub-uuid")
-        assert ctx["email"] == "u@example.com"
-        assert ctx["sub"] == "test-sub-uuid"
-        assert ctx["is_premium"] is True
-
-
-class TestUnconfiguredMode:
-    """No Cognito and ALLOW_INSECURE_DEV_AUTH=False → 503."""
-
-    def test_raises_503(self):
-        s = _build_dev_settings(allow_insecure=False, cognito_user_pool_id="")
-        with pytest.raises(HTTPException) as exc:
-            _call_auth(x_user_email="user@example.com", settings_obj=s)
+            _call_auth(settings_obj=_settings(cognito_user_pool_id=""))
         assert exc.value.status_code == 503
 
 
 # ---------------------------------------------------------------------------
-# End-to-end: dev mode client rejects bad headers
+# Cognito configured — token checks
 # ---------------------------------------------------------------------------
 
 
-class TestDevModeEndToEnd:
-    """Integration: ensure the /api/me endpoint enforces X-User-Email in dev."""
+class TestAuth:
+    def test_missing_authorization_raises_401(self):
+        with pytest.raises(HTTPException) as exc:
+            _call_auth(authorization=None, settings_obj=_settings())
+        assert exc.value.status_code == 401
 
-    def _dev_settings(self):
-        return _build_dev_settings(allow_insecure=True, cognito_user_pool_id="")
+    def test_non_bearer_scheme_raises_401(self):
+        with pytest.raises(HTTPException) as exc:
+            _call_auth(authorization="Token abc123", settings_obj=_settings())
+        assert exc.value.status_code == 401
 
-    def test_missing_email_header_returns_401(self):
-        app.dependency_overrides.clear()
-        client = TestClient(app, raise_server_exceptions=False)
-        with patch("app.api.finance.dependencies.settings", self._dev_settings()):
-            resp = client.get("/api/me")
-        assert resp.status_code == 401
+    def test_valid_token_returns_full_context(self):
+        mock_verify = MagicMock(
+            return_value={"email": "u@example.com", "sub": "sub-uuid"}
+        )
+        mock_premium = MagicMock(return_value=False)
+        with (
+            patch("app.api.finance.dependencies.verify_token", mock_verify),
+            patch("app.api.finance.dependencies._get_is_premium", mock_premium),
+        ):
+            ctx = _call_auth(
+                authorization="Bearer valid.jwt.token",
+                settings_obj=_settings(),
+            )
+        mock_verify.assert_called_once_with("valid.jwt.token")
+        mock_premium.assert_called_once_with("sub-uuid")
+        assert ctx == {"email": "u@example.com", "sub": "sub-uuid", "is_premium": False}
 
-    def test_valid_email_header_returns_200(self):
-        app.dependency_overrides.clear()
-        client = TestClient(app, raise_server_exceptions=False)
-        with patch("app.api.finance.dependencies.settings", self._dev_settings()):
-            resp = client.get("/api/me", headers={"X-User-Email": "user@example.com"})
-        assert resp.status_code == 200
-        assert resp.json()["email"] == "user@example.com"
+    def test_premium_user_gets_is_premium_true(self):
+        mock_verify = MagicMock(
+            return_value={"email": "u@example.com", "sub": "sub-uuid"}
+        )
+        mock_premium = MagicMock(return_value=True)
+        with (
+            patch("app.api.finance.dependencies.verify_token", mock_verify),
+            patch("app.api.finance.dependencies._get_is_premium", mock_premium),
+        ):
+            ctx = _call_auth(
+                authorization="Bearer valid.jwt.token",
+                settings_obj=_settings(),
+            )
+        assert ctx["is_premium"] is True
+
+    def test_verify_token_exception_propagates(self):
+        mock_verify = MagicMock(
+            side_effect=HTTPException(status_code=401, detail="Token expired")
+        )
+        with patch("app.api.finance.dependencies.verify_token", mock_verify):
+            with pytest.raises(HTTPException) as exc:
+                _call_auth(
+                    authorization="Bearer expired.token",
+                    settings_obj=_settings(),
+                )
+        assert exc.value.status_code == 401

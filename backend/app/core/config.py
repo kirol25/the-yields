@@ -48,12 +48,6 @@ class Settings(BaseSettings):
         description="Cognito User Pool ID — required to update custom:is_premium "
         "on subscription events.",
     )
-    ALLOW_INSECURE_DEV_AUTH: bool = Field(
-        False,
-        description="Allow trusting X-User-Email instead of JWTs when Cognito "
-        "is not configured. Intended for local development only.",
-    )
-
     # --- Storage ---
     S3_BUCKET: str = Field("the-yields-data", description="S3 bucket name")
 

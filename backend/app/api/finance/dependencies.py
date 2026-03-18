@@ -1,4 +1,3 @@
-import re
 from typing import Annotated
 
 from cachetools import TTLCache
@@ -13,8 +12,6 @@ from app.core.config import Environment
 from app.core.utils import YieldRepositoryType
 
 # ── dependency factories ──────────────────────────────────────────────────────
-
-_EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$")
 
 _PREMIUM_CACHE: TTLCache = TTLCache(maxsize=1024, ttl=300)
 
@@ -35,51 +32,32 @@ def invalidate_premium_cache(sub: str) -> None:
 
 def get_auth_context(
     authorization: Annotated[str | None, Header()] = None,
-    x_user_email: Annotated[str | None, Header()] = None,
 ) -> dict:
-    """Resolve ``{"email": str, "sub": str, "is_premium": bool}`` from the request.
+    """Verify the ID token and return context with email, sub, and is_premium.
 
-    Production: verify the ID token, then read is_premium from settings.json.
-    Dev mode (ALLOW_INSECURE_DEV_AUTH): trust X-User-Email, is_premium always False.
+    Raises 503 if Cognito is not configured, 401 if the token is missing or invalid.
     """
-    if settings.COGNITO_USER_POOL_ID and not settings.ALLOW_INSECURE_DEV_AUTH:
-        if not authorization or not authorization.startswith("Bearer "):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Authorization header with Bearer token is required",
-            )
-        ctx = verify_token(authorization.removeprefix("Bearer "))
-        ctx["is_premium"] = _get_is_premium(ctx["sub"])
-        return ctx
-
-    if not settings.ALLOW_INSECURE_DEV_AUTH:
+    if not settings.COGNITO_USER_POOL_ID:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Authentication is not configured on this server",
         )
-
-    # Explicit dev mode — trust X-User-Email
-    if not x_user_email:
+    if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="X-User-Email header is required",
+            detail="Authorization header with Bearer token is required",
         )
-    if not _EMAIL_RE.match(x_user_email):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid X-User-Email header value",
-        )
-    return {"email": x_user_email, "sub": "", "is_premium": False}
+    ctx = verify_token(authorization.removeprefix("Bearer "))
+    ctx["is_premium"] = _get_is_premium(ctx["sub"])
+    return ctx
 
 
 def get_repository(
     ctx: Annotated[dict, Depends(get_auth_context)],
 ) -> YieldRepositoryType:
     """Return the appropriate repository scoped to the requesting user."""
-    user_key = ctx.get("sub") or ctx["email"]
-
     if settings.ENVIRONMENT == Environment.PROD:
-        return S3YieldRepository(user_key=user_key)
+        return S3YieldRepository(user_key=ctx["sub"])
     return YieldRepository(user_email=ctx["email"])
 
 

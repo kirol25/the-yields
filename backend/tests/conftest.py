@@ -17,6 +17,7 @@ from app.api.finance.service import YieldService
 from app.main import app
 
 TEST_EMAIL = "test@example.com"
+TEST_SUB = "test-sub-uuid"
 
 
 # ---------------------------------------------------------------------------
@@ -26,12 +27,12 @@ TEST_EMAIL = "test@example.com"
 
 @pytest.fixture
 def free_ctx() -> dict:
-    return {"email": TEST_EMAIL, "is_premium": False}
+    return {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": False}
 
 
 @pytest.fixture
 def premium_ctx() -> dict:
-    return {"email": TEST_EMAIL, "is_premium": True}
+    return {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": True}
 
 
 # ---------------------------------------------------------------------------
