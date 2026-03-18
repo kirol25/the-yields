@@ -15,8 +15,20 @@ from app.version import __version__
 # Configure logging before anything else to ensure all logs are captured
 configure_logging()
 
+# Disable API docs in production to avoid exposing schema information
+_docs_url = "/docs" if settings.docs_enabled else None
+_redoc_url = "/redoc" if settings.docs_enabled else None
+_openapi_url = "/openapi.json" if settings.docs_enabled else None
+
 # The FastAPI application instance
-app = FastAPI(title="The Yield API", version=__version__, description=description)
+app = FastAPI(
+    title="The Yield API",
+    version=__version__,
+    description=description,
+    docs_url=_docs_url,
+    redoc_url=_redoc_url,
+    openapi_url=_openapi_url,
+)
 
 # Global middleware and exception handlers
 app.state.limiter = limiter
