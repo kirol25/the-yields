@@ -93,6 +93,12 @@
       </div>
     </div>
 
+    <!-- Disclaimer -->
+    <p v-if="!isPremium" class="mt-4 text-center text-xs text-gray-500">
+      {{ t('subscriptions.disclaimer') }}
+      <RouterLink to="/terms" class="underline underline-offset-2 hover:text-gray-300 transition-colors">{{ t('subscriptions.disclaimerAgb') }}</RouterLink>.
+    </p>
+
     <!-- Manage subscription (premium users) -->
     <div v-if="isPremium" class="mt-10 text-center">
       <button

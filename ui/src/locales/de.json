@@ -250,7 +250,9 @@
     "manageSubscription": "Abo verwalten oder kündigen",
     "successTitle": "Du bist jetzt Premium!",
     "successSub": "Dein Abonnement ist aktiv. Alle Premium-Funktionen sind freigeschaltet.",
-    "successCta": "Zum Dashboard"
+    "successCta": "Zum Dashboard",
+    "disclaimer": "Das Abonnement verlängert sich automatisch. Jederzeit ohne Kündigungsfrist in den Kontoeinstellungen oder per E-Mail kündbar. Es gelten unsere",
+    "disclaimerAgb": "Allgemeinen Geschäftsbedingungen"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",
