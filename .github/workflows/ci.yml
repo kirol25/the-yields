@@ -206,7 +206,7 @@ jobs:
             VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}
             VITE_REGISTRATION_ENABLED=${{ vars.VITE_REGISTRATION_ENABLED }}
             VITE_STRIPE_ENABLED=${{ vars.VITE_STRIPE_ENABLED }}
-          tags: ghcr.io/${{ github.repository_owner }}/the-yield-ui:${{ needs.tag-ui-release.outputs.version }}
+          tags: ghcr.io/${{ github.repository_owner }}/the-yields-ui:${{ needs.tag-ui-release.outputs.version }}
 
   publish-backend:
     name: Publish Backend Image
@@ -236,4 +236,4 @@ jobs:
           push: true
           cache-from: type=gha,scope=backend
           cache-to: type=gha,scope=backend,mode=max
-          tags: ghcr.io/${{ github.repository_owner }}/the-yield-backend:${{ needs.tag-backend-release.outputs.version }}
+          tags: ghcr.io/${{ github.repository_owner }}/the-yields-backend:${{ needs.tag-backend-release.outputs.version }}
