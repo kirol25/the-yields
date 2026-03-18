@@ -32,7 +32,7 @@ tasks:
   build:api:
     desc: Build the backend Docker image
     cmd: |
-      docker build -t the-yield-api ./backend
+      docker build -t the-yields-api ./backend
 
   build:
     desc: Build both UI and backend
