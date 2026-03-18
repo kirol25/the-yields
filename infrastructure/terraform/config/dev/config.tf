@@ -22,7 +22,7 @@ provider "aws" {
     tags = {
       Creator = "Terraform"
       Stage   = "dev"
-      Project = "the-yield"
+      Project = "the-yields"
     }
   }
 }
