@@ -11,7 +11,7 @@ _HEALTH_PATH = "/monitoring/health"
 
 
 def _extract_user(request: Request) -> str:
-    """Best-effort extraction of user email from the request for log context."""
+    """Best-effort extraction of user sub from the ID token for log context."""
     auth = request.headers.get("authorization", "")
     if auth.startswith("Bearer "):
         try:
@@ -20,12 +20,12 @@ def _extract_user(request: Request) -> str:
                 options={"verify_signature": False},
                 algorithms=["RS256"],
             )
-            email = claims.get("username") or claims.get("cognito:username", "")
-            if email:
-                return email
+            sub = claims.get("sub", "")
+            if sub:
+                return sub
         except Exception:
             pass
-    return request.headers.get("x-user-email", "anonymous")
+    return "anonymous"
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
