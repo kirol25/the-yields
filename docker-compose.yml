@@ -6,7 +6,6 @@ services:
     volumes:
       - ./data:/data
     environment:
-      STORAGE_BACKEND: local
       CORS_ORIGINS: http://localhost
     ports:
       - "127.0.0.1:8000:8000"
