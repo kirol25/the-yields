@@ -84,7 +84,7 @@ jobs:
       - name: Smoke test — app imports cleanly
         run: uv run python -c "from app.main import app; print('app loaded OK')"
         env:
-          STORAGE_BACKEND: local
+          ENVIRONMENT: prod
 
       - name: Health endpoint check
         run: |
@@ -92,13 +92,10 @@ jobs:
           sleep 3
           curl --fail --silent http://127.0.0.1:8000/monitoring/health
         env:
-          STORAGE_BACKEND: s3
+          ENVIRONMENT: prod
 
       - name: Run tests
         run: uv run pytest tests/ -v --junit-xml=pytest-report.xml
-        env:
-          STORAGE_BACKEND: local
-          ALLOW_INSECURE_DEV_AUTH: "true"
 
       - name: Publish test report
         uses: actions/upload-artifact@v4
