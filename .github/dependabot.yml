@@ -8,6 +8,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
+    reviewers:
+      - "kirol25"
     groups:
       dev-dependencies:
         dependency-type: "development"
@@ -21,6 +23,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
+    reviewers:
+      - "kirol25"
 
   # Terraform (infrastructure/terraform/services/)
   - package-ecosystem: "terraform"
@@ -29,6 +33,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
+    reviewers:
+      - "kirol25"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -37,3 +43,5 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
+    reviewers:
+      - "kirol25"
