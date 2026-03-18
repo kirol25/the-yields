@@ -55,13 +55,13 @@ API docs available at `http://localhost:9002/docs`.
 
 ## Authentication
 
-**Production** (`COGNITO_REGION` set): every request must include an `Authorization: Bearer <access_token>` header. The token is verified locally via Cognito's JWKS endpoint — no AWS call on the hot path. The `is_premium` flag is resolved from a 5-minute TTL per-user cache backed by `admin_get_user`.
+Every request must include an `Authorization: Bearer <id_token>` header. The ID token is verified locally via Cognito's JWKS endpoint — no AWS call on the hot path. The `is_premium` flag is resolved from the user's S3 settings with a 5-minute TTL cache.
 
-**Dev mode** (`COGNITO_REGION` empty): requests are rejected unless `ALLOW_INSECURE_DEV_AUTH=true`. With that flag enabled, the `X-User-Email` header is trusted directly after format validation; `is_premium` is always `false`.
+Returns **503** if `COGNITO_USER_POOL_ID` is not configured, **401** if the token is missing or invalid.
 
 ## Rate limiting
 
-Write endpoints are rate-limited per user (keyed by email from the JWT, or IP as fallback):
+Write endpoints are rate-limited per user (keyed by `sub` from the ID token, or IP as fallback):
 
 | Endpoint | Limit |
 |---|---|
@@ -99,12 +99,11 @@ All settings are loaded from environment variables and also from `backend/.env` 
 
 | Variable | Default | Description |
 |---|---|---|
-| `STORAGE_BACKEND` | `local` | `local` or `s3` |
-| `S3_BUCKET` | `the-yields-data` | S3 bucket name |
+| `ENVIRONMENT` | `local` | `local` or `prod` — controls doc exposure and storage backend |
+| `S3_BUCKET` | `the-yields-data` | S3 bucket name (required when `ENVIRONMENT=prod`) |
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
-| `COGNITO_REGION` | `` | AWS region (e.g. `eu-central-1`). Empty = dev mode |
-| `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID |
-| `ALLOW_INSECURE_DEV_AUTH` | `false` | Allow `X-User-Email` auth only for local development |
+| `COGNITO_REGION` | `eu-central-1` | AWS region for Cognito JWKS verification |
+| `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID — required for auth to function |
 | `STRIPE_SECRET_KEY` | `` | Stripe secret key (`sk_live_...` or `sk_test_...`) |
 | `STRIPE_WEBHOOK_SECRET` | `` | Stripe webhook signing secret (`whsec_...`) |
 | `STRIPE_PRICE_ID_MONTHLY` | `` | Stripe Price ID for monthly plan |
@@ -113,13 +112,13 @@ All settings are loaded from environment variables and also from `backend/.env` 
 | `AWS_REGION` | `eu-central-1` | AWS region for SES |
 | `FEEDBACK_TO_EMAIL` | `contact@the-yields.app` | SES recipient for feedback |
 | `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.app` | SES sender for feedback |
+| `FREE_TIER_LIMIT` | `5` | Max tickers/accounts per section for free users |
 
 ## Docker
 
 ```bash
 docker build -t the-yields-backend .
 docker run -p 8000:8000 -v $(pwd)/../data:/data \
-  -e STORAGE_BACKEND=local \
   -e COGNITO_REGION=eu-central-1 \
   -e COGNITO_USER_POOL_ID=eu-central-1_xxx \
   the-yields-backend
