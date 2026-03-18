@@ -8,6 +8,7 @@ from app.api.finance.repository import YieldRepository
 from app.api.finance.s3_repository import S3YieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
+from app.core.config import Environment
 from app.core.utils import YieldRepositoryType
 
 # ── dependency factories ──────────────────────────────────────────────────────
@@ -65,7 +66,7 @@ def get_repository(
     # Use sub (UUID) as the S3 prefix when available — data is keyed by sub
     user_key = ctx.get("sub") or user_email
 
-    if settings.STORAGE_BACKEND == "s3":
+    if settings.ENVIRONMENT == Environment.PROD:
         return S3YieldRepository(user_key=user_key)
     return YieldRepository(user_email=user_email)
 
