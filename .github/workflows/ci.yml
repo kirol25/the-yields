@@ -158,7 +158,7 @@ jobs:
       - name: Read backend version
         id: version
         run: |
-          VERSION=$(grep -m1 '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          VERSION=$(grep -m1 '__version__' app/version.py | sed 's/__version__ = "\(.*\)"/\1/')
           echo "value=$VERSION" >> $GITHUB_OUTPUT
         working-directory: backend
 
