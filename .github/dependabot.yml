@@ -8,8 +8,11 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    reviewers:
+    assignees:
       - "kirol25"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-dependencies:
         dependency-type: "development"
@@ -23,8 +26,11 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    reviewers:
+    assignees:
       - "kirol25"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # Terraform (infrastructure/terraform/services/)
   - package-ecosystem: "terraform"
@@ -33,8 +39,11 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    reviewers:
+    assignees:
       - "kirol25"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -43,5 +52,8 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    reviewers:
+    assignees:
       - "kirol25"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
