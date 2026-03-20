@@ -3,7 +3,7 @@
     <Doughnut :data="chartData" :options="chartOptions" />
     <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
       <span class="text-xl font-bold tabular-nums" :class="textClass">
-        {{ noGoal ? '—' : displayPct + '%' }}
+        {{ noGoal ? '-' : displayPct + '%' }}
       </span>
     </div>
   </div>
