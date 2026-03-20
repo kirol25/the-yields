@@ -44,7 +44,7 @@ async function cognitoRequest(action, body) {
   }
 
   // Some Cognito operations (e.g. DeleteUser) return an empty body on success.
-  // res.json() on an empty body throws SyntaxError in WebKit — treat that as {}
+  // res.json() on an empty body throws SyntaxError in WebKit - treat that as {}
   // if the status is OK, otherwise surface a generic failure.
   let data = {}
   try {
@@ -232,7 +232,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await client.delete('/api/data')
     } catch {
-      // network error or backend unreachable — proceed anyway
+      // network error or backend unreachable - proceed anyway
     }
 
     // Delete the Cognito account
@@ -246,7 +246,7 @@ export const useAuthStore = defineStore('auth', () => {
       await doDelete()
     }
 
-    // Account is gone — clear tokens directly without GlobalSignOut
+    // Account is gone - clear tokens directly without GlobalSignOut
     clearTokens()
   }
 
@@ -256,7 +256,7 @@ export const useAuthStore = defineStore('auth', () => {
         await cognitoRequest('GlobalSignOut', { AccessToken: accessToken.value })
       }
     } catch {
-      // best-effort — clear local state regardless
+      // best-effort - clear local state regardless
     }
     clearTokens()
   }

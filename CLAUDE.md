@@ -3,7 +3,7 @@
 ## 1. Plan Mode Default
 
 - Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
+- If something goes sideways, STOP and re-plan immediately - don't keep pushing
 - Use plan mode for verification steps, not just building
 - Write detailed specs upfront to reduce ambiguity
 
@@ -32,13 +32,13 @@
 
 - For non-trivial changes: pause and ask "is there a more elegant way?"
 - If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes — don't over-engineer
+- Skip this for simple, obvious fixes - don't over-engineer
 - Challenge your own work before presenting it
 
 ## 6. Autonomous Bug Fixing
 
 - When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests — then resolve them
+- Point at logs, errors, failing tests - then resolve them
 - Zero context switching required from the user
 - Go fix failing CI tests without being told how
 
@@ -46,12 +46,12 @@
 
 - **NEVER EVER** run `git push --force` or any force push variant (`--force-with-lease`, `-f`)
 - **NEVER EVER** run `git reset --hard` or any destructive reset
-- These are irreversible and can destroy work — no exceptions, no matter the situation
+- These are irreversible and can destroy work - no exceptions, no matter the situation
 - If you think you need one of these, STOP and ask the user instead
 
 ## 8. Feature Branch & PR Required
 
-- **ALWAYS** create a feature branch for new features — never commit directly to `main`
+- **ALWAYS** create a feature branch for new features - never commit directly to `main`
 - Branch naming: `feat/<short-description>` (e.g. `feat/stripe-subscriptions`)
 - Open a PR from the feature branch into `main` when the feature is complete
 - Bug fixes and chores on `main` are acceptable; new features are not
@@ -59,10 +59,10 @@
 ## 9. Conventional Commits
 
 - Make small, focused commits using conventional commit format
-- Commit early and often — one logical change per commit
+- Commit early and often - one logical change per commit
 - Use conventional commit types: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
 - Example: `fix: resolve null pointer in auth validation` or `feat: add email notification service`
-- Keep commit messages clear and descriptive — future you will thank you
+- Keep commit messages clear and descriptive - future you will thank you
 
 ## Task Management
 
