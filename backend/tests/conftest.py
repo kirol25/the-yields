@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.orm import Session
 
+from app.api.finance.db_repository import DBYieldRepository
 from app.api.finance.dependencies import get_auth_context, get_service
 from app.api.finance.repository import YieldRepository
 from app.api.finance.service import YieldService
@@ -203,3 +204,20 @@ def dividend_entry(db_session: Session, depot: Depot) -> DividendEntry:
     db_session.add(e)
     db_session.flush()
     return e
+
+
+# ---------------------------------------------------------------------------
+# DB-backed repository + service fixtures (DB suite)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def db_repo(db_session: Session) -> DBYieldRepository:
+    """A DBYieldRepository wired to the test session."""
+    return DBYieldRepository(sub=TEST_SUB, email=TEST_EMAIL, session=db_session)
+
+
+@pytest.fixture
+def db_service(db_repo: DBYieldRepository) -> YieldService:
+    """A YieldService backed by the DB repository."""
+    return YieldService(db_repo)
