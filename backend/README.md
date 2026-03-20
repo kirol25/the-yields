@@ -110,8 +110,8 @@ All settings are loaded from environment variables and also from `backend/.env` 
 | `STRIPE_PRICE_ID_YEARLY` | `` | Stripe Price ID for yearly plan |
 | `APP_URL` | `http://localhost:5173` | Public frontend URL (for Stripe redirects) |
 | `AWS_REGION` | `eu-central-1` | AWS region for SES |
-| `FEEDBACK_TO_EMAIL` | `contact@the-yields.app` | SES recipient for feedback |
-| `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.app` | SES sender for feedback |
+| `FEEDBACK_TO_EMAIL` | `contact@the-yields.com` | SES recipient for feedback |
+| `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.com` | SES sender for feedback |
 | `FREE_TIER_LIMIT` | `5` | Max tickers/accounts per section for free users |
 
 ## Docker
