@@ -2,28 +2,28 @@ from typing import Annotated
 
 from cachetools import TTLCache
 from fastapi import Depends, Header, HTTPException, status
+from sqlalchemy.orm import Session
 
 from app.api.auth import verify_token
-from app.api.finance.repository import YieldRepository
-from app.api.finance.s3_repository import S3YieldRepository
+from app.api.finance.db_repository import DBYieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
-from app.core.config import Environment
 from app.core.logging_config import logger
-from app.core.utils import YieldRepositoryType
+from app.db.models import User
+from app.db.session import get_db
 
 # ── dependency factories ──────────────────────────────────────────────────────
 
 _PREMIUM_CACHE: TTLCache = TTLCache(maxsize=1024, ttl=300)
 
 
-def _get_is_premium(sub: str) -> bool:
-    """Read is_premium from the user's settings.json in S3, with a 5-min cache."""
+def _get_is_premium(sub: str, db: Session) -> bool:
+    """Read is_premium from the User row, with a 5-minute in-process cache."""
     if sub in _PREMIUM_CACHE:
         return _PREMIUM_CACHE[sub]
     try:
-        repo = S3YieldRepository(user_key=sub)
-        is_premium = repo.read_settings().get("is_premium", False)
+        user = db.query(User).filter_by(sub=sub).first()
+        is_premium = user.is_premium if user else False
     except Exception:
         logger.warning("premium_check_failed_fallback", user=sub)
         return False
@@ -37,6 +37,7 @@ def invalidate_premium_cache(sub: str) -> None:
 
 def get_auth_context(
     authorization: Annotated[str | None, Header()] = None,
+    db: Annotated[Session, Depends(get_db)] = None,  # type: ignore[assignment]
 ) -> dict:
     """Verify the ID token and return context with email, sub, and is_premium.
 
@@ -53,23 +54,26 @@ def get_auth_context(
             detail="Authorization header with Bearer token is required",
         )
     ctx = verify_token(authorization.removeprefix("Bearer "))
-    ctx["is_premium"] = _get_is_premium(ctx["sub"])
+    ctx["is_premium"] = _get_is_premium(ctx["sub"], db)
     return ctx
 
 
 def get_repository(
     ctx: Annotated[dict, Depends(get_auth_context)],
-) -> YieldRepositoryType:
-    """Return the appropriate repository scoped to the requesting user."""
-    if settings.ENVIRONMENT == Environment.PROD:
-        return S3YieldRepository(user_key=ctx["sub"])
-    return YieldRepository(user_email=ctx["email"])
+    db: Annotated[Session, Depends(get_db)],
+) -> DBYieldRepository:
+    """Return a DBYieldRepository scoped to the requesting user.
+
+    FastAPI caches ``get_db`` per request, so ``ctx`` and ``repo`` share
+    the same session and commit/rollback together.
+    """
+    return DBYieldRepository(sub=ctx["sub"], email=ctx["email"], session=db)
 
 
 def get_service(
-    repo: Annotated[YieldRepositoryType, Depends(get_repository)],
+    repo: Annotated[DBYieldRepository, Depends(get_repository)],
 ) -> YieldService:
-    """Instantiate a ``YieldService`` backed by the injected repository."""
+    """Instantiate a YieldService backed by the injected repository."""
     return YieldService(repo)
 
 
