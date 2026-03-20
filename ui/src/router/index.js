@@ -52,7 +52,7 @@ const routes = [
   // Locale-prefixed 404
   { path: '/:locale(de|en)/:pathMatch(.*)*', component: () => import('../views/NotFound.vue'), meta: { public: true } },
 
-  // 404 catch-all — must be last
+  // 404 catch-all - must be last
   { path: '/:pathMatch(.*)*', component: () => import('../views/NotFound.vue'), meta: { public: true } },
 ]
 

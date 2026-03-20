@@ -81,7 +81,7 @@ jobs:
       - name: Format check (ruff format)
         run: uv run ruff format --check .
 
-      - name: Smoke test — app imports cleanly
+      - name: Smoke test - app imports cleanly
         run: uv run python -c "from app.main import app; print('app loaded OK')"
         env:
           ENVIRONMENT: prod
@@ -112,7 +112,7 @@ jobs:
     steps:
       - run: echo "All checks passed ✓"
 
-  # ── Tag — read each version independently and create separate git tags ──────
+  # ── Tag - read each version independently and create separate git tags ──────
   tag-ui-release:
     name: Tag UI Release
     needs: [healthy]
@@ -169,7 +169,7 @@ jobs:
           git tag "backend-v${{ steps.version.outputs.value }}"
           git push origin "backend-v${{ steps.version.outputs.value }}"
 
-  # ── Publish — each image uses its own version ────────────────────────────
+  # ── Publish - each image uses its own version ────────────────────────────
   publish-ui:
     name: Publish UI Image
     needs: [tag-ui-release]

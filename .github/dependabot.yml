@@ -1,7 +1,7 @@
 version: 2
 
 updates:
-  # Frontend — npm (ui/)
+  # Frontend - npm (ui/)
   - package-ecosystem: "npm"
     directory: "/ui"
     schedule:
@@ -19,7 +19,7 @@ updates:
       production-dependencies:
         dependency-type: "production"
 
-  # Backend — uv / pyproject.toml (backend/)
+  # Backend - uv / pyproject.toml (backend/)
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:

@@ -8,7 +8,7 @@ import { localizePath } from '../router/locale.js'
 
 const client = axios.create({ baseURL: API_BASE })
 
-// ── Request interceptor — inject auth headers on every call ──────────────────
+// ── Request interceptor - inject auth headers on every call ──────────────────
 
 client.interceptors.request.use((config) => {
   // useAuthStore() is called here (inside the interceptor), not at module load
@@ -18,7 +18,7 @@ client.interceptors.request.use((config) => {
   return config
 })
 
-// ── Response interceptor — centralised error handling ────────────────────────
+// ── Response interceptor - centralised error handling ────────────────────────
 
 client.interceptors.response.use(
   (response) => response,
@@ -31,10 +31,10 @@ client.interceptors.response.use(
       router.push(localizePath('/login', useSettingsStore().locale))
     } else if (status === 429) {
       error._handled = true
-      useToastStore().add('Too many requests — please slow down.', 'error')
+      useToastStore().add('Too many requests - please slow down.', 'error')
     } else if (status >= 500) {
       error._handled = true
-      useToastStore().add('Server error — please try again later.', 'error')
+      useToastStore().add('Server error - please try again later.', 'error')
     }
 
     return Promise.reject(error)

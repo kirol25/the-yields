@@ -1,4 +1,4 @@
-# the-yields — ui
+# the-yields - ui
 
 Vue 3 single-page application for tracking dividends and investment yields.
 
@@ -6,9 +6,9 @@ Vue 3 single-page application for tracking dividends and investment yields.
 
 - **Vue 3** (Composition API + `<script setup>`)
 - **Vite 6**
-- **Pinia** — state management
+- **Pinia** - state management
 - **Vue Router 4**
-- **vue-i18n 11** — i18n (default language: German)
+- **vue-i18n 11** - i18n (default language: German)
 - **Tailwind CSS v4** via `@tailwindcss/vite`
 - **Chart.js** via `vue-chartjs`
 - **Axios** for API calls
@@ -89,8 +89,8 @@ npm run preview # preview the production build
 The production image serves the built SPA via nginx (`nginx.conf`).
 
 **Caching**
-- `index.html` — `no-cache, must-revalidate`: always revalidated so new deploys are picked up immediately.
-- `/assets/*` — `max-age=31536000, immutable`: cached for 1 year. Safe because Vite hashes asset filenames on every build.
+- `index.html` - `no-cache, must-revalidate`: always revalidated so new deploys are picked up immediately.
+- `/assets/*` - `max-age=31536000, immutable`: cached for 1 year. Safe because Vite hashes asset filenames on every build.
 
 **Rate limiting**
 - `/api/` is limited to 10 req/s per IP with a burst of 20. Requests beyond the burst receive a `429 Too Many Requests` response.
