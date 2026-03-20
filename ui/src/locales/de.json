@@ -134,7 +134,11 @@
     "companyNameOptional": "Unternehmensname (optional)",
     "month": "Monat",
     "amount": "Betrag (€)",
-    "companyNamePlaceholder": "Unternehmensname"
+    "companyNamePlaceholder": "Unternehmensname",
+    "selectTicker": "Ticker auswählen…",
+    "searchTicker": "Ticker oder Name suchen…",
+    "alreadyTracked": "Bereits erfasst",
+    "noTickersFound": "Keine Ticker gefunden"
   },
   "months": {
     "01": { "short": "Jan", "label": "Januar" },
