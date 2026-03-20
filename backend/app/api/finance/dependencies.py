@@ -9,6 +9,7 @@ from app.api.finance.s3_repository import S3YieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
 from app.core.config import Environment
+from app.core.logging_config import logger
 from app.core.utils import YieldRepositoryType
 
 # ── dependency factories ──────────────────────────────────────────────────────
@@ -20,8 +21,12 @@ def _get_is_premium(sub: str) -> bool:
     """Read is_premium from the user's settings.json in S3, with a 5-min cache."""
     if sub in _PREMIUM_CACHE:
         return _PREMIUM_CACHE[sub]
-    repo = S3YieldRepository(user_key=sub)
-    is_premium = repo.read_settings().get("is_premium", False)
+    try:
+        repo = S3YieldRepository(user_key=sub)
+        is_premium = repo.read_settings().get("is_premium", False)
+    except Exception:
+        logger.warning("premium_check_failed_fallback", user=sub)
+        return False
     _PREMIUM_CACHE[sub] = is_premium
     return is_premium
 

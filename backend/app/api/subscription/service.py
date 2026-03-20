@@ -43,30 +43,48 @@ def create_checkout_url(plan: str, email: str, sub: str) -> str:
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Unknown plan: {plan!r}. Use 'monthly' or 'yearly'.",
         )
-    session = stripe.checkout.Session.create(
-        mode="subscription",
-        line_items=[{"price": price_id, "quantity": 1}],
-        customer_email=email,
-        client_reference_id=sub,
-        success_url=f"{settings.APP_URL}/subscription/success",
-        cancel_url=f"{settings.APP_URL}/subscriptions",
-    )
+    try:
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{"price": price_id, "quantity": 1}],
+            customer_email=email,
+            client_reference_id=sub,
+            success_url=f"{settings.APP_URL}/subscription/success",
+            cancel_url=f"{settings.APP_URL}/subscriptions",
+        )
+    except stripe.StripeError as exc:
+        logger.error("stripe_checkout_failed", plan=plan, user=sub, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to create checkout session",
+        ) from exc
+    logger.info("stripe_checkout_created", plan=plan, user=sub)
     return session.url
 
 
 def create_portal_url(email: str) -> str:
     """Create a Stripe Billing Portal session and return the URL."""
     _require_stripe()
-    customers = stripe.Customer.list(email=email, limit=1)
-    if not customers.data:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No Stripe customer found for this account",
+    try:
+        customers = stripe.Customer.list(email=email, limit=1)
+        if not customers.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No Stripe customer found for this account",
+            )
+        session = stripe.billing_portal.Session.create(
+            customer=customers.data[0].id,
+            return_url=f"{settings.APP_URL}/subscriptions",
         )
-    session = stripe.billing_portal.Session.create(
-        customer=customers.data[0].id,
-        return_url=f"{settings.APP_URL}/subscriptions",
-    )
+    except HTTPException:
+        raise
+    except stripe.StripeError as exc:
+        logger.error("stripe_portal_failed", user=email, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to create billing portal session",
+        ) from exc
+    logger.info("stripe_portal_created", user=email)
     return session.url
 
 
@@ -93,7 +111,15 @@ def handle_webhook(payload: bytes, sig_header: str) -> None:
         if sub:
             set_premium(sub, True)
             # Store sub on the Stripe customer so we can find it on cancellation
-            stripe.Customer.modify(data["customer"], metadata={"sub": sub})
+            try:
+                stripe.Customer.modify(data["customer"], metadata={"sub": sub})
+            except stripe.StripeError as exc:
+                logger.error(
+                    "stripe_customer_modify_failed",
+                    user=sub,
+                    event_id=event["id"],
+                    error=str(exc),
+                )
             logger.info("premium_granted", user=sub, event_id=event["id"])
         else:
             logger.warning("checkout_completed_no_sub", event_id=event["id"])
@@ -102,7 +128,19 @@ def handle_webhook(payload: bytes, sig_header: str) -> None:
         "customer.subscription.deleted",
         "customer.subscription.paused",
     ):
-        customer = stripe.Customer.retrieve(data["customer"])
+        try:
+            customer = stripe.Customer.retrieve(data["customer"])
+        except stripe.StripeError as exc:
+            logger.error(
+                "stripe_customer_retrieve_failed",
+                event_type=event_type,
+                event_id=event["id"],
+                error=str(exc),
+            )
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Failed to retrieve Stripe customer",
+            ) from exc
         sub = customer.get("metadata", {}).get("sub")
         if sub:
             set_premium(sub, False)
