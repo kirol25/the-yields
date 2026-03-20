@@ -22,6 +22,7 @@ from app.db.models import (
     Depot,
     DividendEntry,
     DividendMonth,
+    Ticker,
     User,
     YearGoal,
     YieldEntry,
@@ -527,3 +528,94 @@ class TestFullCascadeChain:
         assert db_session.get(YieldEntry, ids["yld_entry"]) is None
         assert db_session.get(DividendMonth, ids["div_month"]) is None
         assert db_session.get(YieldMonth, ids["yld_month"]) is None
+
+
+# ---------------------------------------------------------------------------
+# Ticker
+# ---------------------------------------------------------------------------
+
+
+class TestTicker:
+    def test_create_minimal(self, db_session: Session):
+        t = Ticker(symbol="AAPL", name="Apple Inc.")
+        db_session.add(t)
+        db_session.flush()
+        fetched = db_session.get(Ticker, "AAPL")
+        assert fetched is not None
+        assert fetched.name == "Apple Inc."
+        assert fetched.sector is None
+        assert fetched.exchange is None
+        assert fetched.currency is None
+
+    def test_create_full(self, db_session: Session):
+        t = Ticker(
+            symbol="SAP",
+            name="SAP SE",
+            sector="Technology",
+            exchange="XETRA",
+            currency="EUR",
+        )
+        db_session.add(t)
+        db_session.flush()
+        fetched = db_session.get(Ticker, "SAP")
+        assert fetched.sector == "Technology"
+        assert fetched.exchange == "XETRA"
+        assert fetched.currency == "EUR"
+
+    def test_symbol_is_primary_key(self, db_session: Session):
+        db_session.add(Ticker(symbol="DUPE", name="First"))
+        db_session.flush()
+        db_session.add(Ticker(symbol="DUPE", name="Second"))
+        with pytest.raises(IntegrityError):
+            db_session.flush()
+        db_session.rollback()
+
+    def test_soft_fk_links_dividend_entry(self, db_session: Session, depot: Depot):
+        db_session.add(Ticker(symbol="KO", name="Coca-Cola Co.", currency="USD"))
+        db_session.flush()
+        entry = DividendEntry(
+            depot_id=depot.id, year=2024, ticker="KO", ticker_symbol="KO"
+        )
+        db_session.add(entry)
+        db_session.flush()
+        db_session.refresh(entry)
+        assert entry.ticker_ref is not None
+        assert entry.ticker_ref.name == "Coca-Cola Co."
+
+    def test_null_ticker_symbol_allowed(self, db_session: Session, depot: Depot):
+        # Custom / unlisted symbol — no entry in tickers table
+        entry = DividendEntry(
+            depot_id=depot.id, year=2024, ticker="CUSTOM", ticker_symbol=None
+        )
+        db_session.add(entry)
+        db_session.flush()
+        assert entry.ticker_symbol is None
+        assert entry.ticker_ref is None
+
+    def test_deleting_ticker_sets_null_on_entry(
+        self, db_session: Session, depot: Depot
+    ):
+        db_session.add(Ticker(symbol="DEL", name="To Delete"))
+        db_session.flush()
+        entry = DividendEntry(
+            depot_id=depot.id, year=2024, ticker="DEL", ticker_symbol="DEL"
+        )
+        db_session.add(entry)
+        db_session.flush()
+
+        t = db_session.get(Ticker, "DEL")
+        db_session.delete(t)
+        db_session.flush()
+        db_session.refresh(entry)
+        assert entry.ticker_symbol is None
+
+    def test_back_populates_dividend_entries(self, db_session: Session, depot: Depot):
+        db_session.add(Ticker(symbol="VZ", name="Verizon"))
+        db_session.flush()
+        db_session.add(
+            DividendEntry(depot_id=depot.id, year=2024, ticker="VZ", ticker_symbol="VZ")
+        )
+        db_session.flush()
+        t = db_session.get(Ticker, "VZ")
+        db_session.refresh(t)
+        assert len(t.dividend_entries) == 1

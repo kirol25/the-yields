@@ -7,9 +7,10 @@ so no data persists between tests.
 from datetime import UTC, datetime
 
 import pytest
+from sqlalchemy.orm import Session
 
 from app.api.finance.db_repository import DBYieldRepository
-from app.db.models import User
+from app.db.models import Ticker, User
 
 CURRENT_YEAR = datetime.now(UTC).year
 PAST_YEAR = CURRENT_YEAR - 1
@@ -274,3 +275,88 @@ class TestSettings:
         result = db_repo.read_settings()
         assert result["dividendGoal"]["2024"] == pytest.approx(999.0)
         assert result["yieldGoal"]["2024"] == pytest.approx(200.0)  # unchanged
+
+
+# ---------------------------------------------------------------------------
+# Ticker reference resolution
+# ---------------------------------------------------------------------------
+
+
+class TestTickerResolution:
+    def test_known_ticker_sets_ticker_symbol(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        db_session.add(Ticker(symbol="AAPL", name="Apple Inc."))
+        db_session.flush()
+        db_repo.write_year(
+            CURRENT_YEAR,
+            {
+                "dividends": {"AAPL": {"name": "Apple Inc.", "months": {"01": 1.50}}},
+                "yields": {},
+            },
+        )
+        from app.db.models import DividendEntry
+
+        entry = db_session.query(DividendEntry).filter_by(ticker="AAPL").first()
+        assert entry.ticker_symbol == "AAPL"
+
+    def test_unknown_ticker_leaves_ticker_symbol_null(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        db_repo.write_year(
+            CURRENT_YEAR,
+            {
+                "dividends": {
+                    "CUSTOM": {"name": "My Custom Stock", "months": {"01": 5.00}}
+                },
+                "yields": {},
+            },
+        )
+        from app.db.models import DividendEntry
+
+        entry = db_session.query(DividendEntry).filter_by(ticker="CUSTOM").first()
+        assert entry.ticker_symbol is None
+
+    def test_name_falls_back_to_ticker_ref(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        db_session.add(Ticker(symbol="KO", name="Coca-Cola Co."))
+        db_session.flush()
+        # Write without an explicit name
+        db_repo.write_year(
+            CURRENT_YEAR,
+            {
+                "dividends": {"KO": {"months": {"06": 0.46}}},
+                "yields": {},
+            },
+        )
+        result = db_repo.read_year(CURRENT_YEAR)
+        assert result["dividends"]["KO"]["name"] == "Coca-Cola Co."
+
+    def test_explicit_name_overrides_ticker_ref(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        db_session.add(Ticker(symbol="KO", name="Coca-Cola Co."))
+        db_session.flush()
+        db_repo.write_year(
+            CURRENT_YEAR,
+            {
+                "dividends": {
+                    "KO": {"name": "Coke (Override)", "months": {"06": 0.46}}
+                },
+                "yields": {},
+            },
+        )
+        result = db_repo.read_year(CURRENT_YEAR)
+        assert result["dividends"]["KO"]["name"] == "Coke (Override)"
+
+    def test_unknown_ticker_falls_back_to_symbol(self, db_repo: DBYieldRepository):
+        db_repo.write_year(
+            CURRENT_YEAR,
+            {
+                "dividends": {"UNKN": {"months": {"01": 1.00}}},
+                "yields": {},
+            },
+        )
+        result = db_repo.read_year(CURRENT_YEAR)
+        assert result["dividends"]["UNKN"]["name"] == "UNKN"
