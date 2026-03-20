@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Request, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Request, status
+from sqlalchemy.orm import Session
 
 from app.api.finance.dependencies import AuthContextDep
 from app.api.subscription import service
 from app.api.subscription.schemas import CheckoutRequest
 from app.core.limiter import limiter
+from app.db.session import get_db
 
 router = APIRouter(prefix="/api/subscription", tags=["subscription"])
 
@@ -41,10 +45,13 @@ def create_portal_session(request: Request, ctx: AuthContextDep) -> dict[str, st
     status_code=status.HTTP_200_OK,
     summary="Stripe webhook receiver",
     description="Receives and verifies Stripe webhook events. "
-    "Updates Cognito custom:is_premium on checkout completion or cancellation.",
+    "Updates is_premium on the User row on checkout completion or cancellation.",
 )
-async def stripe_webhook(request: Request) -> dict[str, str]:
+async def stripe_webhook(
+    request: Request,
+    db: Annotated[Session, Depends(get_db)],
+) -> dict[str, str]:
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature", "")
-    service.handle_webhook(payload, sig_header)
+    service.handle_webhook(payload, sig_header, db)
     return {"status": "ok"}

@@ -48,9 +48,6 @@ class Settings(BaseSettings):
         description="Cognito User Pool ID - required to update custom:is_premium "
         "on subscription events.",
     )
-    # --- Storage ---
-    S3_BUCKET: str = Field("the-yields-data", description="S3 bucket name")
-
     # --- Stripe / Billing ---
     STRIPE_SECRET_KEY: str = Field(
         "",
@@ -82,6 +79,12 @@ class Settings(BaseSettings):
     FEEDBACK_TO_EMAIL: str = Field(
         "you@example.com",
         description="Recipient address for feedback submissions",
+    )
+
+    # --- Database ---
+    DATABASE_URL: str = Field(
+        "postgresql+psycopg://postgres:postgres@localhost:5432/the_yields",
+        description="SQLAlchemy database URL (postgresql://user:pass@host/db)",
     )
 
     # --- Feature flags ---

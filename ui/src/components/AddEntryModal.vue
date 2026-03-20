@@ -23,8 +23,8 @@
 
         <div class="space-y-5">
 
-          <!-- Free-tier limit banner -->
-          <div v-if="atLimit && selectedKey === '__new__'" class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
+          <!-- Free-tier limit banner (yields only — dividends have no "add new" concept) -->
+          <div v-if="props.type === 'yield' && atLimit && selectedKey === '__new__'" class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
             <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             </svg>
@@ -37,11 +37,83 @@
             </div>
           </div>
 
-          <!-- Ticker / Bank - custom dropdown -->
-          <div>
-            <label class="block text-xs font-medium text-gray-400 mb-1.5">
-              {{ props.type === 'dividend' ? t('modal.ticker') : t('modal.bankAccount') }}
-            </label>
+          <!-- Dividends: searchable ticker dropdown from /api/tickers -->
+          <div v-if="props.type === 'dividend'">
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.ticker') }}</label>
+            <div class="relative">
+              <button
+                type="button"
+                @click="keyOpen = !keyOpen"
+                class="w-full flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+              >
+                <span v-if="selectedKey">
+                  <span class="font-medium">{{ selectedKey }}</span>
+                  <span v-if="tickerName(selectedKey)" class="text-gray-400 ml-1.5">{{ tickerName(selectedKey) }}</span>
+                </span>
+                <span v-else class="text-gray-500">{{ t('modal.selectTicker') }}</span>
+                <svg class="w-3.5 h-3.5 text-gray-500 transition-transform duration-150" :class="keyOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+
+              <div
+                v-if="keyOpen"
+                class="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-xl"
+              >
+                <!-- Search input -->
+                <div class="p-2 border-b border-gray-800">
+                  <input
+                    v-model="tickerSearch"
+                    type="text"
+                    :placeholder="t('modal.searchTicker')"
+                    class="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-1.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    @click.stop
+                  />
+                </div>
+                <div class="max-h-48 overflow-y-auto py-1">
+                  <!-- Existing (already tracked this year) -->
+                  <template v-if="filteredExisting.length">
+                    <div class="px-3 py-1 text-xs text-gray-600 uppercase tracking-wide">{{ t('modal.alreadyTracked') }}</div>
+                    <button
+                      v-for="t_ in filteredExisting"
+                      :key="t_.symbol"
+                      type="button"
+                      @click="selectedKey = t_.symbol; keyOpen = false; tickerSearch = ''"
+                      :class="[
+                        'w-full px-3 py-2 text-sm text-left transition-colors flex items-center justify-between',
+                        selectedKey === t_.symbol ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-300 hover:bg-gray-800',
+                      ]"
+                    >
+                      <span class="font-medium">{{ t_.symbol }}</span>
+                      <span class="text-gray-500 text-xs truncate ml-2">{{ t_.name }}</span>
+                    </button>
+                    <div v-if="filteredNew.length" class="border-t border-gray-800 my-1" />
+                  </template>
+                  <!-- All other tickers -->
+                  <button
+                    v-for="t_ in filteredNew"
+                    :key="t_.symbol"
+                    type="button"
+                    @click="selectedKey = t_.symbol; keyOpen = false; tickerSearch = ''"
+                    :class="[
+                      'w-full px-3 py-2 text-sm text-left transition-colors flex items-center justify-between',
+                      selectedKey === t_.symbol ? 'text-emerald-400 bg-emerald-500/10' : 'text-gray-300 hover:bg-gray-800',
+                    ]"
+                  >
+                    <span class="font-medium">{{ t_.symbol }}</span>
+                    <span class="text-gray-500 text-xs truncate ml-2">{{ t_.name }}</span>
+                  </button>
+                  <div v-if="!filteredExisting.length && !filteredNew.length" class="px-3 py-4 text-sm text-gray-600 text-center">
+                    {{ t('modal.noTickersFound') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yields: existing dropdown + "Add New" free-text -->
+          <div v-else>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.bankAccount') }}</label>
             <div class="relative">
               <button
                 type="button"
@@ -88,46 +160,13 @@
             </div>
           </div>
 
-          <!-- New ticker + name (side by side for dividends) -->
-          <div v-if="selectedKey === '__new__'">
-            <div v-if="props.type === 'dividend'" class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.tickerSymbol') }}</label>
-                <input
-                  v-model="newKey"
-                  type="text"
-                  placeholder="e.g. AAPL"
-                  class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
-                <input
-                  v-model="newName"
-                  type="text"
-                  :placeholder="t('modal.companyNamePlaceholder')"
-                  class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
-                />
-              </div>
-            </div>
-            <div v-else>
-              <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
-              <input
-                v-model="newKey"
-                type="text"
-                placeholder="e.g. Chase HYSA"
-                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
-              />
-            </div>
-          </div>
-
-          <!-- Edit company name for existing dividend tickers -->
-          <div v-if="selectedKey !== '__new__' && props.type === 'dividend'">
+          <!-- New yield account name input -->
+          <div v-if="props.type === 'yield' && selectedKey === '__new__'">
             <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.name') }}</label>
             <input
-              v-model="existingName"
+              v-model="newKey"
               type="text"
-              :placeholder="t('modal.companyNamePlaceholder')"
+              placeholder="e.g. Chase HYSA"
               class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 hover:border-gray-600 transition-colors"
             />
           </div>
@@ -191,11 +230,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useMonths } from '../composables/useMonths.js'
 import { useSubscription } from '../composables/useSubscription.js'
+import client from '../api/client.js'
 
 const { t } = useI18n()
 const { months } = useMonths()
@@ -209,34 +249,73 @@ const emit = defineEmits(['close', 'saved'])
 
 const store = useDataStore()
 
-// Free users cannot add more tickers/accounts than the server-defined limit
+// Free users cannot add more accounts than the server-defined limit (yields only)
 const atLimit = computed(
   () => !isPremium.value && props.existingKeys.length >= store.freeTierLimit,
 )
 
-const selectedKey = ref(atLimit.value ? '__new__' : (props.existingKeys[0] ?? '__new__'))
-const keyOpen = ref(false)
-const newKey = ref('')
-const newName = ref('')
-const existingName = ref(
-  props.existingKeys[0] ? (store.yearData.dividends?.[props.existingKeys[0]]?.name ?? '') : '',
-)
-const selectedMonth = ref(String(new Date().getMonth() + 1).padStart(2, '0'))
-const amount = ref(null)
-
-watch(selectedKey, (key) => {
-  if (key !== '__new__') {
-    existingName.value = store.yearData.dividends?.[key]?.name ?? ''
+// Tickers reference list (dividends only)
+const allTickers = ref([])
+onMounted(async () => {
+  if (props.type === 'dividend') {
+    const { data } = await client.get('/api/tickers')
+    allTickers.value = data
   }
 })
 
+const tickerSearch = ref('')
+
+const filteredExisting = computed(() => {
+  const q = tickerSearch.value.trim().toLowerCase()
+  return allTickers.value.filter(
+    (t_) =>
+      props.existingKeys.includes(t_.symbol) &&
+      (!q || t_.symbol.toLowerCase().includes(q) || t_.name.toLowerCase().includes(q)),
+  )
+})
+
+const filteredNew = computed(() => {
+  const q = tickerSearch.value.trim().toLowerCase()
+  return allTickers.value.filter(
+    (t_) =>
+      !props.existingKeys.includes(t_.symbol) &&
+      (!q || t_.symbol.toLowerCase().includes(q) || t_.name.toLowerCase().includes(q)),
+  )
+})
+
+function tickerName(symbol) {
+  return allTickers.value.find((t_) => t_.symbol === symbol)?.name ?? ''
+}
+
+// Initial selection
+const selectedKey = ref(
+  props.type === 'dividend'
+    ? (props.existingKeys[0] ?? '')
+    : (atLimit.value ? '__new__' : (props.existingKeys[0] ?? '__new__')),
+)
+const keyOpen = ref(false)
+const newKey = ref('') // yield "Add New" account name only
+const selectedMonth = ref(String(new Date().getMonth() + 1).padStart(2, '0'))
+const amount = ref(null)
+
 const resolvedKey = computed(() =>
-  selectedKey.value === '__new__' ? newKey.value.trim() : selectedKey.value,
+  props.type === 'yield' && selectedKey.value === '__new__'
+    ? newKey.value.trim()
+    : selectedKey.value,
 )
 
-const isAddingNew = computed(() => selectedKey.value === '__new__')
+const isAddingNew = computed(() =>
+  props.type === 'yield'
+    ? selectedKey.value === '__new__'
+    : !props.existingKeys.includes(selectedKey.value),
+)
+
 const canSubmit = computed(
-  () => resolvedKey.value && amount.value != null && amount.value >= 0 && !(atLimit.value && isAddingNew.value),
+  () =>
+    resolvedKey.value &&
+    amount.value != null &&
+    amount.value >= 0 &&
+    !(props.type === 'yield' && atLimit.value && isAddingNew.value),
 )
 
 async function submit() {
@@ -247,16 +326,12 @@ async function submit() {
 
   if (!store.yearData[section][key]) {
     if (props.type === 'dividend') {
-      store.yearData[section][key] = { name: newName.value.trim() || key, months: {} }
+      // Name resolves from the tickers reference table on the backend;
+      // pass it here so the UI shows it immediately without a round-trip.
+      store.yearData[section][key] = { name: tickerName(key) || key, months: {} }
     } else {
       store.yearData[section][key] = { months: {} }
     }
-  }
-
-  // Update company name if changed for existing or new dividend entries
-  if (props.type === 'dividend') {
-    const name = selectedKey.value === '__new__' ? newName.value.trim() : existingName.value.trim()
-    if (name) store.yearData[section][key].name = name
   }
 
   store.yearData[section][key].months[selectedMonth.value] = amount.value
