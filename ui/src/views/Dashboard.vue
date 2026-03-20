@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <!-- Goal donuts (monthly tab only) — always 3 columns -->
+    <!-- Goal donuts (monthly tab only) - always 3 columns -->
     <div
       v-if="activeTab === 'monthly' && !store.initializing"
       class="grid grid-cols-1 sm:grid-cols-3 gap-4"

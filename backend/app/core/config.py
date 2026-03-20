@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     )
     COGNITO_USER_POOL_ID: str = Field(
         "",
-        description="Cognito User Pool ID — required to update custom:is_premium "
+        description="Cognito User Pool ID - required to update custom:is_premium "
         "on subscription events.",
     )
     # --- Storage ---

@@ -38,7 +38,7 @@
             <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-2xl">
               <!-- Mock header -->
               <div class="flex items-center justify-between mb-5">
-                <span class="text-sm font-semibold text-gray-100">Dashboard — {{ currentYear }}</span>
+                <span class="text-sm font-semibold text-gray-100">Dashboard - {{ currentYear }}</span>
                 <div class="flex gap-1.5">
                   <span class="w-2.5 h-2.5 rounded-full bg-gray-700"></span>
                   <span class="w-2.5 h-2.5 rounded-full bg-gray-700"></span>
@@ -99,6 +99,19 @@
             <p class="text-sm text-gray-400 leading-relaxed">{{ f.desc }}</p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ── Philosophy ───────────────────────────────────────────────────────── -->
+    <section class="py-24">
+      <div class="max-w-3xl mx-auto px-6 text-center space-y-6">
+        <p class="text-xs font-semibold uppercase tracking-widest text-emerald-400">{{ t('landing.philosophyEyebrow') }}</p>
+        <h2 class="text-3xl sm:text-4xl font-bold text-gray-100 leading-tight tracking-tight">
+          {{ t('landing.philosophyTitle') }}
+        </h2>
+        <p class="text-gray-400 text-lg leading-relaxed">
+          {{ t('landing.philosophyBody') }}
+        </p>
       </div>
     </section>
 

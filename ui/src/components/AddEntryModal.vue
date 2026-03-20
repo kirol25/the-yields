@@ -37,7 +37,7 @@
             </div>
           </div>
 
-          <!-- Ticker / Bank — custom dropdown -->
+          <!-- Ticker / Bank - custom dropdown -->
           <div>
             <label class="block text-xs font-medium text-gray-400 mb-1.5">
               {{ props.type === 'dividend' ? t('modal.ticker') : t('modal.bankAccount') }}
@@ -132,7 +132,7 @@
             />
           </div>
 
-          <!-- Month — chip grid -->
+          <!-- Month - chip grid -->
           <div>
             <label class="block text-xs font-medium text-gray-400 mb-2">{{ t('modal.month') }}</label>
             <div class="grid grid-cols-4 gap-1.5">
