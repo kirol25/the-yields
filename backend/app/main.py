@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -41,6 +42,11 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-User-Email"],
 )
 app.include_router(router)
+
+Instrumentator(
+    should_group_status_codes=True,
+    excluded_handlers=["/monitoring/health", "/metrics"],
+).instrument(app).expose(app, endpoint="/metrics", include_in_schema=False)
 
 
 def main() -> None:
