@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 
 from app.api.finance.schemas import YearPayload
 from app.api.finance.utils import assert_ticker_limit, assert_year_allowed, current_year
+from app.core.logging_config import logger
 from app.core.utils import YieldRepositoryType
 
 
@@ -38,11 +39,18 @@ class YieldService:
         assert_year_allowed(year, is_premium)
         assert_ticker_limit(payload, is_premium)
         self.repository.write_year(year, payload.model_dump())
+        logger.info(
+            "data_saved",
+            year=year,
+            dividends=len(payload.dividends),
+            yields=len(payload.yields),
+        )
         return {"status": "ok"}
 
     def delete_all_data(self) -> dict[str, str]:
         """Permanently delete all data for the current user."""
         self.repository.delete_all_data()
+        logger.info("all_data_deleted")
         return {"status": "ok"}
 
     def get_settings(self) -> dict[str, Any]:
@@ -72,4 +80,5 @@ class YieldService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Entry '{key}' not found in {section} for {year}",
             )
+        logger.info("entry_deleted", year=year, section=section, key=key)
         return {"status": "ok"}

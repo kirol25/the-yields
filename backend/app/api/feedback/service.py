@@ -1,4 +1,3 @@
-import logging
 from datetime import UTC, datetime
 
 import boto3
@@ -7,8 +6,7 @@ from pydantic import EmailStr
 
 from app.api.feedback.schemas import FeedbackPayload
 from app.core.config import get_settings
-
-logger = logging.getLogger("the-yields")
+from app.core.logging_config import logger
 
 _CATEGORY_LABELS = {
     "feedback": "Feedback",
@@ -19,9 +17,7 @@ _CATEGORY_LABELS = {
 _ANONYMOUS = "anonymous"
 
 
-def submit_feedback(
-    payload: FeedbackPayload, email: EmailStr | None = None
-) -> dict[str, str]:
+def submit_feedback(payload: FeedbackPayload, email: EmailStr | None = None) -> None:
     """Send a feedback submission as an email via AWS SES."""
     sender = email or _ANONYMOUS
     category_label = _CATEGORY_LABELS.get(payload.category, payload.category)
@@ -37,6 +33,7 @@ def submit_feedback(
     )
 
     _send_email(subject, body, sender)
+    logger.info("feedback_submitted", category=payload.category, user=sender)
 
 
 def _send_email(subject: str, body: str, sender: str) -> None:
@@ -55,7 +52,7 @@ def _send_email(subject: str, body: str, sender: str) -> None:
             ReplyToAddresses=[sender] if sender != _ANONYMOUS else [],
         )
     except Exception as exc:
-        logger.error("SES send_email failed: %s", exc, exc_info=True)
+        logger.error("ses_send_email_failed", error=str(exc), exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Failed to send feedback email.",

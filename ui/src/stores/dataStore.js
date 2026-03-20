@@ -12,6 +12,7 @@ export const useDataStore = defineStore('data', () => {
   const loading = ref(false)
   const initializing = ref(true)
   const freeTierLimit = ref(5) // fallback until /api/me is fetched
+  const isPremium = ref(false)  // source of truth — read from DB via /api/me
   let _meFetched = false
 
   function toastError(message, error) {
@@ -24,6 +25,7 @@ export const useDataStore = defineStore('data', () => {
     try {
       const { data } = await client.get('/api/me')
       freeTierLimit.value = data.free_tier_limit
+      isPremium.value = data.is_premium
       _meFetched = true
     } catch (e) {
       toastError('Failed to load user context.', e)
@@ -97,5 +99,5 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, fetchMe, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, fetchMe, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
 })
