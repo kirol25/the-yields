@@ -15,7 +15,7 @@
             @click="toggleCurrency"
             class="w-full flex items-center justify-between bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
           >
-            <span>{{ settings.currency }} — {{ settings.CURRENCIES.find(c => c.code === settings.currency)?.label }}</span>
+            <span>{{ settings.currency }} - {{ settings.CURRENCIES.find(c => c.code === settings.currency)?.label }}</span>
             <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"/>
             </svg>
@@ -39,7 +39,7 @@
                     : 'text-gray-300 hover:bg-gray-800',
                 ]"
               >
-                {{ c.code }} — {{ c.label }}
+                {{ c.code }} - {{ c.label }}
               </button>
             </div>
           </Teleport>

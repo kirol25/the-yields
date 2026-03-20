@@ -34,7 +34,7 @@
             {{ settings.profile.name || t('profile.noName') }}
           </p>
           <p class="text-xs text-gray-500 truncate">
-            {{ auth.user?.email || settings.profile.email || '—' }}
+            {{ auth.user?.email || settings.profile.email || '-' }}
           </p>
         </div>
       </div>

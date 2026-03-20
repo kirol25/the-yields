@@ -17,7 +17,7 @@ resource "aws_sesv2_email_identity" "domain" {
 }
 
 # ============================================
-# Sending authorization policy — allows Cognito to use this identity
+# Sending authorization policy - allows Cognito to use this identity
 # ============================================
 
 resource "aws_sesv2_email_identity_policy" "cognito" {

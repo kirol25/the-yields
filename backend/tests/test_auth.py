@@ -47,7 +47,7 @@ class TestUnconfigured:
 
 
 # ---------------------------------------------------------------------------
-# Cognito configured — token checks
+# Cognito configured - token checks
 # ---------------------------------------------------------------------------
 
 
