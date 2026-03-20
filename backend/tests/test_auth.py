@@ -76,7 +76,7 @@ class TestAuth:
                 settings_obj=_settings(),
             )
         mock_verify.assert_called_once_with("valid.jwt.token")
-        mock_premium.assert_called_once_with("sub-uuid")
+        mock_premium.assert_called_once_with("sub-uuid", None)
         assert ctx == {"email": "u@example.com", "sub": "sub-uuid", "is_premium": False}
 
     def test_premium_user_gets_is_premium_true(self):
