@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import { useAuthStore } from '../stores/authStore.js'
+import { useDataStore } from '../stores/dataStore.js'
 
 export function useSubscription() {
-  const auth = useAuthStore()
-  const isPremium = computed(() => auth.user?.isPremium === true)
+  const store = useDataStore()
+  const isPremium = computed(() => store.isPremium)
   return { isPremium }
 }
