@@ -1,10 +1,11 @@
 import stripe
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from app.api.finance.dependencies import invalidate_premium_cache
-from app.api.finance.s3_repository import S3YieldRepository
 from app.core import settings
 from app.core.logging_config import logger
+from app.db.models import User
 
 STRIPE_ENABLED = bool(settings.STRIPE_SECRET_KEY)
 
@@ -25,12 +26,14 @@ def _require_stripe() -> None:
         )
 
 
-def set_premium(sub: str, value: bool) -> None:
-    """Write is_premium into the user's settings.json."""
-    repo = S3YieldRepository(user_key=sub)
-    user_settings = repo.read_settings()
-    user_settings["is_premium"] = value
-    repo.write_settings(user_settings)
+def set_premium(sub: str, value: bool, db: Session) -> None:
+    """Set is_premium on the User row and bust the in-process cache."""
+    user = db.query(User).filter_by(sub=sub).first()
+    if not user:
+        logger.warning("set_premium_user_not_found", user=sub)
+        return
+    user.is_premium = value
+    db.flush()
     invalidate_premium_cache(sub)
 
 
@@ -88,7 +91,7 @@ def create_portal_url(email: str) -> str:
     return session.url
 
 
-def handle_webhook(payload: bytes, sig_header: str) -> None:
+def handle_webhook(payload: bytes, sig_header: str, db: Session) -> None:
     """Verify and process an incoming Stripe webhook event."""
     _require_stripe()
     try:
@@ -109,7 +112,7 @@ def handle_webhook(payload: bytes, sig_header: str) -> None:
     if event_type == "checkout.session.completed":
         sub = data.get("client_reference_id")
         if sub:
-            set_premium(sub, True)
+            set_premium(sub, True, db)
             # Store sub on the Stripe customer so we can find it on cancellation
             try:
                 stripe.Customer.modify(data["customer"], metadata={"sub": sub})
@@ -143,7 +146,7 @@ def handle_webhook(payload: bytes, sig_header: str) -> None:
             ) from exc
         sub = customer.get("metadata", {}).get("sub")
         if sub:
-            set_premium(sub, False)
+            set_premium(sub, False, db)
             logger.info(
                 "premium_revoked",
                 user=sub,
