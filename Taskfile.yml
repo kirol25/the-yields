@@ -18,8 +18,18 @@ tasks:
       cd backend
       uv run uvicorn app.main:app --reload --host 0.0.0.0 --port {{.BACKEND_PORT}}
 
+  db:
+    desc: Start the Postgres container and wait until healthy
+    cmd: docker compose up -d db --wait
+
   dev:
-    desc: Start both ui and api concurrently
+    desc: Start database, then ui and api concurrently
+    cmds:
+      - task: db
+      - task: dev:apps
+
+  dev:apps:
+    internal: true
     deps: [ui, api]
 
   # –––– Build ––––––––––––––––––––––––––––––––––––––––––
