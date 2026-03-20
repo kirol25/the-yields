@@ -10,21 +10,21 @@
 }
 
 html.light {
-  /* Page background — clearly visible slate gray */
-  --color-gray-950: oklch(0.920 0.010 255);
-  /* Card backgrounds — white, pops off the page */
+  /* Page background - clearly visible slate gray */
+  --color-gray-950: oklch(0.92 0.01 255);
+  /* Card backgrounds - white, pops off the page */
   --color-gray-900: oklch(1 0 0);
-  /* Input backgrounds — very slightly off-white */
+  /* Input backgrounds - very slightly off-white */
   --color-gray-800: oklch(0.963 0.005 250);
-  /* Borders — visible */
+  /* Borders - visible */
   --color-gray-700: oklch(0.888 0.015 255);
   /* Muted borders / dividers */
-  --color-gray-600: oklch(0.820 0.018 255);
+  --color-gray-600: oklch(0.82 0.018 255);
   /* Secondary text */
-  --color-gray-500: oklch(0.520 0.035 255);
-  --color-gray-400: oklch(0.430 0.038 255);
-  --color-gray-300: oklch(0.350 0.040 255);
-  --color-gray-200: oklch(0.260 0.038 255);
-  /* Primary text — near black */
-  --color-gray-100: oklch(0.150 0.028 255);
+  --color-gray-500: oklch(0.52 0.035 255);
+  --color-gray-400: oklch(0.43 0.038 255);
+  --color-gray-300: oklch(0.35 0.04 255);
+  --color-gray-200: oklch(0.26 0.038 255);
+  /* Primary text - near black */
+  --color-gray-100: oklch(0.15 0.028 255);
 }

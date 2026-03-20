@@ -98,7 +98,7 @@ export const useSettingsStore = defineStore('settings', () => {
         steuerfreibetrag: steuerfreibetrag.value,
       })
     } catch (e) {
-      console.error('[settings] server sync failed — local values kept:', e)
+      console.error('[settings] server sync failed - local values kept:', e)
     }
   }
 
@@ -112,7 +112,7 @@ export const useSettingsStore = defineStore('settings', () => {
       if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object') steuerfreibetrag.value = data.steuerfreibetrag
       save()
     } catch (e) {
-      console.error('[settings] failed to load from server — using local values:', e)
+      console.error('[settings] failed to load from server - using local values:', e)
     }
   }
 

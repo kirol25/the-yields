@@ -70,7 +70,7 @@ Browser → nginx in ui container (:80)
                                 └── backend container (:8000)
 ```
 
-`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service — not the container name (`the-yields-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
+`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service - not the container name (`the-yields-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
 
 ### `VITE_API_BASE` and why it must be empty in production
 
@@ -83,7 +83,7 @@ axios.get(`${API_BASE}/api/years`)
 - **Dev**: set to `http://localhost:9002` so calls go directly to FastAPI
 - **Production**: must be `""` (empty string) so calls become relative (e.g. `/api/years`) and are caught by nginx
 
-Any `VITE_*` variable is compiled into the JS bundle at build time and is readable by anyone in DevTools — never put secrets there. `VITE_COGNITO_CLIENT_ID` is safe because the Cognito Client ID is a public identifier by design.
+Any `VITE_*` variable is compiled into the JS bundle at build time and is readable by anyone in DevTools - never put secrets there. `VITE_COGNITO_CLIENT_ID` is safe because the Cognito Client ID is a public identifier by design.
 
 ## Data format
 

@@ -31,7 +31,7 @@ onMounted(async () => {
   try {
     await auth.refreshSession()
   } catch {
-    // Best-effort — user can reload later if needed
+    // Best-effort - user can reload later if needed
   }
 })
 </script>

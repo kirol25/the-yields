@@ -13,7 +13,7 @@
         </div>
         <div>
           <p class="text-sm font-medium text-gray-100">{{ settings.profile.name || t('profile.noName') }}</p>
-          <p class="text-xs text-gray-500">{{ auth.user?.email || '—' }}</p>
+          <p class="text-xs text-gray-500">{{ auth.user?.email || '-' }}</p>
         </div>
       </div>
 
@@ -72,7 +72,7 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          {{ auth.user?.email || settings.profile.email || '—' }}
+          {{ auth.user?.email || settings.profile.email || '-' }}
         </div>
         <p class="text-xs text-gray-600 mt-1">{{ t('profile.emailManaged') }}</p>
       </div>

@@ -1,4 +1,4 @@
-# the-yields — backend
+# the-yields - backend
 
 FastAPI service that stores and serves per-user dividend and yield data.
 
@@ -55,7 +55,7 @@ API docs available at `http://localhost:9002/docs`.
 
 ## Authentication
 
-Every request must include an `Authorization: Bearer <id_token>` header. The ID token is verified locally via Cognito's JWKS endpoint — no AWS call on the hot path. The `is_premium` flag is resolved from the user's S3 settings with a 5-minute TTL cache.
+Every request must include an `Authorization: Bearer <id_token>` header. The ID token is verified locally via Cognito's JWKS endpoint - no AWS call on the hot path. The `is_premium` flag is resolved from the user's S3 settings with a 5-minute TTL cache.
 
 Returns **503** if `COGNITO_USER_POOL_ID` is not configured, **401** if the token is missing or invalid.
 
@@ -99,19 +99,19 @@ All settings are loaded from environment variables and also from `backend/.env` 
 
 | Variable | Default | Description |
 |---|---|---|
-| `ENVIRONMENT` | `local` | `local` or `prod` — controls doc exposure and storage backend |
+| `ENVIRONMENT` | `local` | `local` or `prod` - controls doc exposure and storage backend |
 | `S3_BUCKET` | `the-yields-data` | S3 bucket name (required when `ENVIRONMENT=prod`) |
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
 | `COGNITO_REGION` | `eu-central-1` | AWS region for Cognito JWKS verification |
-| `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID — required for auth to function |
+| `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID - required for auth to function |
 | `STRIPE_SECRET_KEY` | `` | Stripe secret key (`sk_live_...` or `sk_test_...`) |
 | `STRIPE_WEBHOOK_SECRET` | `` | Stripe webhook signing secret (`whsec_...`) |
 | `STRIPE_PRICE_ID_MONTHLY` | `` | Stripe Price ID for monthly plan |
 | `STRIPE_PRICE_ID_YEARLY` | `` | Stripe Price ID for yearly plan |
 | `APP_URL` | `http://localhost:5173` | Public frontend URL (for Stripe redirects) |
 | `AWS_REGION` | `eu-central-1` | AWS region for SES |
-| `FEEDBACK_TO_EMAIL` | `contact@the-yields.app` | SES recipient for feedback |
-| `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.app` | SES sender for feedback |
+| `FEEDBACK_TO_EMAIL` | `contact@the-yields.com` | SES recipient for feedback |
+| `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.com` | SES sender for feedback |
 | `FREE_TIER_LIMIT` | `5` | Max tickers/accounts per section for free users |
 
 ## Docker

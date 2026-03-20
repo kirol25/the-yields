@@ -7,7 +7,7 @@
           the-yields
         </RouterLink>
 
-        <!-- Authenticated nav — desktop -->
+        <!-- Authenticated nav - desktop -->
         <div v-if="auth.isAuthenticated" class="hidden md:flex items-center gap-1">
           <RouterLink
             to="/dashboard"
@@ -47,7 +47,7 @@
           </button>
         </div>
 
-        <!-- Guest nav — desktop -->
+        <!-- Guest nav - desktop -->
         <div v-else class="hidden md:flex items-center gap-1">
           <button
             @click="scrollToSection('features')"
