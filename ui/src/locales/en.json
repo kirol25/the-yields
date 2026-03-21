@@ -228,6 +228,7 @@
         "Dividend & yield tracking",
         "Current year only",
         "Up to 5 tickers & 5 accounts",
+        "1 broker depot",
         "Monthly chart"
       ]
     },
@@ -238,6 +239,7 @@
       "features": [
         "Unlimited tickers & accounts",
         "All years of data",
+        "Unlimited broker depots",
         "Quarterly, yearly & cumulative charts",
         "Portfolio breakdown & income heatmap",
         "Export as CSV"
@@ -290,6 +292,8 @@
     "feature6Desc": "See exactly which tickers and savings accounts drive your income with an instant visual breakdown.",
     "feature7Title": "Income Heatmap",
     "feature7Desc": "A heatmap grid showing every month across all years. Spot your strongest seasons and watch year-over-year growth at a glance.",
+    "feature8Title": "Multi-Broker Depots",
+    "feature8Desc": "Track investments across multiple brokers or accounts separately. Each depot keeps its own data — perfect for Trade Republic, IBKR, or any other provider side by side.",
     "howTitle": "Simple by design",
     "step1Title": "Add your tickers",
     "step1Desc": "Enter your stock tickers and savings accounts once.",
