@@ -23,6 +23,10 @@ export const useDepotStore = defineStore('depot', () => {
           currentDepotId.value = depots.value[0].id
           localStorage.setItem('last_depot_id', currentDepotId.value)
         }
+      } else {
+        // No depots yet — clear any stale id so apiPrefix falls back to /api
+        currentDepotId.value = null
+        localStorage.removeItem('last_depot_id')
       }
     } catch (e) {
       toastError('Failed to load depots.', e)
