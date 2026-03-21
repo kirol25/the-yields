@@ -35,6 +35,25 @@ resource "aws_iam_user_policy" "app_server_s3" {
   })
 }
 
+resource "aws_iam_user_policy" "app_server_ses" {
+  count = var.s3.enabled && var.ses.enabled ? 1 : 0
+
+  name = "ses-send-email"
+  user = aws_iam_user.app_server[0].name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "SESSendEmail"
+        Effect   = "Allow"
+        Action   = ["ses:SendEmail", "ses:SendRawEmail"]
+        Resource = aws_sesv2_email_identity.domain[0].arn
+      }
+    ]
+  })
+}
+
 resource "aws_iam_access_key" "app_server" {
   count = var.s3.enabled ? 1 : 0
 
