@@ -234,7 +234,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
@@ -256,6 +256,8 @@ const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 const { isPremium } = useSubscription()
+
+onMounted(() => store.loadAllYears())
 
 const tabs = computed(() => [
   { value: 'monthly',    label: t('dashboard.monthly'),    premium: false },
