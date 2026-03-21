@@ -69,11 +69,11 @@ export const useDataStore = defineStore('data', () => {
   async function loadAllYears() {
     try {
       const results = await Promise.all(
-        years.value.map((year) =>
-          client.get(`${_apiPrefix()}/data/${year}`).then((r) => [year, r.data]),
-        ),
+        years.value
+          .filter((year) => year !== currentYear.value)
+          .map((year) => client.get(`${_apiPrefix()}/data/${year}`).then((r) => [year, r.data])),
       )
-      allYearsData.value = Object.fromEntries(results)
+      allYearsData.value = { ...allYearsData.value, ...Object.fromEntries(results) }
     } catch (e) {
       toastError('Failed to load historical data.', e)
     }
