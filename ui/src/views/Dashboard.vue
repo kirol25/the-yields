@@ -2,7 +2,10 @@
   <div class="space-y-6">
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <h1 class="text-2xl font-bold">{{ t('dashboard.title') }}</h1>
-      <YearSelector v-if="activeTab !== 'yearly'" />
+      <div class="flex items-center gap-3">
+        <DepotSelector />
+        <YearSelector v-if="activeTab !== 'yearly'" />
+      </div>
     </div>
 
     <!-- Summary cards -->
@@ -231,12 +234,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useSubscription } from '../composables/useSubscription.js'
 import YearSelector from '../components/YearSelector.vue'
+import DepotSelector from '../components/DepotSelector.vue'
 import MonthlyChart from '../components/MonthlyChart.vue'
 import QuarterlyChart from '../components/QuarterlyChart.vue'
 import YearlyChart from '../components/YearlyChart.vue'
@@ -252,6 +256,8 @@ const { t } = useI18n()
 const store = useDataStore()
 const settings = useSettingsStore()
 const { isPremium } = useSubscription()
+
+onMounted(() => store.loadAllYears())
 
 const tabs = computed(() => [
   { value: 'monthly',    label: t('dashboard.monthly'),    premium: false },

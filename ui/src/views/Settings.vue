@@ -47,6 +47,134 @@
       </div>
     </div>
 
+    <!-- Depots -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.depots') }}</h2>
+      <p class="text-xs text-gray-500">{{ t('settings.depotsDesc') }}</p>
+
+      <!-- Depot list -->
+      <ul class="space-y-2">
+        <li
+          v-for="depot in depotStore.depots"
+          :key="depot.id"
+          class="flex items-center justify-between gap-3 bg-gray-800 rounded-lg px-3 py-2"
+        >
+          <span v-if="editingDepotId !== depot.id" class="text-sm text-gray-200 flex-1 truncate">
+            {{ depot.name }}
+          </span>
+          <input
+            v-else
+            v-model="editingName"
+            @keydown.enter="saveRename(depot.id)"
+            @keydown.escape="cancelEdit"
+            class="flex-1 bg-gray-700 border border-gray-600 rounded px-2 py-0.5 text-sm text-gray-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+          <div class="flex items-center gap-1 shrink-0">
+            <template v-if="editingDepotId === depot.id">
+              <button
+                @click="saveRename(depot.id)"
+                :disabled="!editingName.trim()"
+                class="px-2 py-1 text-xs bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 rounded transition-colors"
+              >
+                {{ t('common.save') }}
+              </button>
+              <button
+                @click="cancelEdit"
+                class="px-2 py-1 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                {{ t('common.cancel') }}
+              </button>
+            </template>
+            <template v-else>
+              <button
+                @click="startEdit(depot)"
+                class="p-1 text-gray-500 hover:text-gray-200 transition-colors"
+                :title="t('settings.renameDepot')"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+              <button
+                v-if="depotStore.depots.length > 1"
+                @click="confirmDelete(depot)"
+                class="p-1 text-gray-500 hover:text-red-400 transition-colors"
+                :title="t('settings.deleteDepot')"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/>
+                </svg>
+              </button>
+            </template>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Delete confirmation -->
+      <div v-if="deletingDepot" class="bg-red-950/40 border border-red-800 rounded-lg p-3 space-y-2">
+        <p class="text-sm text-red-300">{{ t('settings.deleteDepotConfirm', { name: deletingDepot.name }) }}</p>
+        <div class="flex gap-2">
+          <button
+            @click="doDelete"
+            :disabled="deleting"
+            class="px-3 py-1.5 text-xs bg-red-600 hover:bg-red-500 disabled:opacity-40 rounded transition-colors"
+          >
+            {{ deleting ? t('settings.deleting') : t('settings.deleteDepot') }}
+          </button>
+          <button @click="deletingDepot = null" class="px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 transition-colors">
+            {{ t('common.cancel') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Add depot -->
+      <template v-if="isPremium">
+        <div v-if="!addingDepot">
+          <button
+            @click="addingDepot = true"
+            class="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+          >
+            + {{ t('settings.addDepot') }}
+          </button>
+        </div>
+        <div v-else class="flex gap-2">
+          <input
+            v-model="newDepotName"
+            :placeholder="t('settings.depotNamePlaceholder')"
+            @keydown.enter="createDepot"
+            @keydown.escape="addingDepot = false; newDepotName = ''"
+            class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+          <button
+            @click="createDepot"
+            :disabled="!newDepotName.trim() || creatingDepot"
+            class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-sm font-medium rounded-md transition-colors"
+          >
+            {{ t('common.save') }}
+          </button>
+          <button
+            @click="addingDepot = false; newDepotName = ''"
+            class="shrink-0 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+          >
+            {{ t('common.cancel') }}
+          </button>
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex items-center gap-1.5 text-xs text-gray-500">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          {{ t('settings.depotsLocked') }}
+          <RouterLink to="/subscriptions" class="text-emerald-400 hover:text-emerald-300 transition-colors">
+            {{ t('settings.upgradeBtn') }} →
+          </RouterLink>
+        </div>
+      </template>
+    </div>
+
     <!-- Goals -->
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('settings.goals') }}</h2>
@@ -180,12 +308,74 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useDataStore } from '../stores/dataStore.js'
+import { useDepotStore } from '../stores/depotStore.js'
 import { useSubscription } from '../composables/useSubscription.js'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
 const store = useDataStore()
+const depotStore = useDepotStore()
 const { isPremium } = useSubscription()
+
+// ── Depot management ───────────────────────────────────────────────────────────
+const addingDepot = ref(false)
+const newDepotName = ref('')
+const creatingDepot = ref(false)
+const editingDepotId = ref(null)
+const editingName = ref('')
+const deletingDepot = ref(null)
+const deleting = ref(false)
+
+function startEdit(depot) {
+  editingDepotId.value = depot.id
+  editingName.value = depot.name
+}
+
+function cancelEdit() {
+  editingDepotId.value = null
+  editingName.value = ''
+}
+
+async function saveRename(id) {
+  if (!editingName.value.trim()) return
+  try {
+    await depotStore.renameDepot(id, editingName.value.trim())
+    cancelEdit()
+  } catch {
+    // error toast handled in store
+  }
+}
+
+async function createDepot() {
+  if (!newDepotName.value.trim() || creatingDepot.value) return
+  creatingDepot.value = true
+  try {
+    await depotStore.createDepot(newDepotName.value.trim())
+    newDepotName.value = ''
+    addingDepot.value = false
+  } catch {
+    // error toast handled in store
+  } finally {
+    creatingDepot.value = false
+  }
+}
+
+function confirmDelete(depot) {
+  deletingDepot.value = depot
+}
+
+async function doDelete() {
+  if (!deletingDepot.value || deleting.value) return
+  deleting.value = true
+  try {
+    await depotStore.deleteDepot(deletingDepot.value.id)
+    deletingDepot.value = null
+  } catch {
+    // error toast handled in store
+  } finally {
+    deleting.value = false
+  }
+}
 
 // Goals
 const goalInput      = ref(settings.dividendGoal[store.currentYear] || 0)
