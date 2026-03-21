@@ -5,3 +5,42 @@ __pycache__/
 .mypy_cache/
 .pytest_cache/
 *.egg-info/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation and CI/CD
+docs/
+.github/
+.gitlab-ci.yml
+
+# Testing and coverage
+.coverage
+htmlcov/
+.tox/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+
+# OS-specific
+Thumbs.db
+
+# Development files
+*.log
+.pytest_cache/
