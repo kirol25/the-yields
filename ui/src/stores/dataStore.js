@@ -66,12 +66,17 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
+  function clearYearCache() {
+    allYearsData.value = {}
+    yearData.value = { dividends: {}, yields: {} }
+  }
+
   async function loadAllYears() {
+    const missing = years.value.filter((year) => !(year in allYearsData.value))
+    if (!missing.length) return
     try {
       const results = await Promise.all(
-        years.value
-          .filter((year) => year !== currentYear.value)
-          .map((year) => client.get(`${_apiPrefix()}/data/${year}`).then((r) => [year, r.data])),
+        missing.map((year) => client.get(`${_apiPrefix()}/data/${year}`).then((r) => [year, r.data])),
       )
       allYearsData.value = { ...allYearsData.value, ...Object.fromEntries(results) }
     } catch (e) {
@@ -106,5 +111,5 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, fetchMe, fetchYears, loadYear, loadAllYears, saveData, deleteEntries }
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, deleteEntries }
 })
