@@ -3,6 +3,7 @@
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <h1 class="text-2xl font-bold">{{ t('dividends.title') }}</h1>
       <div class="flex items-center gap-3">
+        <DepotSelector />
         <YearSelector />
         <button
           @click="showModal = true"
@@ -32,6 +33,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import YearSelector from '../components/YearSelector.vue'
+import DepotSelector from '../components/DepotSelector.vue'
 import DividendTable from '../components/DividendTable.vue'
 import AddEntryModal from '../components/AddEntryModal.vue'
 
