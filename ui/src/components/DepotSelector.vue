@@ -4,8 +4,11 @@
       @click="toggleOpen"
       class="flex items-center gap-1.5 px-2 text-sm font-medium text-gray-100 hover:text-emerald-400 transition-colors max-w-[140px]"
     >
-      <svg class="w-3.5 h-3.5 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM13 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7"/>
+      <!-- layers / stacked-accounts icon -->
+      <svg class="w-3.5 h-3.5 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 12l10 5 10-5"/>
+        <path d="M2 17l10 5 10-5"/>
       </svg>
       <span class="truncate">{{ depotStore.currentDepot?.name || '…' }}</span>
       <svg class="w-3 h-3 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
