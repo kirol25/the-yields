@@ -40,6 +40,29 @@ resource "aws_sesv2_email_identity_policy" "cognito" {
 }
 
 # ============================================
+# Sending authorization policy - allows app server IAM user to use this identity
+# ============================================
+
+resource "aws_sesv2_email_identity_policy" "app_server" {
+  count = var.ses.enabled ? 1 : 0
+
+  email_identity = aws_sesv2_email_identity.domain[0].email_identity
+  policy_name    = "AppServerSendingPolicy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { AWS = aws_iam_user.app_server[0].arn }
+        Action    = ["ses:SendEmail", "ses:SendRawEmail"]
+        Resource  = aws_sesv2_email_identity.domain[0].arn
+      }
+    ]
+  })
+}
+
+# ============================================
 # Custom MAIL FROM domain
 # ============================================
 
