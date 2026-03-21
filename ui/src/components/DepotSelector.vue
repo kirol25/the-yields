@@ -73,8 +73,9 @@ async function select(id) {
   }
   depotStore.selectDepot(id)
   open.value = false
-  // Reload data for the newly selected depot
+  // Clear stale cache and reload data for the newly selected depot
+  dataStore.clearYearCache()
   await dataStore.fetchYears()
-  await Promise.all([dataStore.loadYear(dataStore.currentYear), dataStore.loadAllYears()])
+  await dataStore.loadYear(dataStore.currentYear)
 }
 </script>

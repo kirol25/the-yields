@@ -335,7 +335,7 @@ watch(
       if (!valid) return
       await Promise.all([settings.loadFromServer(), store.fetchMe(), depotStore.fetchDepots()])
       await store.fetchYears()
-      await Promise.all([store.loadYear(store.currentYear), store.loadAllYears()])
+      await store.loadYear(store.currentYear)
     }
   },
   { immediate: true },
