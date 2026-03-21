@@ -221,3 +221,36 @@ def db_repo(db_session: Session) -> DBYieldRepository:
 def db_service(db_repo: DBYieldRepository) -> YieldService:
     """A YieldService backed by the DB repository."""
     return YieldService(db_repo)
+
+
+# ---------------------------------------------------------------------------
+# HTTP clients backed by the test DB session (depot + integration HTTP suite)
+# ---------------------------------------------------------------------------
+
+
+def _make_db_client(auth_ctx: dict, session: Session) -> TestClient:
+    """TestClient that uses real DB session but fake auth context."""
+    app.dependency_overrides[get_auth_context] = lambda: auth_ctx
+    from app.db.session import get_db
+
+    app.dependency_overrides[get_db] = lambda: session
+    return TestClient(app, raise_server_exceptions=True)
+
+
+@pytest.fixture
+def free_db_client(db_session: Session) -> TestClient:
+    client = _make_db_client(
+        {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": False}, db_session
+    )
+    yield client
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def premium_db_client(db_session: Session) -> TestClient:
+    client = _make_db_client(
+        {"email": "premium@example.com", "sub": "premium-sub", "is_premium": True},
+        db_session,
+    )
+    yield client
+    app.dependency_overrides.clear()

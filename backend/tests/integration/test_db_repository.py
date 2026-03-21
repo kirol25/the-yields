@@ -10,7 +10,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.api.finance.db_repository import DBYieldRepository
-from app.db.models import Ticker, User
+from app.db.models import Depot, Ticker, User
 
 CURRENT_YEAR = datetime.now(UTC).year
 PAST_YEAR = CURRENT_YEAR - 1
@@ -360,3 +360,122 @@ class TestTickerResolution:
         )
         result = db_repo.read_year(CURRENT_YEAR)
         assert result["dividends"]["UNKN"]["name"] == "UNKN"
+
+
+# ---------------------------------------------------------------------------
+# Multi-depot isolation
+# ---------------------------------------------------------------------------
+
+
+class TestMultiDepot:
+    """Verify that repos scoped to different depot_ids are fully isolated."""
+
+    def _make_second_depot(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ) -> Depot:
+        """Create a second depot for the test user and return it."""
+        user = db_session.query(User).filter_by(sub=db_repo._sub).first()
+        if not user:
+            db_repo.list_years()  # ensures user is created
+            user = db_session.query(User).filter_by(sub=db_repo._sub).first()
+        depot2 = Depot(user_id=user.id, name="Broker B")
+        db_session.add(depot2)
+        db_session.flush()
+        return depot2
+
+    def test_data_written_to_depot_a_not_visible_in_depot_b(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        depot2 = self._make_second_depot(db_repo, db_session)
+
+        # Write to the default depot (depot A via db_repo)
+        db_repo.write_year(CURRENT_YEAR, SAMPLE_DATA)
+
+        # Read from depot B — should see nothing
+        repo_b = DBYieldRepository(
+            sub=db_repo._sub,
+            email=db_repo._email,
+            session=db_session,
+            depot_id=depot2.id,
+        )
+        result = repo_b.read_year(CURRENT_YEAR)
+        assert result == {"dividends": {}, "yields": {}}
+
+    def test_data_written_to_depot_b_not_visible_in_depot_a(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        depot2 = self._make_second_depot(db_repo, db_session)
+        repo_b = DBYieldRepository(
+            sub=db_repo._sub,
+            email=db_repo._email,
+            session=db_session,
+            depot_id=depot2.id,
+        )
+
+        repo_b.write_year(CURRENT_YEAR, SAMPLE_DATA)
+
+        # Default depot (depot A) should see nothing
+        result = db_repo.read_year(CURRENT_YEAR)
+        assert result == {"dividends": {}, "yields": {}}
+
+    def test_same_ticker_allowed_in_both_depots(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        depot2 = self._make_second_depot(db_repo, db_session)
+        repo_b = DBYieldRepository(
+            sub=db_repo._sub,
+            email=db_repo._email,
+            session=db_session,
+            depot_id=depot2.id,
+        )
+        aapl_data = {
+            "dividends": {"AAPL": {"name": "Apple Inc.", "months": {"01": 1.00}}},
+            "yields": {},
+        }
+
+        db_repo.write_year(CURRENT_YEAR, aapl_data)
+        repo_b.write_year(CURRENT_YEAR, aapl_data)
+
+        result_a = db_repo.read_year(CURRENT_YEAR)
+        result_b = repo_b.read_year(CURRENT_YEAR)
+
+        assert result_a["dividends"]["AAPL"]["months"]["01"] == pytest.approx(1.00)
+        assert result_b["dividends"]["AAPL"]["months"]["01"] == pytest.approx(1.00)
+
+    def test_depot_id_not_found_raises_404(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        import uuid
+
+        from fastapi import HTTPException
+
+        bogus_id = uuid.uuid4()
+        # Ensure the user exists first so the user lookup doesn't short-circuit
+        db_repo.list_years()
+
+        repo_bad = DBYieldRepository(
+            sub=db_repo._sub,
+            email=db_repo._email,
+            session=db_session,
+            depot_id=bogus_id,
+        )
+        with pytest.raises(HTTPException) as exc_info:
+            repo_bad.read_year(CURRENT_YEAR)
+        assert exc_info.value.status_code == 404
+
+    def test_list_years_scoped_to_depot(
+        self, db_repo: DBYieldRepository, db_session: Session
+    ):
+        depot2 = self._make_second_depot(db_repo, db_session)
+        repo_b = DBYieldRepository(
+            sub=db_repo._sub,
+            email=db_repo._email,
+            session=db_session,
+            depot_id=depot2.id,
+        )
+
+        db_repo.write_year(PAST_YEAR, SAMPLE_DATA)
+        repo_b.write_year(CURRENT_YEAR, SAMPLE_DATA)
+
+        assert db_repo.list_years() == [PAST_YEAR]
+        assert repo_b.list_years() == [CURRENT_YEAR]

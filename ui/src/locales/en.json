@@ -114,7 +114,16 @@
     "steuerfreibetragMax": "Maximum value is €2,000.",
     "exportLocked": "CSV export is a Monthly/Yearly feature",
     "exportLockedDesc": "Upgrade to export your data as CSV.",
-    "upgradeBtn": "Upgrade"
+    "upgradeBtn": "Upgrade",
+    "depots": "Depots",
+    "depotsDesc": "Depots let you track dividends and yields across multiple brokers or accounts separately.",
+    "addDepot": "Add depot",
+    "depotNamePlaceholder": "e.g. Trade Republic",
+    "renameDepot": "Rename depot",
+    "deleteDepot": "Delete depot",
+    "deleteDepotConfirm": "Delete depot \"{name}\" and all its data? This cannot be undone.",
+    "deleting": "Deleting…",
+    "depotsLocked": "Multiple depots are a Premium feature."
   },
   "blade": {
     "account": "Account",
