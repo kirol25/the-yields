@@ -26,11 +26,3 @@ variable "ses" {
     domain  = string
   })
 }
-
-variable "s3" {
-  description = "Configuration for the app data S3 bucket"
-  type = object({
-    enabled     = bool
-    bucket_name = string
-  })
-}

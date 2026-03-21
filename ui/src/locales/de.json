@@ -114,7 +114,16 @@
     "steuerfreibetragMax": "Der Maximalwert betr\u00e4gt 2.000\u202f\u20ac.",
     "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
     "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
-    "upgradeBtn": "Upgraden"
+    "upgradeBtn": "Upgraden",
+    "depots": "Depots",
+    "depotsDesc": "Mit Depots kannst du Dividenden und Zinsen für verschiedene Broker oder Konten separat verfolgen.",
+    "addDepot": "Depot hinzufügen",
+    "depotNamePlaceholder": "z.\u202fB. Trade Republic",
+    "renameDepot": "Depot umbenennen",
+    "deleteDepot": "Depot löschen",
+    "deleteDepotConfirm": "Depot \"{name}\" und alle zugehörigen Daten löschen? Das kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht\u2026",
+    "depotsLocked": "Mehrere Depots sind eine Premium-Funktion."
   },
   "blade": {
     "account": "Konto",
@@ -219,7 +228,8 @@
         "Dividenden- & Zins-Tracking",
         "Nur aktuelles Jahr",
         "Bis zu 5 Ticker & 5 Konten",
-        "Monatliches Diagramm"
+        "Monatliches Diagramm",
+        "1 Broker-Depot"
       ]
     },
     "monthly": {
@@ -229,6 +239,7 @@
       "features": [
         "Unbegrenzte Ticker & Konten",
         "Alle Jahre gespeichert",
+        "Unbegrenzte Broker-Depots",
         "Quartals-, Jahres- & kumulative Diagramme",
         "Portfolio-Aufschlüsselung & Heatmap",
         "Export als CSV"
@@ -281,6 +292,8 @@
     "feature6Desc": "Sieh auf einen Blick, welche Ticker und Sparkonten dein Einkommen am st\u00e4rksten antreiben.",
     "feature7Title": "Einkommens-Heatmap",
     "feature7Desc": "Eine Heatmap mit jedem Monat \u00fcber alle Jahre hinweg. Erkenne deine st\u00e4rksten Monate und das Wachstum auf einen Blick.",
+    "feature8Title": "Multi-Broker-Depots",
+    "feature8Desc": "Verfolge Investments bei mehreren Brokern oder Konten separat. Jedes Depot h\u00e4lt eigene Daten \u2014 ideal f\u00fcr Trade Republic, IBKR oder jede andere Kombination.",
     "howTitle": "Einfach und fokussiert",
     "step1Title": "Ticker hinzufügen",
     "step1Desc": "Trage einmalig deine Aktien-Ticker und Sparkonten ein.",

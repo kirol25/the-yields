@@ -253,6 +253,7 @@ import { APP_NAME } from './config.js'
 import { useRoute, useRouter } from 'vue-router'
 import { localizePath, stripLocalePrefix } from './router/locale.js'
 import { useDataStore } from './stores/dataStore.js'
+import { useDepotStore } from './stores/depotStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
 import { useSubscription } from './composables/useSubscription.js'
@@ -264,6 +265,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const store = useDataStore()
+const depotStore = useDepotStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
 const { isPremium } = useSubscription()
@@ -331,9 +333,9 @@ watch(
     if (authed) {
       const valid = await auth.ensureValidToken()
       if (!valid) return
-      await Promise.all([settings.loadFromServer(), store.fetchMe()])
+      await Promise.all([settings.loadFromServer(), store.fetchMe(), depotStore.fetchDepots()])
       await store.fetchYears()
-      await Promise.all([store.loadYear(store.currentYear), store.loadAllYears()])
+      await store.loadYear(store.currentYear)
     }
   },
   { immediate: true },
