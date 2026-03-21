@@ -114,7 +114,16 @@
     "steuerfreibetragMax": "Der Maximalwert betr\u00e4gt 2.000\u202f\u20ac.",
     "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
     "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
-    "upgradeBtn": "Upgraden"
+    "upgradeBtn": "Upgraden",
+    "depots": "Depots",
+    "depotsDesc": "Mit Depots kannst du Dividenden und Zinsen für verschiedene Broker oder Konten separat verfolgen.",
+    "addDepot": "Depot hinzufügen",
+    "depotNamePlaceholder": "z.\u202fB. Trade Republic",
+    "renameDepot": "Depot umbenennen",
+    "deleteDepot": "Depot löschen",
+    "deleteDepotConfirm": "Depot \"{name}\" und alle zugehörigen Daten löschen? Das kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht\u2026",
+    "depotsLocked": "Mehrere Depots sind eine Premium-Funktion."
   },
   "blade": {
     "account": "Konto",
