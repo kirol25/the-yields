@@ -1,6 +1,8 @@
+import uuid
 from decimal import Decimal
 from typing import Any
 
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, selectinload
 
 from app.db.models import (
@@ -19,16 +21,43 @@ class DBYieldRepository:
     """Reads and writes all user data via the relational database.
 
     Scoped to a single user (identified by Cognito sub + email).
-    All data lives under the user's "Default" depot unless the depot API
-    is used directly in the future.
+    When depot_id is provided, operations are scoped to that specific depot.
+    Otherwise, the user's "Default" depot is used (legacy behaviour).
     """
 
-    def __init__(self, sub: str, email: str, session: Session) -> None:
+    def __init__(
+        self,
+        sub: str,
+        email: str,
+        session: Session,
+        depot_id: uuid.UUID | None = None,
+    ) -> None:
         self._sub = sub
         self._email = email
         self._db = session
+        self._depot_id = depot_id
 
     # ── private helpers ───────────────────────────────────────────────────────
+
+    def _resolve_depot(self) -> Depot:
+        """Return the depot to operate on.
+
+        Uses the explicit depot_id when set; falls back to creating/fetching
+        the user's "Default" depot for legacy callers.
+        """
+        if self._depot_id is not None:
+            user = self._get_or_create_user()
+            depot = (
+                self._db.query(Depot)
+                .filter_by(id=self._depot_id, user_id=user.id)
+                .first()
+            )
+            if not depot:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Depot not found"
+                )
+            return depot
+        return self._get_or_create_default_depot()
 
     def _get_or_create_user(self) -> User:
         user = self._db.query(User).filter_by(sub=self._sub).first()
@@ -51,7 +80,7 @@ class DBYieldRepository:
 
     def list_years(self) -> list[int]:
         """Return all years that have at least one dividend or yield entry."""
-        depot = self._get_or_create_default_depot()
+        depot = self._resolve_depot()
         div_years = {
             y
             for (y,) in self._db.query(DividendEntry.year)
@@ -73,7 +102,7 @@ class DBYieldRepository:
         data exists yet, matching the legacy file-based behaviour.
         Display name resolves as: entry.name → ticker_ref.name → ticker symbol.
         """
-        depot = self._get_or_create_default_depot()
+        depot = self._resolve_depot()
 
         div_entries = (
             self._db.query(DividendEntry)
@@ -113,7 +142,7 @@ class DBYieldRepository:
         Existing entries for the year are deleted (months cascade via FK) and
         the incoming payload is re-inserted in full.
         """
-        depot = self._get_or_create_default_depot()
+        depot = self._resolve_depot()
 
         # Full replacement — remove existing rows first; months are removed by
         # PostgreSQL's ON DELETE CASCADE on the FK.
@@ -169,7 +198,7 @@ class DBYieldRepository:
 
         Returns ``True`` if the entry existed and was removed, ``False`` if not found.
         """
-        depot = self._get_or_create_default_depot()
+        depot = self._resolve_depot()
         if section == "dividends":
             deleted = (
                 self._db.query(DividendEntry)
