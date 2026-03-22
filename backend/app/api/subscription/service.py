@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.finance.dependencies import invalidate_premium_cache
+from app.api.subscription.schemas import SubscriptionPlan
 from app.core import settings
 from app.core.logging_config import logger
 from app.db.models import User
@@ -13,8 +14,8 @@ if STRIPE_ENABLED:
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
 _PLAN_TO_PRICE = {
-    "monthly": settings.STRIPE_PRICE_ID_MONTHLY,
-    "yearly": settings.STRIPE_PRICE_ID_YEARLY,
+    SubscriptionPlan.monthly: settings.STRIPE_PRICE_ID_MONTHLY,
+    SubscriptionPlan.yearly: settings.STRIPE_PRICE_ID_YEARLY,
 }
 
 
@@ -26,18 +27,21 @@ def _require_stripe() -> None:
         )
 
 
-def set_premium(sub: str, value: bool, db: Session) -> None:
-    """Set is_premium on the User row and bust the in-process cache."""
+def set_premium(
+    sub: str, value: bool, db: Session, plan: SubscriptionPlan | None = None
+) -> None:
+    """Set is_premium and subscription_plan on the User row and bust the cache."""
     user = db.query(User).filter_by(sub=sub).first()
     if not user:
         logger.warning("set_premium_user_not_found", user=sub)
         return
     user.is_premium = value
+    user.subscription_plan = plan.value if plan else None
     db.flush()
     invalidate_premium_cache(sub)
 
 
-def create_checkout_url(plan: str, email: str, sub: str) -> str:
+def create_checkout_url(plan: SubscriptionPlan, email: str, sub: str) -> str:
     """Create a Stripe Checkout session and return the hosted URL."""
     _require_stripe()
     price_id = _PLAN_TO_PRICE.get(plan)
@@ -52,6 +56,7 @@ def create_checkout_url(plan: str, email: str, sub: str) -> str:
             line_items=[{"price": price_id, "quantity": 1}],
             customer_email=email,
             client_reference_id=sub,
+            metadata={"plan": plan.value},
             success_url=f"{settings.APP_URL}/subscription/success",
             cancel_url=f"{settings.APP_URL}/subscriptions",
         )
@@ -112,7 +117,12 @@ def handle_webhook(payload: bytes, sig_header: str, db: Session) -> None:
     if event_type == "checkout.session.completed":
         sub = data.get("client_reference_id")
         if sub:
-            set_premium(sub, True, db)
+            raw_plan = data.get("metadata", {}).get("plan")
+            try:
+                plan: SubscriptionPlan | None = SubscriptionPlan(raw_plan)
+            except (ValueError, KeyError):
+                plan = None
+            set_premium(sub, True, db, plan=plan)
             # Store sub on the Stripe customer so we can find it on cancellation
             try:
                 stripe.Customer.modify(data["customer"], metadata={"sub": sub})
@@ -123,7 +133,7 @@ def handle_webhook(payload: bytes, sig_header: str, db: Session) -> None:
                     event_id=event["id"],
                     error=str(exc),
                 )
-            logger.info("premium_granted", user=sub, event_id=event["id"])
+            logger.info("premium_granted", user=sub, plan=plan, event_id=event["id"])
         else:
             logger.warning("checkout_completed_no_sub", event_id=event["id"])
 
@@ -146,7 +156,7 @@ def handle_webhook(payload: bytes, sig_header: str, db: Session) -> None:
             ) from exc
         sub = customer.get("metadata", {}).get("sub")
         if sub:
-            set_premium(sub, False, db)
+            set_premium(sub, False, db, plan=None)
             logger.info(
                 "premium_revoked",
                 user=sub,
