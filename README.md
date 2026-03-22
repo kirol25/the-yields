@@ -125,6 +125,59 @@ Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3:
 
 Interactive docs available at `http://localhost:9002/docs`.
 
+## Stripe setup
+
+### 1. Create products & prices
+
+1. Go to **dashboard.stripe.com → Products → Add product**
+2. Create a product called e.g. **"The Yields Premium"**
+3. Under **Pricing**, add two recurring prices:
+   - **Monthly**: e.g. €4.99/month → copy the `price_...` ID
+   - **Yearly**: e.g. €39.99/year → copy the `price_...` ID
+
+> **Important**: Use the `price_...` IDs, not the `prod_...` product IDs.
+
+### 2. Create a webhook endpoint
+
+1. Go to **Developers → Webhooks → Add endpoint**
+2. Set the endpoint URL to `https://<your-domain>/api/subscription/webhook`
+3. Select these events:
+   - `checkout.session.completed`
+   - `customer.subscription.deleted`
+   - `customer.subscription.paused`
+   - `invoice.payment_failed`
+4. Save and copy the **Signing secret** (`whsec_...`)
+
+### 3. Configure environment variables
+
+Add to `backend/.env`:
+
+```env
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID_MONTHLY=price_...
+STRIPE_PRICE_ID_YEARLY=price_...
+APP_URL=https://your-domain.com
+```
+
+Add to `ui/.env`:
+
+```env
+VITE_STRIPE_ENABLED=true
+```
+
+### 4. Test webhooks locally
+
+Install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and forward events to your local backend:
+
+```bash
+brew install stripe/stripe-cli/stripe
+stripe login
+stripe listen --forward-to localhost:9002/api/subscription/webhook
+```
+
+The CLI prints a local `whsec_...` secret — use that as `STRIPE_WEBHOOK_SECRET` when developing locally (it differs from the dashboard webhook secret).
+
 ## Account deletion
 
 When a user deletes their account the frontend:
