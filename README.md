@@ -178,9 +178,23 @@ stripe listen --forward-to localhost:9002/api/subscription/webhook
 
 The CLI prints a local `whsec_...` secret — use that as `STRIPE_WEBHOOK_SECRET` when developing locally (it differs from the dashboard webhook secret).
 
+### 5. Subscription lifecycle
+
+| Event | When it fires | Effect |
+| --- | --- | --- |
+| `checkout.session.completed` | User completes payment | `is_premium = True` |
+| `customer.subscription.deleted` | Paid period expires | `is_premium = False` |
+| `customer.subscription.paused` | Subscription paused | `is_premium = False` |
+| `invoice.payment_failed` | Payment fails | Logged only (no action) |
+
+**Cancellation behaviour**: when a user cancels via the billing portal, Stripe sets `cancel_at_period_end: true` but the subscription stays active — no webhook fires immediately. The user keeps premium access until the end of the paid period, at which point `customer.subscription.deleted` fires and `is_premium` is set to `False`.
+
+> **Production note**: the `customer.subscription.deleted` event is delivered by Stripe on the period end date — make sure your production webhook endpoint is live and reachable, otherwise access will not be revoked on time.
+
 ## Account deletion
 
 When a user deletes their account the frontend:
+
 1. Calls `DELETE /api/data` to wipe all their data from the backend
 2. Calls Cognito `DeleteUser` to remove the auth account
 3. Clears local tokens and redirects to `/login`

@@ -93,7 +93,7 @@ router.beforeEach((to) => {
 
   if (to.meta.public) return true
 
-  if (!auth.isAuthenticated) return localizePath('/login', activeLocale)
+  if (!auth.isAuthenticated) return { path: localizePath('/login', activeLocale), query: { redirect: to.fullPath } }
 })
 
 export default router

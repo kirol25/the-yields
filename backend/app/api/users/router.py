@@ -21,4 +21,6 @@ router = APIRouter(prefix="/api", tags=["users"])
 )
 @limiter.limit("30/minute")
 def get_me(request: Request, ctx: AuthContextDep) -> MeResponse:
-    return UserService().get_me(ctx["email"], ctx["is_premium"])
+    return UserService().get_me(
+        ctx["email"], ctx["is_premium"], ctx["subscription_plan"]
+    )
