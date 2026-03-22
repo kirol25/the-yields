@@ -3,8 +3,8 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.finance.dependencies import invalidate_premium_cache
-from app.api.subscription.schemas import SubscriptionPlan
 from app.core import settings
+from app.core.enums import SubscriptionPlan
 from app.core.logging_config import logger
 from app.db.models import User
 
