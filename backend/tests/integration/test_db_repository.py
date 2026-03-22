@@ -7,9 +7,9 @@ so no data persists between tests.
 from datetime import UTC, datetime
 
 import pytest
+from backend.app.api.finance.repository import DBYieldRepository
 from sqlalchemy.orm import Session
 
-from app.api.finance.db_repository import DBYieldRepository
 from app.db.models import Depot, Ticker, User
 
 CURRENT_YEAR = datetime.now(UTC).year
