@@ -1,15 +1,10 @@
-from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-class Environment(StrEnum):
-    LOCAL = "local"
-    PROD = "prod"
-
+from app.core.enums import Environment
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 

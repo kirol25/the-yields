@@ -48,14 +48,14 @@
         </ul>
         <button
           type="button"
-          :disabled="!stripeEnabled || loading === 'monthly'"
+          :disabled="!stripeEnabled || loading === 'monthly' || subscriptionPlan === 'monthly' || subscriptionPlan === 'yearly'"
           @click="checkout('monthly')"
           class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors"
-          :class="stripeEnabled
+          :class="stripeEnabled && subscriptionPlan !== 'monthly' && subscriptionPlan !== 'yearly'
             ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed'
             : 'bg-gray-800 text-gray-500 cursor-not-allowed'"
         >
-          {{ loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
+          {{ subscriptionPlan === 'monthly' ? t('subscriptions.currentPlan') : loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
 
@@ -81,14 +81,14 @@
         </ul>
         <button
           type="button"
-          :disabled="!stripeEnabled || loading === 'yearly'"
+          :disabled="!stripeEnabled || loading === 'yearly' || subscriptionPlan === 'yearly'"
           @click="checkout('yearly')"
           class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors border"
-          :class="stripeEnabled
+          :class="stripeEnabled && subscriptionPlan !== 'yearly'
             ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed'
             : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
         >
-          {{ loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
+          {{ subscriptionPlan === 'yearly' ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
     </div>
@@ -118,11 +118,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '../stores/authStore.js'
 import client from '../api/client.js'
 import { useSubscription } from '../composables/useSubscription.js'
 
 const { t, tm } = useI18n()
-const { isPremium } = useSubscription()
+const { isPremium, subscriptionPlan } = useSubscription()
+const auth = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
 const stripeEnabled = import.meta.env.VITE_STRIPE_ENABLED === 'true'
 const loading = ref(null)   // 'monthly' | 'yearly' | null
@@ -130,6 +135,10 @@ const portalLoading = ref(false)
 const error = ref('')
 
 async function checkout(plan) {
+  if (!auth.isAuthenticated) {
+    router.push({ path: '/login', query: { redirect: route.fullPath } })
+    return
+  }
   loading.value = plan
   error.value = ''
   try {
