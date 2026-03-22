@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 
-from app.api.subscription.schemas import SubscriptionPlan
 from app.core import settings
+from app.core.enums import SubscriptionPlan
 
 
 class MeResponse(BaseModel):
