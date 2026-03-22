@@ -89,12 +89,13 @@ import { REGISTRATION_ENABLED } from '../config.js'
 
 const registrationEnabled = REGISTRATION_ENABLED
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 
 const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
@@ -119,7 +120,7 @@ async function submit() {
   loading.value = true
   try {
     await auth.signIn(email.value, password.value)
-    router.push('/dashboard')
+    router.push(route.query.redirect || '/dashboard')
   } catch (err) {
     if (err.type === 'UserNotConfirmedException') {
       router.push('/confirm')
