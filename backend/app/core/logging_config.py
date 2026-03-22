@@ -32,6 +32,7 @@ def configure_logging() -> None:
     )
 
     formatter = structlog.stdlib.ProcessorFormatter(
+        foreign_pre_chain=shared_processors,
         processors=[
             structlog.stdlib.ProcessorFormatter.remove_processors_meta,
             *shared_processors,
@@ -47,5 +48,5 @@ def configure_logging() -> None:
     root.setLevel(logging.INFO)
 
     # Silence noisy third-party loggers
-    for name in ("uvicorn.access", "boto3", "botocore", "urllib3"):
+    for name in ("uvicorn.access", "boto3", "botocore", "urllib3", "stripe"):
         logging.getLogger(name).setLevel(logging.WARNING)

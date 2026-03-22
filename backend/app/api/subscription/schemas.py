@@ -1,11 +1,6 @@
-from enum import Enum
-
 from pydantic import BaseModel
 
-
-class SubscriptionPlan(str, Enum):
-    monthly = "monthly"
-    yearly = "yearly"
+from app.core.enums import SubscriptionPlan
 
 
 class CheckoutRequest(BaseModel):
