@@ -4,5 +4,6 @@ import { useDataStore } from '../stores/dataStore.js'
 export function useSubscription() {
   const store = useDataStore()
   const isPremium = computed(() => store.isPremium)
-  return { isPremium }
+  const subscriptionPlan = computed(() => store.subscriptionPlan)
+  return { isPremium, subscriptionPlan }
 }

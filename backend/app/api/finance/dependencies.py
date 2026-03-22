@@ -1,11 +1,11 @@
 from typing import Annotated
 
+from backend.app.api.finance.repository import DBYieldRepository
 from cachetools import TTLCache
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.auth import verify_token
-from app.api.finance.db_repository import DBYieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
 from app.core.logging_config import logger
@@ -17,18 +17,18 @@ from app.db.session import get_db
 _PREMIUM_CACHE: TTLCache = TTLCache(maxsize=1024, ttl=300)
 
 
-def _get_is_premium(sub: str, db: Session) -> bool:
-    """Read is_premium from the User row, with a 5-minute in-process cache."""
+def _get_user_subscription(sub: str, db: Session) -> tuple[bool, str | None]:
+    """Return (is_premium, subscription_plan) from the User row, 5-minute cache."""
     if sub in _PREMIUM_CACHE:
         return _PREMIUM_CACHE[sub]
     try:
         user = db.query(User).filter_by(sub=sub).first()
-        is_premium = user.is_premium if user else False
+        result = (user.is_premium, user.subscription_plan) if user else (False, None)
     except Exception:
         logger.warning("premium_check_failed_fallback", user=sub)
-        return False
-    _PREMIUM_CACHE[sub] = is_premium
-    return is_premium
+        return (False, None)
+    _PREMIUM_CACHE[sub] = result
+    return result
 
 
 def invalidate_premium_cache(sub: str) -> None:
@@ -54,7 +54,9 @@ def get_auth_context(
             detail="Authorization header with Bearer token is required",
         )
     ctx = verify_token(authorization.removeprefix("Bearer "))
-    ctx["is_premium"] = _get_is_premium(ctx["sub"], db)
+    is_premium, subscription_plan = _get_user_subscription(ctx["sub"], db)
+    ctx["is_premium"] = is_premium
+    ctx["subscription_plan"] = subscription_plan
     return ctx
 
 

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.core.enums import SubscriptionPlan
+
 
 class CheckoutRequest(BaseModel):
-    plan: str  # "monthly" | "yearly"
+    plan: SubscriptionPlan

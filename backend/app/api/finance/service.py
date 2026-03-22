@@ -1,17 +1,17 @@
 from typing import Any, Literal
 
+from backend.app.api.finance.repository import YieldRepository
 from fastapi import HTTPException, status
 
 from app.api.finance.schemas import YearPayload
 from app.api.finance.utils import assert_ticker_limit, assert_year_allowed, current_year
 from app.core.logging_config import logger
-from app.core.utils import YieldRepositoryType
 
 
 class YieldService:
     """Business logic layer between the HTTP router and the data repository."""
 
-    def __init__(self, repository: YieldRepositoryType) -> None:
+    def __init__(self, repository: YieldRepository) -> None:
         self.repository = repository
 
     def get_years(self, is_premium: bool) -> list[int]:

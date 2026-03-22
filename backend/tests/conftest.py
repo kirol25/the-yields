@@ -25,13 +25,12 @@ Override it with the TEST_DATABASE_URL environment variable.
 import os
 
 import pytest
+from backend.app.api.finance.repository import YieldRepository
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.orm import Session
 
-from app.api.finance.db_repository import DBYieldRepository
 from app.api.finance.dependencies import get_auth_context, get_service
-from app.api.finance.repository import YieldRepository
 from app.api.finance.service import YieldService
 from app.db import models  # noqa: F401 — ensures all models are registered
 from app.db.base import Base
@@ -212,13 +211,13 @@ def dividend_entry(db_session: Session, depot: Depot) -> DividendEntry:
 
 
 @pytest.fixture
-def db_repo(db_session: Session) -> DBYieldRepository:
-    """A DBYieldRepository wired to the test session."""
-    return DBYieldRepository(sub=TEST_SUB, email=TEST_EMAIL, session=db_session)
+def db_repo(db_session: Session) -> YieldRepository:
+    """A YieldRepository wired to the test session."""
+    return YieldRepository(sub=TEST_SUB, email=TEST_EMAIL, session=db_session)
 
 
 @pytest.fixture
-def db_service(db_repo: DBYieldRepository) -> YieldService:
+def db_service(db_repo: YieldRepository) -> YieldService:
     """A YieldService backed by the DB repository."""
     return YieldService(db_repo)
 
