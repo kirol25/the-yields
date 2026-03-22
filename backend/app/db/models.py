@@ -100,6 +100,12 @@ class User(Base):
         default=False,
         comment="Set to True by Stripe webhook on active subscription",
     )
+    subscription_plan: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+        default=None,
+        comment="Active plan: 'monthly' or 'yearly'. NULL when not premium.",
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
