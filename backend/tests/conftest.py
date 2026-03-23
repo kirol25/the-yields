@@ -239,7 +239,13 @@ def _make_db_client(auth_ctx: dict, session: Session) -> TestClient:
 @pytest.fixture
 def free_db_client(db_session: Session) -> TestClient:
     client = _make_db_client(
-        {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": False}, db_session
+        {
+            "email": TEST_EMAIL,
+            "sub": TEST_SUB,
+            "is_premium": False,
+            "subscription_plan": None,
+        },
+        db_session,
     )
     yield client
     app.dependency_overrides.clear()
@@ -248,7 +254,12 @@ def free_db_client(db_session: Session) -> TestClient:
 @pytest.fixture
 def premium_db_client(db_session: Session) -> TestClient:
     client = _make_db_client(
-        {"email": "premium@example.com", "sub": "premium-sub", "is_premium": True},
+        {
+            "email": "premium@example.com",
+            "sub": "premium-sub",
+            "is_premium": True,
+            "subscription_plan": "monthly",
+        },
         db_session,
     )
     yield client

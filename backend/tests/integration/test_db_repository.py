@@ -48,6 +48,31 @@ class TestAutoProvisioning:
 
 
 # ---------------------------------------------------------------------------
+# _resolve_depot memoization
+# ---------------------------------------------------------------------------
+
+
+class TestResolveDepotMemoization:
+    def test_depot_cached_after_first_call(self, db_repo: YieldRepository):
+        assert db_repo._depot is None
+        db_repo.list_years()
+        assert db_repo._depot is not None
+
+    def test_same_object_returned_on_subsequent_calls(self, db_repo: YieldRepository):
+        db_repo.list_years()
+        first = db_repo._depot
+        db_repo.read_year(CURRENT_YEAR)
+        assert db_repo._depot is first
+
+    def test_depot_cached_across_multiple_methods(self, db_repo: YieldRepository):
+        db_repo.write_year(CURRENT_YEAR, SAMPLE_DATA)
+        after_write = db_repo._depot
+        db_repo.list_years()
+        db_repo.read_year(CURRENT_YEAR)
+        assert db_repo._depot is after_write
+
+
+# ---------------------------------------------------------------------------
 # list_years
 # ---------------------------------------------------------------------------
 
