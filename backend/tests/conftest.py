@@ -25,12 +25,12 @@ Override it with the TEST_DATABASE_URL environment variable.
 import os
 
 import pytest
-from backend.app.api.finance.repository import YieldRepository
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine, event, text
 from sqlalchemy.orm import Session
 
 from app.api.finance.dependencies import get_auth_context, get_service
+from app.api.finance.repository import YieldRepository
 from app.api.finance.service import YieldService
 from app.db import models  # noqa: F401 — ensures all models are registered
 from app.db.base import Base

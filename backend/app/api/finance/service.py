@@ -1,8 +1,8 @@
 from typing import Any, Literal
 
-from backend.app.api.finance.repository import YieldRepository
 from fastapi import HTTPException, status
 
+from app.api.finance.repository import YieldRepository
 from app.api.finance.schemas import YearPayload
 from app.api.finance.utils import assert_ticker_limit, assert_year_allowed, current_year
 from app.core.logging_config import logger
