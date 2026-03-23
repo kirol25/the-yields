@@ -106,6 +106,13 @@ class User(Base):
         default=None,
         comment="Active plan: 'monthly' or 'yearly'. NULL when not premium.",
     )
+    currency: Mapped[str] = mapped_column(
+        String(3),
+        nullable=False,
+        default="EUR",
+        server_default="EUR",
+        comment="ISO 4217 display currency preference, e.g. 'EUR'",
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )

@@ -413,8 +413,7 @@ function toggleCurrency() {
 }
 
 function selectCurrency(code) {
-  settings.currency = code
-  settings.save()
+  settings.setCurrency(code)
   currencyOpen.value = false
 }
 

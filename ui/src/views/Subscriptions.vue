@@ -32,9 +32,18 @@
       </div>
 
       <!-- Monthly -->
-      <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_28px_rgba(52,211,153,0.12)]">
+      <div class="bg-gray-900 border rounded-xl p-6 flex flex-col transition-all duration-300"
+        :class="subscriptionPlan === 'monthly'
+          ? 'border-emerald-500/50'
+          : 'border-gray-800 hover:border-emerald-500/40 hover:shadow-[0_0_28px_rgba(52,211,153,0.12)]'"
+      >
         <div class="mb-6">
-          <h2 class="text-lg font-semibold text-gray-100 mb-1">{{ t('subscriptions.monthly.name') }}</h2>
+          <div class="flex items-center justify-between mb-1">
+            <h2 class="text-lg font-semibold text-gray-100">{{ t('subscriptions.monthly.name') }}</h2>
+            <span v-if="subscriptionPlan === 'monthly'" class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
+              {{ t('subscriptions.currentPlan') }}
+            </span>
+          </div>
           <div class="flex items-baseline gap-1">
             <span class="text-3xl font-bold text-gray-100">{{ t('subscriptions.monthly.price') }}</span>
             <span class="text-sm text-gray-500">/ {{ t('subscriptions.monthly.period') }}</span>
@@ -50,22 +59,26 @@
           type="button"
           :disabled="!stripeEnabled || loading === 'monthly' || subscriptionPlan === 'monthly' || subscriptionPlan === 'yearly'"
           @click="checkout('monthly')"
-          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors"
-          :class="stripeEnabled && subscriptionPlan !== 'monthly' && subscriptionPlan !== 'yearly'
-            ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed'
-            : 'bg-gray-800 text-gray-500 cursor-not-allowed'"
+          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors cursor-not-allowed"
+          :class="subscriptionPlan === 'monthly'
+            ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+            : stripeEnabled && subscriptionPlan !== 'yearly'
+              ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+              : 'bg-gray-800 text-gray-500'"
         >
           {{ subscriptionPlan === 'monthly' ? t('subscriptions.currentPlan') : loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
 
       <!-- Yearly (highlighted) -->
-      <div class="bg-gray-900 border-2 border-emerald-500/50 rounded-xl p-6 flex flex-col transition-all duration-300 hover:border-emerald-400/80 hover:shadow-[0_0_36px_rgba(52,211,153,0.22)]">
+      <div class="bg-gray-900 border-2 border-emerald-500/50 rounded-xl p-6 flex flex-col transition-all duration-300"
+        :class="subscriptionPlan !== 'yearly' ? 'hover:border-emerald-400/80 hover:shadow-[0_0_36px_rgba(52,211,153,0.22)]' : ''"
+      >
         <div class="mb-6">
           <div class="flex items-center justify-between mb-1">
             <h2 class="text-lg font-semibold text-gray-100">{{ t('subscriptions.yearly.name') }}</h2>
             <span class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
-              {{ t('subscriptions.yearly.badge') }}
+              {{ subscriptionPlan === 'yearly' ? t('subscriptions.currentPlan') : t('subscriptions.yearly.badge') }}
             </span>
           </div>
           <div class="flex items-baseline gap-1">
@@ -84,9 +97,11 @@
           :disabled="!stripeEnabled || loading === 'yearly' || subscriptionPlan === 'yearly'"
           @click="checkout('yearly')"
           class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors border"
-          :class="stripeEnabled && subscriptionPlan !== 'yearly'
-            ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed'
-            : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
+          :class="subscriptionPlan === 'yearly'
+            ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30 cursor-not-allowed'
+            : stripeEnabled
+              ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+              : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
         >
           {{ subscriptionPlan === 'yearly' ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>

@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -48,4 +50,15 @@ class SettingsPayload(BaseModel):
     steuerfreibetrag: dict[str, float] = Field(
         default={},
         description="Tax-free allowance per year keyed by year (e.g. {'2024': 801.0})",
+    )
+    currency: (
+        Literal[
+            "USD",
+            "EUR",
+            "GBP",
+        ]
+        | None
+    ) = Field(
+        default=None,
+        description="ISO 4217 display currency preference",
     )
