@@ -16,12 +16,12 @@ Finance sub-routes (scoped to a specific depot):
 import uuid
 from typing import Annotated, Any, Literal
 
-from backend.app.api.finance.repository import DBYieldRepository
 from fastapi import APIRouter, Depends, HTTPException, Path, Request, status
 from sqlalchemy.orm import Session
 
 from app.api.depots.schemas import CreateDepotRequest, DepotOut, RenameDepotRequest
 from app.api.finance.dependencies import AuthContextDep
+from app.api.finance.repository import DBYieldRepository
 from app.api.finance.schemas import YearPayload
 from app.api.finance.service import YieldService
 from app.core.limiter import limiter
