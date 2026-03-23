@@ -147,7 +147,9 @@
     "selectTicker": "Select a ticker…",
     "searchTicker": "Search ticker or name…",
     "alreadyTracked": "Already tracked",
-    "noTickersFound": "No tickers found"
+    "noTickersFound": "No tickers found",
+    "year": "Year",
+    "yearPastLocked": "Past years require Premium"
   },
   "months": {
     "01": { "short": "Jan", "label": "January" },

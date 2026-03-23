@@ -96,6 +96,36 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
+  async function saveEntryToYear(year, section, key, monthStr, value, name) {
+    loading.value = true
+    try {
+      // Use cached data if available, otherwise fetch from the server
+      const base = allYearsData.value[year]
+        ?? (await client.get(`${_apiPrefix()}/data/${year}`).then((r) => r.data))
+
+      const existingEntry = base[section]?.[key]
+      const merged = {
+        ...base,
+        [section]: {
+          ...base[section],
+          [key]: {
+            ...(existingEntry ?? (name ? { name, months: {} } : { months: {} })),
+            months: { ...(existingEntry?.months ?? {}), [monthStr]: value },
+          },
+        },
+      }
+
+      await client.put(`${_apiPrefix()}/data/${year}`, merged)
+      allYearsData.value[year] = merged
+      if (year === currentYear.value) yearData.value = merged
+      await fetchYears()
+    } catch (e) {
+      toastError('Failed to save. Please try again.', e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function deleteEntries(section, keys) {
     try {
       await Promise.all(
@@ -134,5 +164,5 @@ export const useDataStore = defineStore('data', () => {
     initializing.value = false
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, deleteEntries, initFromData }
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, saveEntryToYear, deleteEntries, initFromData }
 })
