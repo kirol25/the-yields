@@ -4,6 +4,7 @@ import stripe
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.subscription.service import set_premium
 from app.core import settings
 from app.core.enums import SubscriptionPlan
 from app.core.logging_config import logger
@@ -91,8 +92,6 @@ class StripeWebhookHandler:
     def _on_checkout_completed(
         self, event_id: str, _event_type: str, data: dict
     ) -> None:
-        from app.api.subscription.service import set_premium
-
         sub = data.get("client_reference_id")
         if not sub:
             logger.warning("checkout_completed_no_sub", event_id=event_id)
@@ -106,8 +105,6 @@ class StripeWebhookHandler:
     def _on_subscription_ended(
         self, event_id: str, event_type: str, data: dict
     ) -> None:
-        from app.api.subscription.service import set_premium
-
         customer = self._retrieve_customer(data["customer"], event_type, event_id)
         sub = customer.get("metadata", {}).get("sub")
         if not sub:
