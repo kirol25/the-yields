@@ -69,6 +69,18 @@ export const useDepotStore = defineStore('depot', () => {
     currentDepotId.value ? `/api/depots/${currentDepotId.value}` : '/api',
   )
 
+  function initFromData({ depots: initDepots, depot_id }) {
+    if (!initDepots) return
+    depots.value = initDepots
+    if (depot_id) {
+      currentDepotId.value = depot_id
+      localStorage.setItem('last_depot_id', depot_id)
+    } else if (initDepots.length > 0) {
+      currentDepotId.value = initDepots[0].id
+      localStorage.setItem('last_depot_id', initDepots[0].id)
+    }
+  }
+
   return {
     depots,
     currentDepotId,
@@ -79,5 +91,6 @@ export const useDepotStore = defineStore('depot', () => {
     renameDepot,
     deleteDepot,
     selectDepot,
+    initFromData,
   }
 })
