@@ -96,6 +96,7 @@ export const useSettingsStore = defineStore('settings', () => {
         dividendGoal: dividendGoal.value,
         yieldGoal: yieldGoal.value,
         steuerfreibetrag: steuerfreibetrag.value,
+        currency: currency.value,
       })
     } catch (e) {
       console.error('[settings] server sync failed - local values kept:', e)
@@ -110,10 +111,17 @@ export const useSettingsStore = defineStore('settings', () => {
       if (data.dividendGoal     && typeof data.dividendGoal     === 'object') dividendGoal.value     = data.dividendGoal
       if (data.yieldGoal        && typeof data.yieldGoal        === 'object') yieldGoal.value        = data.yieldGoal
       if (data.steuerfreibetrag && typeof data.steuerfreibetrag === 'object') steuerfreibetrag.value = data.steuerfreibetrag
+      if (data.currency         && typeof data.currency         === 'string')  currency.value        = data.currency
       save()
     } catch (e) {
       console.error('[settings] failed to load from server - using local values:', e)
     }
+  }
+
+  function setCurrency(code) {
+    currency.value = code
+    save()
+    _debouncedSaveToServer()
   }
 
   function setDividendGoal(year, amount) {
@@ -145,5 +153,5 @@ export const useSettingsStore = defineStore('settings', () => {
     save()
   }
 
-  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer, initFromData }
+  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setCurrency, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer, initFromData }
 })
