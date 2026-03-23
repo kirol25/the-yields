@@ -23,6 +23,28 @@
 
         <div class="space-y-5">
 
+          <!-- Year picker -->
+          <div>
+            <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.year') }}</label>
+            <div v-if="isPremium" class="relative">
+              <select
+                v-model.number="selectedYear"
+                class="w-full appearance-none bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+              >
+                <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
+              </select>
+              <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+            <div v-else class="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5">
+              <span class="text-sm text-gray-100">{{ THIS_YEAR }}</span>
+              <RouterLink to="/subscriptions" @click="$emit('close')" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+                {{ t('modal.yearPastLocked') }} →
+              </RouterLink>
+            </div>
+          </div>
+
           <!-- Free-tier limit banner (yields only — dividends have no "add new" concept) -->
           <div v-if="props.type === 'yield' && atLimit && selectedKey === '__new__'" class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
             <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -133,7 +155,7 @@
                 class="absolute z-10 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-1 max-h-48 overflow-y-auto"
               >
                 <button
-                  v-for="key in props.existingKeys"
+                  v-for="key in resolvedExistingKeys"
                   :key="key"
                   type="button"
                   @click="selectedKey = key; keyOpen = false"
@@ -144,7 +166,7 @@
                 >
                   {{ key }}
                 </button>
-                <div v-if="props.existingKeys.length" class="border-t border-gray-800 my-1" />
+                <div v-if="resolvedExistingKeys.length" class="border-t border-gray-800 my-1" />
                 <button
                   type="button"
                   :disabled="atLimit"
@@ -249,9 +271,25 @@ const emit = defineEmits(['close', 'saved'])
 
 const store = useDataStore()
 
+const THIS_YEAR = new Date().getFullYear()
+const selectedYear = ref(store.currentYear)
+const availableYears = computed(() => {
+  const years = []
+  for (let y = THIS_YEAR; y >= 2000; y--) years.push(y)
+  return years
+})
+
+// Keys already tracked for the selected year (falls back to prop for current year)
+const resolvedExistingKeys = computed(() => {
+  if (selectedYear.value === store.currentYear) return props.existingKeys
+  const data = store.allYearsData[selectedYear.value]
+  if (!data) return []
+  return Object.keys(data[props.type === 'dividend' ? 'dividends' : 'yields'] || {})
+})
+
 // Free users cannot add more accounts than the server-defined limit (yields only)
 const atLimit = computed(
-  () => !isPremium.value && props.existingKeys.length >= store.freeTierLimit,
+  () => !isPremium.value && resolvedExistingKeys.value.length >= store.freeTierLimit,
 )
 
 // Tickers reference list (dividends only)
@@ -269,7 +307,7 @@ const filteredExisting = computed(() => {
   const q = tickerSearch.value.trim().toLowerCase()
   return allTickers.value.filter(
     (t_) =>
-      props.existingKeys.includes(t_.symbol) &&
+      resolvedExistingKeys.value.includes(t_.symbol) &&
       (!q || t_.symbol.toLowerCase().includes(q) || t_.name.toLowerCase().includes(q)),
   )
 })
@@ -278,7 +316,7 @@ const filteredNew = computed(() => {
   const q = tickerSearch.value.trim().toLowerCase()
   return allTickers.value.filter(
     (t_) =>
-      !props.existingKeys.includes(t_.symbol) &&
+      !resolvedExistingKeys.value.includes(t_.symbol) &&
       (!q || t_.symbol.toLowerCase().includes(q) || t_.name.toLowerCase().includes(q)),
   )
 })
@@ -290,8 +328,8 @@ function tickerName(symbol) {
 // Initial selection
 const selectedKey = ref(
   props.type === 'dividend'
-    ? (props.existingKeys[0] ?? '')
-    : (atLimit.value ? '__new__' : (props.existingKeys[0] ?? '__new__')),
+    ? (resolvedExistingKeys.value[0] ?? '')
+    : (atLimit.value ? '__new__' : (resolvedExistingKeys.value[0] ?? '__new__')),
 )
 const keyOpen = ref(false)
 const newKey = ref('') // yield "Add New" account name only
@@ -320,23 +358,10 @@ const canSubmit = computed(
 
 async function submit() {
   if (!canSubmit.value) return
-
   const key = resolvedKey.value
   const section = props.type === 'dividend' ? 'dividends' : 'yields'
-
-  if (!store.yearData[section][key]) {
-    if (props.type === 'dividend') {
-      // Name resolves from the tickers reference table on the backend;
-      // pass it here so the UI shows it immediately without a round-trip.
-      store.yearData[section][key] = { name: tickerName(key) || key, months: {} }
-    } else {
-      store.yearData[section][key] = { months: {} }
-    }
-  }
-
-  store.yearData[section][key].months[selectedMonth.value] = amount.value
-
-  await store.saveData()
+  const name = props.type === 'dividend' ? (tickerName(key) || key) : undefined
+  await store.saveEntryToYear(selectedYear.value, section, key, selectedMonth.value, amount.value, name)
   emit('saved')
   emit('close')
 }
