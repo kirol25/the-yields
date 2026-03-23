@@ -66,27 +66,36 @@ class TestAuth:
         mock_verify = MagicMock(
             return_value={"email": "u@example.com", "sub": "sub-uuid"}
         )
-        mock_premium = MagicMock(return_value=False)
+        mock_subscription = MagicMock(return_value=(False, None))
         with (
             patch("app.api.finance.dependencies.verify_token", mock_verify),
-            patch("app.api.finance.dependencies._get_is_premium", mock_premium),
+            patch(
+                "app.api.finance.dependencies._get_user_subscription", mock_subscription
+            ),
         ):
             ctx = _call_auth(
                 authorization="Bearer valid.jwt.token",
                 settings_obj=_settings(),
             )
         mock_verify.assert_called_once_with("valid.jwt.token")
-        mock_premium.assert_called_once_with("sub-uuid", None)
-        assert ctx == {"email": "u@example.com", "sub": "sub-uuid", "is_premium": False}
+        mock_subscription.assert_called_once_with("sub-uuid", None)
+        assert ctx == {
+            "email": "u@example.com",
+            "sub": "sub-uuid",
+            "is_premium": False,
+            "subscription_plan": None,
+        }
 
     def test_premium_user_gets_is_premium_true(self):
         mock_verify = MagicMock(
             return_value={"email": "u@example.com", "sub": "sub-uuid"}
         )
-        mock_premium = MagicMock(return_value=True)
+        mock_subscription = MagicMock(return_value=(True, "monthly"))
         with (
             patch("app.api.finance.dependencies.verify_token", mock_verify),
-            patch("app.api.finance.dependencies._get_is_premium", mock_premium),
+            patch(
+                "app.api.finance.dependencies._get_user_subscription", mock_subscription
+            ),
         ):
             ctx = _call_auth(
                 authorization="Bearer valid.jwt.token",
