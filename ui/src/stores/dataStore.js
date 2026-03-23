@@ -41,10 +41,10 @@ export const useDataStore = defineStore('data', () => {
 
   async function fetchYears() {
     try {
+      const THIS_YEAR = new Date().getFullYear()
       const { data } = await client.get(`${_apiPrefix()}/years`)
-      const base = data.length ? data : [currentYear.value]
-      const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
-      const sorted = withCurrent.slice().sort((a, b) => b - a)
+      const yearSet = new Set([...data, THIS_YEAR, currentYear.value])
+      const sorted = [...yearSet].sort((a, b) => b - a)
       years.value = sorted
       if (!sorted.includes(currentYear.value)) currentYear.value = sorted[0]
     } catch (e) {
@@ -120,9 +120,12 @@ export const useDataStore = defineStore('data', () => {
       subscriptionPlan.value = me.subscription_plan ?? null
       _meFetched = true
     }
-    const base = initYears?.length ? initYears : [currentYear.value]
-    const withCurrent = base.includes(current_year) ? base : [...base, current_year]
-    years.value = withCurrent.slice().sort((a, b) => b - a)
+    const THIS_YEAR = new Date().getFullYear()
+    const base = initYears?.length ? initYears : [THIS_YEAR]
+    // Always include THIS_YEAR so users can navigate to the current year even
+    // if they have no data for it yet, and include current_year (stored year).
+    const yearSet = new Set([...base, THIS_YEAR, current_year])
+    years.value = [...yearSet].sort((a, b) => b - a)
     currentYear.value = current_year
     yearData.value = year_data ?? { dividends: {}, yields: {} }
     allYearsData.value[current_year] = yearData.value
