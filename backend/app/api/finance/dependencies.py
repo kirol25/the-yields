@@ -5,7 +5,7 @@ from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.auth import verify_token
-from app.api.finance.repository import DBYieldRepository
+from app.api.finance.repository import YieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
 from app.core.logging_config import logger
@@ -63,17 +63,17 @@ def get_auth_context(
 def get_repository(
     ctx: Annotated[dict, Depends(get_auth_context)],
     db: Annotated[Session, Depends(get_db)],
-) -> DBYieldRepository:
-    """Return a DBYieldRepository scoped to the requesting user.
+) -> YieldRepository:
+    """Return a YieldRepository scoped to the requesting user.
 
     FastAPI caches ``get_db`` per request, so ``ctx`` and ``repo`` share
     the same session and commit/rollback together.
     """
-    return DBYieldRepository(sub=ctx["sub"], email=ctx["email"], session=db)
+    return YieldRepository(sub=ctx["sub"], email=ctx["email"], session=db)
 
 
 def get_service(
-    repo: Annotated[DBYieldRepository, Depends(get_repository)],
+    repo: Annotated[YieldRepository, Depends(get_repository)],
 ) -> YieldService:
     """Instantiate a YieldService backed by the injected repository."""
     return YieldService(repo)

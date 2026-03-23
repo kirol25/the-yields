@@ -1,6 +1,9 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -16,6 +19,25 @@ from app.version import __version__
 # Configure logging before anything else to ensure all logs are captured
 configure_logging()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Pre-warm the Cognito JWKS client so the first real request
+    # doesn't pay the network round-trip cost of fetching signing keys.
+    try:
+        from app.api.auth import _get_jwks_client
+        from app.core.logging_config import logger
+
+        client = _get_jwks_client()
+        client.fetch_data()
+        logger.info("jwks_prewarm_ok")
+    except Exception as exc:
+        from app.core.logging_config import logger
+
+        logger.warning("jwks_prewarm_failed", error=str(exc))
+    yield
+
+
 # Disable API docs in production to avoid exposing schema information
 _docs_url = "/docs" if settings.docs_enabled else None
 _redoc_url = "/redoc" if settings.docs_enabled else None
@@ -29,11 +51,13 @@ app = FastAPI(
     docs_url=_docs_url,
     redoc_url=_redoc_url,
     openapi_url=_openapi_url,
+    lifespan=lifespan,
 )
 
 # Global middleware and exception handlers
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,

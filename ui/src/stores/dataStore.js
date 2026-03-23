@@ -41,10 +41,10 @@ export const useDataStore = defineStore('data', () => {
 
   async function fetchYears() {
     try {
+      const THIS_YEAR = new Date().getFullYear()
       const { data } = await client.get(`${_apiPrefix()}/years`)
-      const base = data.length ? data : [currentYear.value]
-      const withCurrent = base.includes(currentYear.value) ? base : [...base, currentYear.value]
-      const sorted = withCurrent.slice().sort((a, b) => b - a)
+      const yearSet = new Set([...data, THIS_YEAR, currentYear.value])
+      const sorted = [...yearSet].sort((a, b) => b - a)
       years.value = sorted
       if (!sorted.includes(currentYear.value)) currentYear.value = sorted[0]
     } catch (e) {
@@ -96,6 +96,36 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
+  async function saveEntryToYear(year, section, key, monthStr, value, name) {
+    loading.value = true
+    try {
+      // Use cached data if available, otherwise fetch from the server
+      const base = allYearsData.value[year]
+        ?? (await client.get(`${_apiPrefix()}/data/${year}`).then((r) => r.data))
+
+      const existingEntry = base[section]?.[key]
+      const merged = {
+        ...base,
+        [section]: {
+          ...base[section],
+          [key]: {
+            ...(existingEntry ?? (name ? { name, months: {} } : { months: {} })),
+            months: { ...(existingEntry?.months ?? {}), [monthStr]: value },
+          },
+        },
+      }
+
+      await client.put(`${_apiPrefix()}/data/${year}`, merged)
+      allYearsData.value[year] = merged
+      if (year === currentYear.value) yearData.value = merged
+      await fetchYears()
+    } catch (e) {
+      toastError('Failed to save. Please try again.', e)
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function deleteEntries(section, keys) {
     try {
       await Promise.all(
@@ -113,5 +143,26 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, deleteEntries }
+  function initFromData({ me, years: initYears, year_data, current_year, depot_id }) {
+    if (me) {
+      freeTierLimit.value = me.free_tier_limit
+      isPremium.value = me.is_premium
+      subscriptionPlan.value = me.subscription_plan ?? null
+      _meFetched = true
+    }
+    const THIS_YEAR = new Date().getFullYear()
+    const base = initYears?.length ? initYears : [THIS_YEAR]
+    // Always include THIS_YEAR so users can navigate to the current year even
+    // if they have no data for it yet, and include current_year (stored year).
+    const yearSet = new Set([...base, THIS_YEAR, current_year])
+    years.value = [...yearSet].sort((a, b) => b - a)
+    currentYear.value = current_year
+    yearData.value = year_data ?? { dividends: {}, yields: {} }
+    allYearsData.value[current_year] = yearData.value
+    if (current_year) localStorage.setItem('last_year', current_year)
+    loading.value = false
+    initializing.value = false
+  }
+
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, saveEntryToYear, deleteEntries, initFromData }
 })

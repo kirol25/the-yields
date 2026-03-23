@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 
 from app.api.depots.schemas import CreateDepotRequest, DepotOut, RenameDepotRequest
 from app.api.finance.dependencies import AuthContextDep
-from app.api.finance.repository import DBYieldRepository
+from app.api.finance.repository import YieldRepository
 from app.api.finance.schemas import YearPayload
 from app.api.finance.service import YieldService
 from app.core.limiter import limiter
@@ -63,7 +63,7 @@ def _get_depot_or_404(depot_id: uuid.UUID, user: User, db: Session) -> Depot:
 
 
 def _make_service(depot_id: uuid.UUID, ctx: dict, db: Session) -> YieldService:
-    repo = DBYieldRepository(
+    repo = YieldRepository(
         sub=ctx["sub"], email=ctx["email"], session=db, depot_id=depot_id
     )
     return YieldService(repo)
