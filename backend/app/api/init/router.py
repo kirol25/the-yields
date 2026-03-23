@@ -53,20 +53,24 @@ def get_init(
 ) -> InitResponse:
     current_year = year or datetime.now(UTC).year
 
-    # Build a repo — creates user+depot if this is a brand-new account.
-    # If depot_id is stale (deleted), fall back to the default depot.
-    active_depot_id = depot_id
-    try:
-        repo = YieldRepository(
-            sub=ctx["sub"], email=ctx["email"], session=db, depot_id=active_depot_id
-        )
-        settings_data = repo.read_settings()
-    except HTTPException:
-        active_depot_id = None
-        repo = YieldRepository(sub=ctx["sub"], email=ctx["email"], session=db)
-        settings_data = repo.read_settings()
+    # Load settings — this guarantees the User row exists but does not
+    # touch the Depot yet (read_settings only calls _get_or_create_user).
+    repo = YieldRepository(
+        sub=ctx["sub"], email=ctx["email"], session=db, depot_id=depot_id
+    )
+    settings_data = repo.read_settings()
 
-    # Depots list (user guaranteed to exist after read_settings above)
+    # list_years() triggers _resolve_depot(), which:
+    #   - raises HTTP 404 if depot_id is stale → caught below, retried without id
+    #   - creates the Default depot for brand-new users
+    # Either way the depot is guaranteed to exist after this block.
+    try:
+        years = repo.list_years()
+    except HTTPException:
+        repo = YieldRepository(sub=ctx["sub"], email=ctx["email"], session=db)
+        years = repo.list_years()
+
+    # Depot list — queried *after* list_years() so the default depot exists.
     user = db.query(User).filter_by(sub=ctx["sub"]).first()
     depots: list[Depot] = (
         db.query(Depot).filter_by(user_id=user.id).order_by(Depot.created_at).all()
@@ -74,14 +78,8 @@ def get_init(
         else []
     )
 
-    # If no depot_id was given (or it was stale), pin to the first depot
-    if active_depot_id is None and depots:
-        active_depot_id = depots[0].id
-        repo = YieldRepository(
-            sub=ctx["sub"], email=ctx["email"], session=db, depot_id=active_depot_id
-        )
-
-    years = repo.list_years()
+    # Pin active_depot_id to whatever the repo resolved to.
+    active_depot_id = repo._depot.id if repo._depot else None
 
     # Clamp current_year to what actually exists
     if years and current_year not in years:

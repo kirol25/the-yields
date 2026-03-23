@@ -36,15 +36,18 @@ class YieldRepository:
         self._email = email
         self._db = session
         self._depot_id = depot_id
+        self._depot: Depot | None = None
 
     # ── private helpers ───────────────────────────────────────────────────────
 
     def _resolve_depot(self) -> Depot:
-        """Return the depot to operate on.
+        """Return the depot to operate on, memoised for the lifetime of this repo.
 
         Uses the explicit depot_id when set; falls back to creating/fetching
         the user's "Default" depot for legacy callers.
         """
+        if self._depot is not None:
+            return self._depot
         if self._depot_id is not None:
             user = self._get_or_create_user()
             depot = (
@@ -56,10 +59,13 @@ class YieldRepository:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND, detail="Depot not found"
                 )
-            return depot
-        return self._get_or_create_default_depot()
+            self._depot = depot
+            return self._depot
+        self._depot = self._get_or_create_default_depot()
+        return self._depot
 
     def _get_or_create_user(self) -> User:
+        """Return the User row for this sub, creating it on first login."""
         user = self._db.query(User).filter_by(sub=self._sub).first()
         if not user:
             user = User(sub=self._sub, email=self._email)
@@ -68,6 +74,7 @@ class YieldRepository:
         return user
 
     def _get_or_create_default_depot(self) -> Depot:
+        """Return the user's "Default" depot, creating it if it doesn't exist yet."""
         user = self._get_or_create_user()
         depot = self._db.query(Depot).filter_by(user_id=user.id, name="Default").first()
         if not depot:
