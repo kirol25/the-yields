@@ -53,12 +53,22 @@ TEST_DATABASE_URL = os.environ.get(
 
 @pytest.fixture
 def free_ctx() -> dict:
-    return {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": False}
+    return {
+        "email": TEST_EMAIL,
+        "sub": TEST_SUB,
+        "is_premium": False,
+        "subscription_plan": None,
+    }
 
 
 @pytest.fixture
 def premium_ctx() -> dict:
-    return {"email": TEST_EMAIL, "sub": TEST_SUB, "is_premium": True}
+    return {
+        "email": TEST_EMAIL,
+        "sub": TEST_SUB,
+        "is_premium": True,
+        "subscription_plan": "monthly",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -67,8 +77,8 @@ def premium_ctx() -> dict:
 
 
 @pytest.fixture
-def tmp_repo(tmp_path) -> YieldRepository:
-    return YieldRepository(user_email=TEST_EMAIL, data_dir=tmp_path)
+def tmp_repo(db_session: Session) -> YieldRepository:
+    return YieldRepository(sub=TEST_SUB, email=TEST_EMAIL, session=db_session)
 
 
 @pytest.fixture

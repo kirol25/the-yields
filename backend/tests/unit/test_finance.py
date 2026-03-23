@@ -156,7 +156,7 @@ class TestSettings:
     def test_returns_empty_dict_when_no_settings(self, free_client):
         resp = free_client.get("/api/settings")
         assert resp.status_code == 200
-        assert resp.json() == {}
+        assert resp.json() == {"is_premium": False}
 
     def test_saves_and_retrieves_settings(self, free_client):
         payload = {
