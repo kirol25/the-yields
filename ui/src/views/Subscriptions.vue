@@ -24,23 +24,31 @@
           </li>
         </ul>
         <RouterLink
+          v-if="!auth.isAuthenticated"
           to="/register"
           class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block"
         >
           {{ t('subscriptions.ctaFree') }}
         </RouterLink>
+        <button
+          v-else
+          disabled
+          class="w-full py-2.5 rounded-lg text-sm font-medium bg-gray-800 text-gray-500 cursor-not-allowed"
+        >
+          {{ t('subscriptions.ctaFree') }}
+        </button>
       </div>
 
       <!-- Monthly -->
       <div class="bg-gray-900 border rounded-xl p-6 flex flex-col transition-all duration-300"
-        :class="subscriptionPlan === 'monthly'
+        :class="isMonthly || isUnknownPlan
           ? 'border-emerald-500/50'
           : 'border-gray-800 hover:border-emerald-500/40 hover:shadow-[0_0_28px_rgba(52,211,153,0.12)]'"
       >
         <div class="mb-6">
           <div class="flex items-center justify-between mb-1">
             <h2 class="text-lg font-semibold text-gray-100">{{ t('subscriptions.monthly.name') }}</h2>
-            <span v-if="subscriptionPlan === 'monthly'" class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
+            <span v-if="isMonthly || isUnknownPlan" class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
               {{ t('subscriptions.currentPlan') }}
             </span>
           </div>
@@ -57,28 +65,28 @@
         </ul>
         <button
           type="button"
-          :disabled="!stripeEnabled || loading === 'monthly' || subscriptionPlan === 'monthly' || subscriptionPlan === 'yearly'"
+          :disabled="!stripeEnabled || loading === 'monthly' || isMonthly || isYearly || isUnknownPlan"
           @click="checkout('monthly')"
-          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors cursor-not-allowed"
-          :class="subscriptionPlan === 'monthly'
-            ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-            : stripeEnabled && subscriptionPlan !== 'yearly'
+          class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors"
+          :class="isMonthly || isUnknownPlan
+            ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 cursor-not-allowed'
+            : stripeEnabled && !isYearly
               ? 'bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-              : 'bg-gray-800 text-gray-500'"
+              : 'bg-gray-800 text-gray-500 cursor-not-allowed'"
         >
-          {{ subscriptionPlan === 'monthly' ? t('subscriptions.currentPlan') : loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
+          {{ isMonthly || isUnknownPlan ? t('subscriptions.currentPlan') : loading === 'monthly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
 
       <!-- Yearly (highlighted) -->
       <div class="bg-gray-900 border-2 border-emerald-500/50 rounded-xl p-6 flex flex-col transition-all duration-300"
-        :class="subscriptionPlan !== 'yearly' ? 'hover:border-emerald-400/80 hover:shadow-[0_0_36px_rgba(52,211,153,0.22)]' : ''"
+        :class="!isYearly ? 'hover:border-emerald-400/80 hover:shadow-[0_0_36px_rgba(52,211,153,0.22)]' : ''"
       >
         <div class="mb-6">
           <div class="flex items-center justify-between mb-1">
             <h2 class="text-lg font-semibold text-gray-100">{{ t('subscriptions.yearly.name') }}</h2>
             <span class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
-              {{ subscriptionPlan === 'yearly' ? t('subscriptions.currentPlan') : t('subscriptions.yearly.badge') }}
+              {{ isYearly ? t('subscriptions.currentPlan') : t('subscriptions.yearly.badge') }}
             </span>
           </div>
           <div class="flex items-baseline gap-1">
@@ -94,16 +102,16 @@
         </ul>
         <button
           type="button"
-          :disabled="!stripeEnabled || loading === 'yearly' || subscriptionPlan === 'yearly'"
+          :disabled="!stripeEnabled || loading === 'yearly' || isYearly || isUnknownPlan"
           @click="checkout('yearly')"
           class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors border"
-          :class="subscriptionPlan === 'yearly'
+          :class="isYearly || isUnknownPlan
             ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30 cursor-not-allowed'
             : stripeEnabled
               ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
               : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
         >
-          {{ subscriptionPlan === 'yearly' ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
+          {{ isYearly || isUnknownPlan ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
     </div>
@@ -131,7 +139,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
@@ -140,6 +148,12 @@ import { useSubscription } from '../composables/useSubscription.js'
 
 const { t, tm } = useI18n()
 const { isPremium, subscriptionPlan } = useSubscription()
+
+// True when the user is on this specific plan
+const isMonthly = computed(() => subscriptionPlan.value === 'monthly')
+const isYearly  = computed(() => subscriptionPlan.value === 'yearly')
+// True when premium but we don't know the exact plan (e.g. legacy row without plan set)
+const isUnknownPlan = computed(() => isPremium.value && !subscriptionPlan.value)
 const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
