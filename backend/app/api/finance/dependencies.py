@@ -1,11 +1,11 @@
 from typing import Annotated
 
-from backend.app.api.finance.repository import DBYieldRepository
 from cachetools import TTLCache
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.auth import verify_token
+from app.api.finance.repository import DBYieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
 from app.core.logging_config import logger
