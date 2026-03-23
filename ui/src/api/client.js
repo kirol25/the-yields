@@ -6,7 +6,7 @@ import { API_BASE } from '../config.js'
 import router from '../router/index.js'
 import { localizePath } from '../router/locale.js'
 
-const client = axios.create({ baseURL: API_BASE })
+const client = axios.create({ baseURL: API_BASE, timeout: 15_000 })
 
 // ── Request interceptor - inject auth headers on every call ──────────────────
 
