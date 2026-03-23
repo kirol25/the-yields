@@ -105,13 +105,13 @@
           :disabled="!stripeEnabled || loading === 'yearly' || isYearly || isUnknownPlan"
           @click="checkout('yearly')"
           class="w-full py-2.5 rounded-lg text-sm font-medium transition-colors border"
-          :class="isYearly || isUnknownPlan
+          :class="isYearly
             ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30 cursor-not-allowed'
-            : stripeEnabled
+            : stripeEnabled && !isUnknownPlan
               ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
               : 'bg-emerald-600/30 text-emerald-400 cursor-not-allowed border-emerald-500/30'"
         >
-          {{ isYearly || isUnknownPlan ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
+          {{ isYearly ? t('subscriptions.currentPlan') : loading === 'yearly' ? t('subscriptions.redirecting') : t('subscriptions.ctaPaid') }}
         </button>
       </div>
     </div>
