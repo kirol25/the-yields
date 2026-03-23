@@ -257,6 +257,7 @@ import { useDepotStore } from './stores/depotStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
 import { useSubscription } from './composables/useSubscription.js'
+import client from './api/client.js'
 import ProfileBlade from './components/ProfileBlade.vue'
 import ToastContainer from './components/ToastContainer.vue'
 import CookieBanner from './components/CookieBanner.vue'
@@ -333,9 +334,22 @@ watch(
     if (authed) {
       const valid = await auth.ensureValidToken()
       if (!valid) return
-      await Promise.all([settings.loadFromServer(), store.fetchMe(), depotStore.fetchDepots()])
-      await store.fetchYears()
-      await store.loadYear(store.currentYear)
+      try {
+        const { data } = await client.get('/api/init', {
+          params: {
+            depot_id: depotStore.currentDepotId || undefined,
+            year: store.currentYear,
+          },
+        })
+        depotStore.initFromData(data)
+        settings.initFromData(data)
+        store.initFromData(data)
+      } catch {
+        // Fall back to individual calls if init endpoint fails
+        await Promise.all([settings.loadFromServer(), store.fetchMe(), depotStore.fetchDepots()])
+        await store.fetchYears()
+        await store.loadYear(store.currentYear)
+      }
     }
   },
   { immediate: true },

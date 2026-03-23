@@ -62,11 +62,38 @@ async function cognitoRequest(action, body) {
   return data
 }
 
+const REFRESH_BEFORE_EXPIRY_MS = 5 * 60 * 1000 // refresh 5 min before expiry
+
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(sessionStorage.getItem('access_token'))
   const idToken = ref(sessionStorage.getItem('id_token'))
   const refreshToken = ref(sessionStorage.getItem('refresh_token'))
   const pendingEmail = ref(sessionStorage.getItem('pending_email') ?? '')
+
+  let _refreshTimer = null
+
+  function _scheduleProactiveRefresh() {
+    if (_refreshTimer) clearTimeout(_refreshTimer)
+    if (!accessToken.value) return
+    try {
+      const { exp } = JSON.parse(atob(accessToken.value.split('.')[1]))
+      const msUntilRefresh = exp * 1000 - Date.now() - REFRESH_BEFORE_EXPIRY_MS
+      if (msUntilRefresh <= 0) return // already within the buffer — ensureValidToken handles it
+      _refreshTimer = setTimeout(async () => {
+        try {
+          await refreshSession()
+        } catch {
+          // silent — ensureValidToken will catch it on the next real request
+        }
+      }, msUntilRefresh)
+    } catch {
+      // malformed token — ignore
+    }
+  }
+
+  // Schedule on store init so a page-reload with a live token in sessionStorage
+  // is covered without requiring a sign-in.
+  _scheduleProactiveRefresh()
 
   const isAuthenticated = computed(() => !!accessToken.value)
   const user = computed(() => (idToken.value ? parseIdToken(idToken.value) : null))
@@ -78,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     sessionStorage.setItem('access_token', AccessToken)
     sessionStorage.setItem('id_token', IdToken)
     if (RefreshToken) sessionStorage.setItem('refresh_token', RefreshToken)
+    _scheduleProactiveRefresh()
   }
 
   async function signUp(email, password, name) {
@@ -214,6 +242,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function clearTokens() {
+    if (_refreshTimer) {
+      clearTimeout(_refreshTimer)
+      _refreshTimer = null
+    }
     accessToken.value = null
     idToken.value = null
     refreshToken.value = null
