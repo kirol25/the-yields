@@ -113,5 +113,23 @@ export const useDataStore = defineStore('data', () => {
     }
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, deleteEntries }
+  function initFromData({ me, years: initYears, year_data, current_year, depot_id }) {
+    if (me) {
+      freeTierLimit.value = me.free_tier_limit
+      isPremium.value = me.is_premium
+      subscriptionPlan.value = me.subscription_plan ?? null
+      _meFetched = true
+    }
+    const base = initYears?.length ? initYears : [currentYear.value]
+    const withCurrent = base.includes(current_year) ? base : [...base, current_year]
+    years.value = withCurrent.slice().sort((a, b) => b - a)
+    currentYear.value = current_year
+    yearData.value = year_data ?? { dividends: {}, yields: {} }
+    allYearsData.value[current_year] = yearData.value
+    if (current_year) localStorage.setItem('last_year', current_year)
+    loading.value = false
+    initializing.value = false
+  }
+
+  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, deleteEntries, initFromData }
 })

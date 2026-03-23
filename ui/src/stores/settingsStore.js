@@ -134,5 +134,16 @@ export const useSettingsStore = defineStore('settings', () => {
     _debouncedSaveToServer()
   }
 
-  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer }
+  function initFromData({ settings: serverSettings }) {
+    if (!serverSettings) return
+    if (serverSettings.dividendGoal && typeof serverSettings.dividendGoal === 'object')
+      dividendGoal.value = serverSettings.dividendGoal
+    if (serverSettings.yieldGoal && typeof serverSettings.yieldGoal === 'object')
+      yieldGoal.value = serverSettings.yieldGoal
+    if (serverSettings.steuerfreibetrag && typeof serverSettings.steuerfreibetrag === 'object')
+      steuerfreibetrag.value = serverSettings.steuerfreibetrag
+    save()
+  }
+
+  return { profile, currency, locale, theme, dividendGoal, yieldGoal, steuerfreibetrag, CURRENCIES, LANGUAGES, save, setLocale, setTheme, setDividendGoal, setYieldGoal, setSteuerfreibetrag, fmt, loadFromServer, initFromData }
 })
