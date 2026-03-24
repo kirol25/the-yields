@@ -96,6 +96,115 @@ def create_portal_url(email: str) -> str:
     return session.url
 
 
+def _get_active_subscription(email: str):
+    """Return (customer_id, subscription) for the user's active subscription.
+
+    Raises 404 if no customer or no active subscription exists.
+    """
+    customers = stripe.Customer.list(email=email, limit=1)
+    if not customers.data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No Stripe customer found for this account",
+        )
+    subscriptions = stripe.Subscription.list(
+        customer=customers.data[0].id,
+        status="active",
+        limit=1,
+    )
+    if not subscriptions.data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No active subscription found",
+        )
+    return subscriptions.data[0]
+
+
+def get_subscription_status(email: str) -> dict:
+    """Return current subscription state from Stripe.
+
+    Returns ``cancel_at_period_end`` and ``ends_at`` so the frontend can
+    show the appropriate action (cancel vs. reactivate).
+    """
+    _require_stripe()
+    try:
+        sub = _get_active_subscription(email)
+    except HTTPException:
+        return {"active": False, "cancel_at_period_end": False, "ends_at": None}
+    except stripe.StripeError as exc:
+        logger.error("stripe_status_failed", user=email, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to retrieve subscription status",
+        ) from exc
+    cancel_at_period_end = getattr(sub, "cancel_at_period_end", False)
+    cancel_at = getattr(sub, "cancel_at", None) or getattr(
+        sub, "current_period_end", None
+    )
+
+    # Interval comes from the first subscription item's price
+    interval: str | None = None
+    try:
+        interval = sub.items.data[0].price.recurring.interval
+    except Exception:
+        pass
+
+    return {
+        "active": True,
+        "cancel_at_period_end": cancel_at_period_end,
+        "ends_at": cancel_at if cancel_at_period_end else None,
+        "started_at": getattr(sub, "start_date", None),
+        "current_period_start": getattr(sub, "current_period_start", None),
+        "current_period_end": getattr(sub, "current_period_end", None),
+        "interval": interval,
+    }
+
+
+def reactivate_subscription(email: str) -> dict:
+    """Remove a pending cancellation so the subscription continues as normal."""
+    _require_stripe()
+    try:
+        sub = _get_active_subscription(email)
+        stripe.Subscription.modify(sub.id, cancel_at_period_end=False)
+    except HTTPException:
+        raise
+    except stripe.StripeError as exc:
+        logger.error("stripe_reactivate_failed", user=email, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to reactivate subscription",
+        ) from exc
+    logger.info("subscription_reactivated", user=email)
+    return {"status": "reactivated"}
+
+
+def cancel_subscription(email: str) -> dict:
+    """Cancel the user's active Stripe subscription at the end of the current period.
+
+    Returns a dict with ``ends_at`` (Unix timestamp) so the frontend can
+    display when access expires.  Raises 404 if no active subscription is found.
+    """
+    _require_stripe()
+    try:
+        existing = _get_active_subscription(email)
+        sub = stripe.Subscription.modify(existing.id, cancel_at_period_end=True)
+    except HTTPException:
+        raise
+    except stripe.StripeError as exc:
+        logger.error("stripe_cancel_failed", user=email, error=str(exc))
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to cancel subscription",
+        ) from exc
+    logger.info("subscription_cancel_scheduled", user=email)
+    # cancel_at is set to current_period_end when cancel_at_period_end=True;
+    # fall back to current_period_end for older API shapes.
+    ends_at = getattr(sub, "cancel_at", None) or getattr(
+        sub, "current_period_end", None
+    )
+    return {"ends_at": ends_at}
+
+
 def handle_webhook(payload: bytes, sig_header: str, db: Session) -> None:
     """Verify and process an incoming Stripe webhook event."""
     _require_stripe()
