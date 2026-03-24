@@ -251,7 +251,10 @@ class YieldRepository:
             if goal.steuerfreibetrag is not None:
                 steuerfreibetrag[y] = int(goal.steuerfreibetrag)
 
-        result: dict[str, Any] = {"is_premium": user.is_premium}
+        result: dict[str, Any] = {
+            "is_premium": user.is_premium,
+            "currency": user.currency,
+        }
         if dividend_goal:
             result["dividendGoal"] = dividend_goal
         if yield_goal:
@@ -288,5 +291,8 @@ class YieldRepository:
                 goal.yield_goal = int(data["yieldGoal"][y])
             if "steuerfreibetrag" in data and y in data["steuerfreibetrag"]:
                 goal.steuerfreibetrag = int(data["steuerfreibetrag"][y])
+
+        if data.get("currency"):
+            user.currency = data["currency"]
 
         self._db.flush()
