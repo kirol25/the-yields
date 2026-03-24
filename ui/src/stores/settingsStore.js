@@ -29,7 +29,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')
 
   const profile = ref({ name: saved.name || '', email: saved.email || '' })
-  const currency = ref(saved.currency || 'USD')
+  const currency = ref(saved.currency || 'EUR')
   const locale = ref(saved.locale || 'de')
   const theme = ref(saved.theme || 'dark')
   const dividendGoal     = ref(typeof saved.dividendGoal     === 'object' && saved.dividendGoal     !== null ? saved.dividendGoal     : {})
@@ -150,6 +150,8 @@ export const useSettingsStore = defineStore('settings', () => {
       yieldGoal.value = serverSettings.yieldGoal
     if (serverSettings.steuerfreibetrag && typeof serverSettings.steuerfreibetrag === 'object')
       steuerfreibetrag.value = serverSettings.steuerfreibetrag
+    if (serverSettings.currency && typeof serverSettings.currency === 'string')
+      currency.value = serverSettings.currency
     save()
   }
 
