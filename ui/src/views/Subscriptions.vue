@@ -145,7 +145,7 @@
       </template>
 
       <!-- Cancelled state -->
-      <p v-else-if="cancelledUntil !== null" class="text-sm text-gray-400">
+      <p v-else-if="cancelledUntil !== undefined" class="text-sm text-gray-400">
         {{ cancelledUntil ? t('subscriptions.cancelledUntil', { date: cancelledUntil }) : t('subscriptions.cancelledGeneric') }}
       </p>
 
