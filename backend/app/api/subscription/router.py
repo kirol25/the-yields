@@ -40,6 +40,44 @@ def create_portal_session(request: Request, ctx: AuthContextDep) -> dict[str, st
     return {"url": service.create_portal_url(ctx["email"])}
 
 
+@router.get(
+    "/status",
+    status_code=status.HTTP_200_OK,
+    summary="Get subscription status",
+    description="Returns whether the subscription is active and pending cancellation.",
+)
+@limiter.limit("20/minute")
+def get_subscription_status(request: Request, ctx: AuthContextDep) -> dict:
+    return service.get_subscription_status(ctx["email"])
+
+
+@router.post(
+    "/reactivate",
+    status_code=status.HTTP_200_OK,
+    summary="Reactivate subscription",
+    description="Removes a pending cancellation so the subscription renews normally.",
+)
+@limiter.limit("5/minute")
+def reactivate_subscription(request: Request, ctx: AuthContextDep) -> dict[str, str]:
+    return service.reactivate_subscription(ctx["email"])
+
+
+@router.post(
+    "/cancel",
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {"description": "Subscription cancellation scheduled successfully"},
+        403: {"description": "No active subscription to cancel"},
+    },
+    summary="Cancel active subscription",
+    description="Schedules the user's active Stripe subscription to cancel at the "
+    "end of the current billing period. Access remains until then.",
+)
+@limiter.limit("5/minute")
+def cancel_subscription(request: Request, ctx: AuthContextDep) -> dict[str, int]:
+    return service.cancel_subscription(ctx["email"])
+
+
 @router.post(
     "/webhook",
     status_code=status.HTTP_200_OK,
