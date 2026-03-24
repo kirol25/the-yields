@@ -123,14 +123,70 @@
     </p>
 
     <!-- Manage subscription (premium users) -->
-    <div v-if="isPremium" class="mt-10 text-center">
-      <button
-        @click="openPortal"
-        :disabled="portalLoading"
-        class="text-sm text-gray-400 hover:text-gray-200 underline underline-offset-2 transition-colors disabled:opacity-50"
-      >
-        {{ portalLoading ? t('subscriptions.redirecting') : t('subscriptions.manageSubscription') }}
-      </button>
+    <div v-if="isPremium" class="mt-10 text-center space-y-3">
+      <!-- Cancellation confirm step -->
+      <template v-if="cancelConfirm">
+        <p class="text-sm text-gray-300">{{ t('subscriptions.cancelConfirm') }}</p>
+        <div class="flex justify-center gap-3">
+          <button
+            @click="cancelConfirm = false"
+            class="px-4 py-1.5 text-sm rounded-lg border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 transition-colors"
+          >
+            {{ t('subscriptions.cancelAbort') }}
+          </button>
+          <button
+            @click="confirmCancel"
+            :disabled="cancelLoading"
+            class="px-4 py-1.5 text-sm rounded-lg bg-red-600 hover:bg-red-500 text-white transition-colors disabled:opacity-50"
+          >
+            {{ cancelLoading ? t('subscriptions.cancelling') : t('subscriptions.cancelConfirmBtn') }}
+          </button>
+        </div>
+      </template>
+
+      <!-- Cancelled state -->
+      <p v-else-if="cancelledUntil !== null" class="text-sm text-gray-400">
+        {{ cancelledUntil ? t('subscriptions.cancelledUntil', { date: cancelledUntil }) : t('subscriptions.cancelledGeneric') }}
+      </p>
+
+      <!-- Default actions -->
+      <template v-else>
+        <button
+          @click="cancelConfirm = true"
+          class="text-sm text-red-400 hover:text-red-300 underline underline-offset-2 transition-colors"
+        >
+          {{ t('subscriptions.cancelSubscription') }}
+        </button>
+      </template>
+    </div>
+
+    <!-- Subscription details (premium only) -->
+    <div v-if="isPremium" class="mt-10 bg-gray-900 border border-gray-800 rounded-xl p-6">
+      <h3 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-4">{{ t('subscriptions.details.title') }}</h3>
+      <!-- Stripe data loaded -->
+      <dl v-if="subStatus.active" class="grid grid-cols-2 gap-x-6 gap-y-4">
+        <div>
+          <dt class="text-xs text-gray-500 mb-0.5">{{ t('subscriptions.details.startedOn') }}</dt>
+          <dd class="text-sm text-gray-200">{{ fmtDate(subStatus.started_at) }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-500 mb-0.5">{{ t('subscriptions.details.billingInterval') }}</dt>
+          <dd class="text-sm text-gray-200">{{ subStatus.interval ? t('subscriptions.details.interval_' + subStatus.interval) : '—' }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-500 mb-0.5">{{ t('subscriptions.details.periodStart') }}</dt>
+          <dd class="text-sm text-gray-200">{{ fmtDate(subStatus.current_period_start) }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-gray-500 mb-0.5">{{ subStatus.cancel_at_period_end ? t('subscriptions.details.accessUntil') : t('subscriptions.details.nextRenewal') }}</dt>
+          <dd class="text-sm" :class="subStatus.cancel_at_period_end ? 'text-amber-400' : 'text-gray-200'">{{ fmtDate(subStatus.current_period_end) }}</dd>
+        </div>
+      </dl>
+      <!-- Stripe not reachable (e.g. dev environment) -->
+      <p v-else class="text-sm text-gray-500">{{ t('subscriptions.details.unavailable') }}</p>
+      <p v-if="subStatus.cancel_at_period_end" class="mt-4 text-xs text-amber-400/80">
+        {{ t('subscriptions.details.cancelNotice') }}
+      </p>
     </div>
 
     <!-- Error -->
@@ -139,12 +195,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../stores/authStore.js'
 import client from '../api/client.js'
 import { useSubscription } from '../composables/useSubscription.js'
+import { useSubscriptionStatus } from '../composables/useSubscriptionStatus.js'
 
 const { t, tm } = useI18n()
 const { isPremium, subscriptionPlan } = useSubscription()
@@ -160,8 +217,24 @@ const route = useRoute()
 
 const stripeEnabled = import.meta.env.VITE_STRIPE_ENABLED === 'true'
 const loading = ref(null)   // 'monthly' | 'yearly' | null
-const portalLoading = ref(false)
 const error = ref('')
+
+const cancelConfirm  = ref(false)
+const cancelLoading  = ref(false)
+const cancelledUntil = ref(undefined) // undefined = not cancelled; null = cancelled, no date; string = date
+
+const { subStatus, fetchStatus, markCancelled } = useSubscriptionStatus()
+
+onMounted(() => { if (isPremium.value) fetchStatus() })
+
+// Clear local cancellation message when reactivation happens (shared state updated via Profile modal)
+watch(() => subStatus.value.cancel_at_period_end, (isPending) => {
+  if (!isPending) cancelledUntil.value = undefined
+})
+
+function fmtDate(ts) {
+  return ts ? new Date(ts * 1000).toLocaleDateString() : '—'
+}
 
 async function checkout(plan) {
   if (!auth.isAuthenticated) {
@@ -179,15 +252,21 @@ async function checkout(plan) {
   }
 }
 
-async function openPortal() {
-  portalLoading.value = true
+async function confirmCancel() {
+  cancelLoading.value = true
   error.value = ''
   try {
-    const { data } = await client.post('/api/subscription/portal', {})
-    window.location.href = data.url
+    const { data } = await client.post('/api/subscription/cancel')
+    const date = data.ends_at
+      ? new Date(data.ends_at * 1000).toLocaleDateString()
+      : null
+    cancelledUntil.value = date
+    cancelConfirm.value = false
+    markCancelled(data.ends_at)
   } catch {
-    error.value = t('subscriptions.checkoutError')
-    portalLoading.value = false
+    error.value = t('subscriptions.cancelError')
+  } finally {
+    cancelLoading.value = false
   }
 }
 </script>
