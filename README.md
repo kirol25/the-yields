@@ -164,10 +164,11 @@ Year data is stored per user in PostgreSQL and follows this structure:
 
 | Task           | Description                            |
 |----------------|----------------------------------------|
-| `task dev`     | Start database, UI, and API            |
+| `task dev`     | Start database, run migrations, UI, and API |
 | `task ui`      | Start the Vite dev server              |
 | `task api`     | Start the FastAPI server               |
 | `task db`      | Start the PostgreSQL container         |
+| `task migrate` | Run Alembic migrations                 |
 | `task test`    | Run backend tests                      |
 | `task format`  | Run Ruff + Prettier via pre-commit     |
 | `task build`   | Build both UI and backend              |

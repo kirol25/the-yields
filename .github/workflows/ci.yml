@@ -109,16 +109,17 @@ jobs:
     needs: [test-ui, test-backend]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "All checks passed ✓"
+      - run: echo "All checks passed"
 
-  # ── Tag - read each version independently and create separate git tags ──────
-  tag-ui-release:
-    name: Tag UI Release
+  # ── Release ──────────────────────────────────────────────────────────────────
+  release:
+    name: Tag & Create Release
     needs: [healthy]
     if: github.event_name == 'workflow_dispatch' && inputs.release == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
     outputs:
       version: ${{ steps.version.outputs.value }}
 
@@ -127,51 +128,44 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read UI version
-        id: version
-        run: echo "value=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-        working-directory: ui
-
-      - name: Create and push git tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "ui-v${{ steps.version.outputs.value }}"
-          git push origin "ui-v${{ steps.version.outputs.value }}"
-
-  tag-backend-release:
-    name: Tag Backend Release
-    needs: [healthy]
-    if: github.event_name == 'workflow_dispatch' && inputs.release == true
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      version: ${{ steps.version.outputs.value }}
-
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Read backend version
+      - name: Read version
         id: version
         run: |
-          VERSION=$(grep -m1 '__version__' app/version.py | sed 's/__version__ = "\(.*\)"/\1/')
+          VERSION=$(grep -m1 '__version__' backend/app/version.py | sed 's/__version__ = "\(.*\)"/\1/')
           echo "value=$VERSION" >> $GITHUB_OUTPUT
-        working-directory: backend
 
       - name: Create and push git tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "backend-v${{ steps.version.outputs.value }}"
-          git push origin "backend-v${{ steps.version.outputs.value }}"
+          git tag "v${{ steps.version.outputs.value }}"
+          git push origin "v${{ steps.version.outputs.value }}"
 
-  # ── Publish - each image uses its own version ────────────────────────────
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s" HEAD)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s" "${PREV_TAG}..HEAD")
+          fi
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.value }}
+          name: v${{ steps.version.outputs.value }}
+          body: ${{ steps.changelog.outputs.content }}
+          generate_release_notes: true
+
+  # ── Publish Docker Images ────────────────────────────────────────────────
   publish-ui:
     name: Publish UI Image
-    needs: [tag-ui-release]
+    needs: [release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -201,11 +195,11 @@ jobs:
             VITE_API_BASE=${{ secrets.VITE_API_BASE }}
             VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}
             VITE_REGISTRATION_ENABLED=${{ vars.VITE_REGISTRATION_ENABLED }}
-          tags: ghcr.io/${{ github.repository_owner }}/the-yields-ui:${{ needs.tag-ui-release.outputs.version }}
+          tags: ghcr.io/${{ github.repository_owner }}/the-yields-ui:${{ needs.release.outputs.version }}
 
   publish-backend:
     name: Publish Backend Image
-    needs: [tag-backend-release]
+    needs: [release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -231,4 +225,4 @@ jobs:
           push: true
           cache-from: type=gha,scope=backend
           cache-to: type=gha,scope=backend,mode=max
-          tags: ghcr.io/${{ github.repository_owner }}/the-yields-backend:${{ needs.tag-backend-release.outputs.version }}
+          tags: ghcr.io/${{ github.repository_owner }}/the-yields-backend:${{ needs.release.outputs.version }}

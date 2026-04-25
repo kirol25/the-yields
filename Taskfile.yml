@@ -22,10 +22,19 @@ tasks:
     desc: Start the Postgres container and wait until healthy
     cmd: docker compose up -d db --wait
 
+  migrate:
+    desc: Run Alembic migrations against the local database
+    env:
+      PYTHONPATH: backend
+    cmd: |
+      cd backend
+      uv run alembic upgrade head
+
   dev:
-    desc: Start database, then ui and api concurrently
+    desc: Start database, run migrations, then ui and api concurrently
     cmds:
       - task: db
+      - task: migrate
       - task: dev:apps
 
   dev:apps:
