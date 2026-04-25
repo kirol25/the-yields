@@ -1,6 +1,6 @@
-# Pre-commit hooks for openclaw
-# Install: prek install
-# Run manually: prek run --all-files
+# Pre-commit hooks for the-yields
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
 #
 # See https://pre-commit.com for more information
 
