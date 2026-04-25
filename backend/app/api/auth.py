@@ -20,8 +20,7 @@ def _get_jwks_client() -> PyJWKClient:
 
 
 def verify_token(token: str) -> dict:
-    """Verify a Cognito ID token and return
-    `{"email": str, "sub": str, "is_premium": bool}``.
+    """Verify a Cognito ID token and return `{"email": str, "sub": str}`.
 
     Raises HTTP 401 if the token is invalid or expired.
     """

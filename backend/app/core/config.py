@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     )
     APP_URL: str = Field(
         "http://localhost:5173",
-        description="Public frontend URL used for Stripe success/cancel redirects.",
+        description="Public frontend URL",
     )
     CORS_ORIGINS: str = Field(
         "http://localhost:5173",
@@ -40,26 +40,7 @@ class Settings(BaseSettings):
     )
     COGNITO_USER_POOL_ID: str = Field(
         "",
-        description="Cognito User Pool ID - required to update custom:is_premium "
-        "on subscription events.",
-    )
-    # --- Stripe / Billing ---
-    STRIPE_SECRET_KEY: str = Field(
-        "",
-        description="Stripe secret key (sk_live_... or sk_test_...). "
-        "Leave empty to disable Stripe endpoints.",
-    )
-    STRIPE_WEBHOOK_SECRET: str = Field(
-        "",
-        description="Stripe webhook signing secret (whsec_...) for verifying events.",
-    )
-    STRIPE_PRICE_ID_MONTHLY: str = Field(
-        "",
-        description="Stripe Price ID for the monthly plan.",
-    )
-    STRIPE_PRICE_ID_YEARLY: str = Field(
-        "",
-        description="Stripe Price ID for the yearly plan.",
+        description="Cognito User Pool ID - required for JWT verification.",
     )
 
     # --- Email (SES) ---
@@ -80,12 +61,6 @@ class Settings(BaseSettings):
     DATABASE_URL: str = Field(
         "postgresql+psycopg://postgres:postgres@localhost:5432/the_yields",
         description="SQLAlchemy database URL (postgresql://user:pass@host/db)",
-    )
-
-    # --- Feature flags ---
-    FREE_TIER_LIMIT: int = Field(
-        5,
-        description="Max tickers/accounts per section for free users",
     )
 
     @property

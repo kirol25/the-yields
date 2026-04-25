@@ -2,9 +2,8 @@ from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Path, Request, status
 
-from app.api.finance.dependencies import AuthContextDep, ServiceDep
+from app.api.finance.dependencies import ServiceDep
 from app.api.finance.schemas import SettingsPayload, YearPayload
-from app.core import settings
 from app.core.limiter import limiter
 
 router = APIRouter(prefix="/api", tags=["finance"])
@@ -30,54 +29,45 @@ KeyPath = Annotated[
     },
     status_code=status.HTTP_200_OK,
     summary="List available years",
-    description="Returns a sorted list of years for which data exists."
-    " Free users only receive the current year.",
+    description="Returns a sorted list of years for which data exists.",
 )
 @limiter.limit("60/minute")
-def get_years(request: Request, ctx: AuthContextDep, service: ServiceDep) -> list[int]:
-    return service.get_years(ctx["is_premium"])
+def get_years(request: Request, service: ServiceDep) -> list[int]:
+    return service.get_years()
 
 
 @router.get(
     "/data/{year}",
     responses={
         status.HTTP_200_OK: {"description": "Data retrieved successfully"},
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
         status.HTTP_404_NOT_FOUND: {"description": "Year not found"},
     },
     status_code=status.HTTP_200_OK,
     summary="Get year data",
-    description="Returns dividend and yield data for the given year."
-    " Free users may only access the current year.",
+    description="Returns dividend and yield data for the given year.",
 )
 @limiter.limit("120/minute")
-def get_data(
-    request: Request, year: YearPath, ctx: AuthContextDep, service: ServiceDep
-) -> dict[str, Any]:
-    return service.get_data(year, ctx["is_premium"])
+def get_data(request: Request, year: YearPath, service: ServiceDep) -> dict[str, Any]:
+    return service.get_data(year)
 
 
 @router.put(
     "/data/{year}",
     responses={
         status.HTTP_200_OK: {"description": "Data saved successfully"},
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
     },
     status_code=status.HTTP_200_OK,
     summary="Save year data",
-    description="Writes the provided dividend and yield payload to `YYYY.json`."
-    " Free users are restricted to the current year and up to"
-    f" {settings.FREE_TIER_LIMIT} tickers/accounts per section.",
+    description="Writes the provided dividend and yield payload for the given year.",
 )
 @limiter.limit("120/minute")
 def put_data(
     request: Request,
     year: YearPath,
     payload: YearPayload,
-    ctx: AuthContextDep,
     service: ServiceDep,
 ) -> dict[str, str]:
-    return service.save_data(year, payload, ctx["is_premium"])
+    return service.save_data(year, payload)
 
 
 @router.get(
@@ -123,7 +113,6 @@ def delete_all_data(service: ServiceDep) -> dict[str, str]:
     "/data/{year}/{section}/{key}",
     responses={
         status.HTTP_202_ACCEPTED: {"description": "Entry deleted successfully"},
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
         status.HTTP_404_NOT_FOUND: {"description": "Entry not found"},
     },
     status_code=status.HTTP_202_ACCEPTED,
@@ -136,7 +125,6 @@ def delete_entry(
     year: YearPath,
     section: Literal["dividends", "yields"],
     key: KeyPath,
-    ctx: AuthContextDep,
     service: ServiceDep,
 ) -> dict[str, str]:
-    return service.delete_entry(year, section, key, ctx["is_premium"])
+    return service.delete_entry(year, section, key)

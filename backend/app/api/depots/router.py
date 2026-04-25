@@ -2,7 +2,7 @@
 
 Depot CRUD:
   GET    /api/depots               - list user's depots
-  POST   /api/depots               - create depot (free: max 1, premium: unlimited)
+  POST   /api/depots               - create depot
   PATCH  /api/depots/{depot_id}    - rename depot
   DELETE /api/depots/{depot_id}    - delete depot (not allowed if it's the only one)
 
@@ -91,22 +91,13 @@ def list_depots(ctx: AuthContextDep, db: DBDep) -> list[Depot]:
     response_model=DepotOut,
     status_code=status.HTTP_201_CREATED,
     summary="Create depot",
-    description="Creates a new depot. Free users are limited to 1 depot.",
+    description="Creates a new depot.",
     responses={
-        status.HTTP_403_FORBIDDEN: {"description": "Free-tier depot limit reached"},
         status.HTTP_409_CONFLICT: {"description": "Depot name already exists"},
     },
 )
 def create_depot(payload: CreateDepotRequest, ctx: AuthContextDep, db: DBDep) -> Depot:
     user = _get_or_create_user(ctx, db)
-
-    if not ctx["is_premium"]:
-        existing_count = db.query(Depot).filter_by(user_id=user.id).count()
-        if existing_count >= 1:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Free tier allows only 1 depot. Upgrade to Premium for more.",
-            )
 
     duplicate = db.query(Depot).filter_by(user_id=user.id, name=payload.name).first()
     if duplicate:
@@ -186,7 +177,7 @@ def get_years_for_depot(
     request: Request, depot_id: uuid.UUID, ctx: AuthContextDep, db: DBDep
 ) -> list[int]:
     service = _make_service(depot_id, ctx, db)
-    return service.get_years(ctx["is_premium"])
+    return service.get_years()
 
 
 @router.get(
@@ -194,7 +185,6 @@ def get_years_for_depot(
     status_code=status.HTTP_200_OK,
     summary="Get year data for depot",
     responses={
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
         status.HTTP_404_NOT_FOUND: {"description": "Depot not found"},
     },
 )
@@ -207,7 +197,7 @@ def get_data_for_depot(
     db: DBDep,
 ) -> dict[str, Any]:
     service = _make_service(depot_id, ctx, db)
-    return service.get_data(year, ctx["is_premium"])
+    return service.get_data(year)
 
 
 @router.put(
@@ -215,7 +205,6 @@ def get_data_for_depot(
     status_code=status.HTTP_200_OK,
     summary="Save year data for depot",
     responses={
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
         status.HTTP_404_NOT_FOUND: {"description": "Depot not found"},
     },
 )
@@ -229,7 +218,7 @@ def put_data_for_depot(
     db: DBDep,
 ) -> dict[str, str]:
     service = _make_service(depot_id, ctx, db)
-    return service.save_data(year, payload, ctx["is_premium"])
+    return service.save_data(year, payload)
 
 
 @router.delete(
@@ -237,7 +226,6 @@ def put_data_for_depot(
     status_code=status.HTTP_202_ACCEPTED,
     summary="Delete an entry for depot",
     responses={
-        status.HTTP_403_FORBIDDEN: {"description": "Premium subscription required"},
         status.HTTP_404_NOT_FOUND: {"description": "Entry not found"},
     },
 )
@@ -252,4 +240,4 @@ def delete_entry_for_depot(
     db: DBDep,
 ) -> dict[str, str]:
     service = _make_service(depot_id, ctx, db)
-    return service.delete_entry(year, section, key, ctx["is_premium"])
+    return service.delete_entry(year, section, key)

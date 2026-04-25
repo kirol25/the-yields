@@ -26,20 +26,11 @@ class TestGetYears:
         assert resp.status_code == 200
         assert resp.json() == []
 
-    def test_free_user_only_sees_current_year(self, free_client):
-        # Write data for current + past year via PUT
+    def test_returns_all_years(self, free_client):
         for year in [CURRENT_YEAR, PAST_YEAR]:
             free_client.put(f"/api/data/{year}", json=SAMPLE_PAYLOAD)
 
         resp = free_client.get("/api/years")
-        assert resp.status_code == 200
-        assert resp.json() == [CURRENT_YEAR]
-
-    def test_premium_user_sees_all_years(self, premium_client):
-        for year in [CURRENT_YEAR, PAST_YEAR]:
-            premium_client.put(f"/api/data/{year}", json=SAMPLE_PAYLOAD)
-
-        resp = premium_client.get("/api/years")
         assert resp.status_code == 200
         assert sorted(resp.json()) == sorted([CURRENT_YEAR, PAST_YEAR])
 
@@ -63,13 +54,9 @@ class TestGetData:
         assert "AAPL" in data["dividends"]
         assert "TradeRepublic" in data["yields"]
 
-    def test_free_user_blocked_from_past_year(self, free_client):
+    def test_can_access_past_year(self, free_client):
+        free_client.put(f"/api/data/{PAST_YEAR}", json=SAMPLE_PAYLOAD)
         resp = free_client.get(f"/api/data/{PAST_YEAR}")
-        assert resp.status_code == 403
-
-    def test_premium_user_can_access_past_year(self, premium_client):
-        premium_client.put(f"/api/data/{PAST_YEAR}", json=SAMPLE_PAYLOAD)
-        resp = premium_client.get(f"/api/data/{PAST_YEAR}")
         assert resp.status_code == 200
 
 
@@ -87,23 +74,11 @@ class TestPutData:
         resp = free_client.get(f"/api/data/{CURRENT_YEAR}")
         assert resp.json()["dividends"]["AAPL"]["name"] == "Apple Inc."
 
-    def test_free_user_blocked_from_past_year(self, free_client):
+    def test_can_save_past_year(self, free_client):
         resp = free_client.put(f"/api/data/{PAST_YEAR}", json=SAMPLE_PAYLOAD)
-        assert resp.status_code == 403
+        assert resp.status_code == 200
 
-    def test_free_user_blocked_when_exceeding_ticker_limit(self, free_client):
-        # FREE_TIER_LIMIT defaults to 5; send 6 tickers
-        big_payload = {
-            "dividends": {
-                f"TICK{i}": {"name": f"Ticker {i}", "months": {"01": 1.0}}
-                for i in range(6)
-            },
-            "yields": {},
-        }
-        resp = free_client.put(f"/api/data/{CURRENT_YEAR}", json=big_payload)
-        assert resp.status_code == 403
-
-    def test_premium_user_can_exceed_free_limit(self, premium_client):
+    def test_can_save_many_tickers(self, free_client):
         big_payload = {
             "dividends": {
                 f"TICK{i}": {"name": f"Ticker {i}", "months": {"01": 1.0}}
@@ -111,7 +86,7 @@ class TestPutData:
             },
             "yields": {},
         }
-        resp = premium_client.put(f"/api/data/{CURRENT_YEAR}", json=big_payload)
+        resp = free_client.put(f"/api/data/{CURRENT_YEAR}", json=big_payload)
         assert resp.status_code == 200
 
     def test_rejects_invalid_year(self, free_client):
@@ -142,9 +117,10 @@ class TestDeleteEntry:
         resp = free_client.delete(f"/api/data/{CURRENT_YEAR}/dividends/MISSING")
         assert resp.status_code == 404
 
-    def test_free_user_blocked_from_past_year(self, free_client):
+    def test_can_delete_from_past_year(self, free_client):
+        free_client.put(f"/api/data/{PAST_YEAR}", json=SAMPLE_PAYLOAD)
         resp = free_client.delete(f"/api/data/{PAST_YEAR}/dividends/AAPL")
-        assert resp.status_code == 403
+        assert resp.status_code == 202
 
 
 # ---------------------------------------------------------------------------
@@ -153,10 +129,11 @@ class TestDeleteEntry:
 
 
 class TestSettings:
-    def test_returns_empty_dict_when_no_settings(self, free_client):
+    def test_returns_default_settings_when_no_goals(self, free_client):
         resp = free_client.get("/api/settings")
         assert resp.status_code == 200
-        assert resp.json() == {"is_premium": False}
+        data = resp.json()
+        assert "currency" in data
 
     def test_saves_and_retrieves_settings(self, free_client):
         payload = {

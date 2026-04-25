@@ -48,5 +48,5 @@ def configure_logging() -> None:
     root.setLevel(logging.INFO)
 
     # Silence noisy third-party loggers
-    for name in ("uvicorn.access", "boto3", "botocore", "urllib3", "stripe"):
+    for name in ("uvicorn.access", "boto3", "botocore", "urllib3"):
         logging.getLogger(name).setLevel(logging.WARNING)

@@ -31,12 +31,6 @@ def upgrade() -> None:
         ),
         sa.Column("email", sa.String(length=254), nullable=False),
         sa.Column(
-            "is_premium",
-            sa.Boolean(),
-            nullable=False,
-            comment="Set to True by Stripe webhook on active subscription",
-        ),
-        sa.Column(
             "created_at",
             sa.DateTime(timezone=True),
             server_default=sa.text("now()"),
