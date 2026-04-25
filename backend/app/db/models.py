@@ -16,7 +16,6 @@ from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import (
-    Boolean,
     DateTime,
     ForeignKey,
     Integer,
@@ -94,18 +93,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(
         String(254), unique=True, nullable=False, index=True
     )
-    is_premium: Mapped[bool] = mapped_column(
-        Boolean,
-        nullable=False,
-        default=False,
-        comment="Set to True by Stripe webhook on active subscription",
-    )
-    subscription_plan: Mapped[str | None] = mapped_column(
-        String(20),
-        nullable=True,
-        default=None,
-        comment="Active plan: 'monthly' or 'yearly'. NULL when not premium.",
-    )
     currency: Mapped[str] = mapped_column(
         String(3),
         nullable=False,
@@ -132,7 +119,7 @@ class User(Base):
     )
 
     def __repr__(self) -> str:
-        return f"<User email={self.email!r} premium={self.is_premium}>"
+        return f"<User email={self.email!r}>"
 
 
 class Depot(Base):

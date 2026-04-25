@@ -230,11 +230,7 @@ class YieldRepository:
         self._db.flush()
 
     def read_settings(self) -> dict[str, Any]:
-        """Return goals and steuerfreibetrag, keyed by year string.
-
-        Also includes ``is_premium`` from the User row so callers have a
-        single source of truth.
-        """
+        """Return goals and steuerfreibetrag, keyed by year string."""
         user = self._get_or_create_user()
         goals = self._db.query(YearGoal).filter_by(user_id=user.id).all()
 
@@ -252,7 +248,6 @@ class YieldRepository:
                 steuerfreibetrag[y] = int(goal.steuerfreibetrag)
 
         result: dict[str, Any] = {
-            "is_premium": user.is_premium,
             "currency": user.currency,
         }
         if dividend_goal:
@@ -264,11 +259,7 @@ class YieldRepository:
         return result
 
     def write_settings(self, data: dict[str, Any]) -> None:
-        """Upsert year goals from *data*.
-
-        ``is_premium`` is intentionally ignored here — it is managed exclusively
-        by the Stripe webhook via the User row.
-        """
+        """Upsert year goals from *data*."""
         user = self._get_or_create_user()
 
         years_touched: set[int] = set()

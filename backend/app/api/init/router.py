@@ -88,9 +88,7 @@ def get_init(
     year_data = repo.read_year(current_year)
 
     return InitResponse(
-        me=UserService().get_me(
-            ctx["email"], ctx["is_premium"], ctx["subscription_plan"]
-        ),
+        me=UserService().get_me(ctx["email"]),
         settings=settings_data,
         depots=depots,
         years=years,

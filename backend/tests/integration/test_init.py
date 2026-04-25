@@ -34,17 +34,7 @@ class TestGetInit:
 
     def test_me_contains_expected_fields(self, free_db_client: TestClient):
         me = free_db_client.get("/api/init").json()["me"]
-        assert "is_premium" in me
-        assert "free_tier_limit" in me
         assert "email" in me
-
-    def test_free_user_is_not_premium(self, free_db_client: TestClient):
-        me = free_db_client.get("/api/init").json()["me"]
-        assert me["is_premium"] is False
-
-    def test_premium_user_is_premium(self, premium_db_client: TestClient):
-        me = premium_db_client.get("/api/init").json()["me"]
-        assert me["is_premium"] is True
 
     def test_year_data_is_empty_scaffold_for_new_depot(
         self, free_db_client: TestClient

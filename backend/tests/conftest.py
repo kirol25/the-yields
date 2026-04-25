@@ -5,7 +5,7 @@ Strategy (HTTP tests)
 - `get_auth_context` is overridden to skip real JWT/Cognito calls.
 - `get_service` is overridden to use an in-process `YieldRepository` backed
   by a per-test `tmp_path`, so tests never touch S3 or the real data dir.
-- `free_client` / `premium_client` expose the two tiers used across suites.
+- `free_client` exposes the test client used across suites.
 
 Strategy (DB / model tests)
 ----------------------------
@@ -56,18 +56,6 @@ def free_ctx() -> dict:
     return {
         "email": TEST_EMAIL,
         "sub": TEST_SUB,
-        "is_premium": False,
-        "subscription_plan": None,
-    }
-
-
-@pytest.fixture
-def premium_ctx() -> dict:
-    return {
-        "email": TEST_EMAIL,
-        "sub": TEST_SUB,
-        "is_premium": True,
-        "subscription_plan": "monthly",
     }
 
 
@@ -102,13 +90,6 @@ def _make_client(auth_ctx: dict, service: YieldService) -> TestClient:
 @pytest.fixture
 def free_client(free_ctx, tmp_service):
     client = _make_client(free_ctx, tmp_service)
-    yield client
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def premium_client(premium_ctx, tmp_service):
-    client = _make_client(premium_ctx, tmp_service)
     yield client
     app.dependency_overrides.clear()
 
@@ -252,23 +233,6 @@ def free_db_client(db_session: Session) -> TestClient:
         {
             "email": TEST_EMAIL,
             "sub": TEST_SUB,
-            "is_premium": False,
-            "subscription_plan": None,
-        },
-        db_session,
-    )
-    yield client
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def premium_db_client(db_session: Session) -> TestClient:
-    client = _make_db_client(
-        {
-            "email": "premium@example.com",
-            "sub": "premium-sub",
-            "is_premium": True,
-            "subscription_plan": "monthly",
         },
         db_session,
     )

@@ -4,7 +4,6 @@ from fastapi import HTTPException, status
 
 from app.api.finance.repository import YieldRepository
 from app.api.finance.schemas import YearPayload
-from app.api.finance.utils import assert_ticker_limit, assert_year_allowed, current_year
 from app.core.logging_config import logger
 
 
@@ -14,30 +13,16 @@ class YieldService:
     def __init__(self, repository: YieldRepository) -> None:
         self.repository = repository
 
-    def get_years(self, is_premium: bool) -> list[int]:
-        """Return available years, filtered to the current year for free users."""
-        years = self.repository.list_years()
-        if not is_premium:
-            years = [y for y in years if y == current_year()]
-        return years
+    def get_years(self) -> list[int]:
+        """Return all available years."""
+        return self.repository.list_years()
 
-    def get_data(self, year: int, is_premium: bool) -> dict[str, Any]:
-        """Retrieve dividend and yield data for *year*.
-
-        Raises 403 if a free user requests a non-current year.
-        """
-        assert_year_allowed(year, is_premium)
+    def get_data(self, year: int) -> dict[str, Any]:
+        """Retrieve dividend and yield data for *year*."""
         return self.repository.read_year(year)
 
-    def save_data(
-        self, year: int, payload: YearPayload, is_premium: bool
-    ) -> dict[str, str]:
-        """Persist dividend and yield data for *year*.
-
-        Raises 403 if a free user exceeds the tier limits.
-        """
-        assert_year_allowed(year, is_premium)
-        assert_ticker_limit(payload, is_premium)
+    def save_data(self, year: int, payload: YearPayload) -> dict[str, str]:
+        """Persist dividend and yield data for *year*."""
         self.repository.write_year(year, payload.model_dump())
         logger.info(
             "data_saved",
@@ -67,14 +52,11 @@ class YieldService:
         year: int,
         section: Literal["dividends", "yields"],
         key: str,
-        is_premium: bool,
     ) -> dict[str, str]:
         """Delete *key* from *section* in *year*.
 
-        Raises 403 if a free user requests a non-current year.
         Raises 404 if the entry does not exist.
         """
-        assert_year_allowed(year, is_premium)
         if not self.repository.delete_entry(year, section, key):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

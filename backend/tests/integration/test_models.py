@@ -44,16 +44,8 @@ class TestUser:
         assert fetched is not None
         assert fetched.email == "u001@example.com"
         assert fetched.sub == "sub-001"
-        assert fetched.is_premium is False
         assert fetched.created_at is not None
         assert fetched.updated_at is not None
-
-    def test_set_premium(self, db_session: Session):
-        user = User(sub="sub-premium", email="premium@example.com", is_premium=True)
-        db_session.add(user)
-        db_session.flush()
-
-        assert db_session.get(User, user.id).is_premium is True
 
     def test_sub_unique_constraint(self, db_session: Session):
         db_session.add(User(sub="dup-sub", email="a@example.com"))

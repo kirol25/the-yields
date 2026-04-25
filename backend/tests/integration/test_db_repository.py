@@ -251,10 +251,6 @@ class TestDeleteAllData:
 
 
 class TestSettings:
-    def test_read_returns_is_premium_false_by_default(self, db_repo: YieldRepository):
-        result = db_repo.read_settings()
-        assert result["is_premium"] is False
-
     def test_read_empty_goals(self, db_repo: YieldRepository):
         result = db_repo.read_settings()
         assert "dividendGoal" not in result
@@ -282,13 +278,6 @@ class TestSettings:
         db_repo.write_settings({"dividendGoal": {"2024": 2000.0}})
         result = db_repo.read_settings()
         assert result["dividendGoal"]["2024"] == pytest.approx(2000.0)
-
-    def test_is_premium_ignored_by_write_settings(self, db_repo: YieldRepository):
-        """is_premium must not be writable via write_settings -
-        only the webhook sets it."""
-        db_repo.write_settings({"is_premium": True})
-        result = db_repo.read_settings()
-        assert result["is_premium"] is False
 
     def test_partial_goals_only_updates_present_fields(self, db_repo: YieldRepository):
         db_repo.write_settings(

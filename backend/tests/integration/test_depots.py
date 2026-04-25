@@ -41,31 +41,22 @@ class TestListDepots:
 
 
 class TestCreateDepot:
-    def test_create_succeeds_for_free_user_with_no_existing_depot(
-        self, free_db_client: TestClient
-    ):
+    def test_create_succeeds(self, free_db_client: TestClient):
         resp = free_db_client.post("/api/depots", json={"name": "Default"})
         assert resp.status_code == 201
         assert resp.json()["name"] == "Default"
 
-    def test_free_user_cannot_create_second_depot(self, free_db_client: TestClient):
-        free_db_client.post("/api/depots", json={"name": "Default"})
-        resp = free_db_client.post("/api/depots", json={"name": "Broker B"})
-        assert resp.status_code == 403
-
-    def test_premium_user_can_create_multiple_depots(
-        self, premium_db_client: TestClient
-    ):
-        r1 = premium_db_client.post("/api/depots", json={"name": "Depot A"})
-        r2 = premium_db_client.post("/api/depots", json={"name": "Depot B"})
-        r3 = premium_db_client.post("/api/depots", json={"name": "Depot C"})
+    def test_can_create_multiple_depots(self, free_db_client: TestClient):
+        r1 = free_db_client.post("/api/depots", json={"name": "Depot A"})
+        r2 = free_db_client.post("/api/depots", json={"name": "Depot B"})
+        r3 = free_db_client.post("/api/depots", json={"name": "Depot C"})
         assert r1.status_code == 201
         assert r2.status_code == 201
         assert r3.status_code == 201
 
-    def test_duplicate_name_rejected(self, premium_db_client: TestClient):
-        premium_db_client.post("/api/depots", json={"name": "Default"})
-        resp = premium_db_client.post("/api/depots", json={"name": "Default"})
+    def test_duplicate_name_rejected(self, free_db_client: TestClient):
+        free_db_client.post("/api/depots", json={"name": "Default"})
+        resp = free_db_client.post("/api/depots", json={"name": "Default"})
         assert resp.status_code == 409
 
     def test_empty_name_rejected(self, free_db_client: TestClient):
@@ -86,11 +77,11 @@ class TestCreateDepot:
 
 
 class TestRenameDepot:
-    def test_rename_succeeds(self, premium_db_client: TestClient):
-        created = premium_db_client.post("/api/depots", json={"name": "Old"}).json()
+    def test_rename_succeeds(self, free_db_client: TestClient):
+        created = free_db_client.post("/api/depots", json={"name": "Old"}).json()
         depot_id = created["id"]
 
-        resp = premium_db_client.patch(f"/api/depots/{depot_id}", json={"name": "New"})
+        resp = free_db_client.patch(f"/api/depots/{depot_id}", json={"name": "New"})
         assert resp.status_code == 200
         assert resp.json()["name"] == "New"
 
@@ -101,12 +92,10 @@ class TestRenameDepot:
         )
         assert resp.status_code == 200
 
-    def test_rename_to_existing_name_rejected(self, premium_db_client: TestClient):
-        premium_db_client.post("/api/depots", json={"name": "Depot A"})
-        b = premium_db_client.post("/api/depots", json={"name": "Depot B"}).json()
-        resp = premium_db_client.patch(
-            f"/api/depots/{b['id']}", json={"name": "Depot A"}
-        )
+    def test_rename_to_existing_name_rejected(self, free_db_client: TestClient):
+        free_db_client.post("/api/depots", json={"name": "Depot A"})
+        b = free_db_client.post("/api/depots", json={"name": "Depot B"}).json()
+        resp = free_db_client.patch(f"/api/depots/{b['id']}", json={"name": "Depot A"})
         assert resp.status_code == 409
 
     def test_rename_unknown_depot_returns_404(self, free_db_client: TestClient):
@@ -120,14 +109,14 @@ class TestRenameDepot:
 
 
 class TestDeleteDepot:
-    def test_delete_succeeds_when_multiple_depots(self, premium_db_client: TestClient):
-        premium_db_client.post("/api/depots", json={"name": "Depot A"})
-        b = premium_db_client.post("/api/depots", json={"name": "Depot B"}).json()
+    def test_delete_succeeds_when_multiple_depots(self, free_db_client: TestClient):
+        free_db_client.post("/api/depots", json={"name": "Depot A"})
+        b = free_db_client.post("/api/depots", json={"name": "Depot B"}).json()
 
-        resp = premium_db_client.delete(f"/api/depots/{b['id']}")
+        resp = free_db_client.delete(f"/api/depots/{b['id']}")
         assert resp.status_code == 204
 
-        remaining = premium_db_client.get("/api/depots").json()
+        remaining = free_db_client.get("/api/depots").json()
         names = [d["name"] for d in remaining]
         assert "Depot B" not in names
         assert "Depot A" in names
@@ -182,17 +171,15 @@ class TestDepotFinanceRoutes:
         resp = free_db_client.get(f"/api/depots/{depot['id']}/years")
         assert CURRENT_YEAR in resp.json()
 
-    def test_depot_data_isolated_from_another_depot(
-        self, premium_db_client: TestClient
-    ):
-        a = premium_db_client.post("/api/depots", json={"name": "Depot A"}).json()
-        b = premium_db_client.post("/api/depots", json={"name": "Depot B"}).json()
+    def test_depot_data_isolated_from_another_depot(self, free_db_client: TestClient):
+        a = free_db_client.post("/api/depots", json={"name": "Depot A"}).json()
+        b = free_db_client.post("/api/depots", json={"name": "Depot B"}).json()
 
-        premium_db_client.put(
+        free_db_client.put(
             f"/api/depots/{a['id']}/data/{CURRENT_YEAR}", json=self.SAMPLE_DATA
         )
 
-        resp = premium_db_client.get(f"/api/depots/{b['id']}/data/{CURRENT_YEAR}")
+        resp = free_db_client.get(f"/api/depots/{b['id']}/data/{CURRENT_YEAR}")
         assert resp.status_code == 200
         data = resp.json()
         assert data["dividends"] == {}
