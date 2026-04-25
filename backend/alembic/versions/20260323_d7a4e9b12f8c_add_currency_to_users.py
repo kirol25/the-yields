@@ -1,7 +1,7 @@
 """add currency column to users
 
 Revision ID: d7a4e9b12f8c
-Revises: c3e1f7a29b4d
+Revises: b4f812c9d1e2
 Create Date: 2026-03-23 12:00:00.000000+00:00
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = "d7a4e9b12f8c"
-down_revision: str | None = "c3e1f7a29b4d"
+down_revision: str | None = "b4f812c9d1e2"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
