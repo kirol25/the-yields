@@ -10,6 +10,8 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY app/ ./app/
+COPY alembic/ ./alembic/
+COPY alembic.ini ./alembic.ini
 COPY scripts/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh \
     && chown -R app:app /app
