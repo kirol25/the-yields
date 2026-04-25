@@ -50,7 +50,6 @@ jobs:
           VITE_API_BASE: http://localhost:8000
           VITE_COGNITO_CLIENT_ID: ci-placeholder
           VITE_REGISTRATION_ENABLED: "false"
-          VITE_STRIPE_ENABLED: "false"
 
   test-backend:
     name: Test Backend
@@ -202,7 +201,6 @@ jobs:
             VITE_API_BASE=${{ secrets.VITE_API_BASE }}
             VITE_COGNITO_CLIENT_ID=${{ secrets.VITE_COGNITO_CLIENT_ID }}
             VITE_REGISTRATION_ENABLED=${{ vars.VITE_REGISTRATION_ENABLED }}
-            VITE_STRIPE_ENABLED=${{ vars.VITE_STRIPE_ENABLED }}
           tags: ghcr.io/${{ github.repository_owner }}/the-yields-ui:${{ needs.tag-ui-release.outputs.version }}
 
   publish-backend:

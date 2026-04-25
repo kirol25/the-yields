@@ -1,42 +1,64 @@
-# the-yields
+# The Yields
 
-[![CI](https://github.com/kirol25/the-yields/actions/workflows/ci.yml/badge.svg)](https://github.com/kirol25/the-yields/actions/workflows/ci.yml)
-[![Dependabot Updates](https://github.com/kirol25/the-yields/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/kirol25/the-yields/actions/workflows/dependabot/dependabot-updates)
+A self-hosted personal finance tracker for dividends and investment yields. Track your dividend income, monitor yields across accounts, and visualize your portfolio performance over time.
 
-A personal finance tracker for dividends and investment yields. Built with a FastAPI backend and a Vue 3 frontend.
+## Features
 
-## Structure
+- **Dividend tracking** — log dividend payments per ticker, per month
+- **Yield tracking** — track interest and yield income across accounts
+- **Multi-year history** — view and compare data across years
+- **Portfolio depots** — organize investments into separate portfolios
+- **Dashboard** — charts and summaries of your financial data
+- **Multi-language** — English and German (i18n)
+- **Self-hosted** — your data stays on your own infrastructure
+- **Authentication** — AWS Cognito integration with JWT verification
 
-```md
-the-yields/
-├── backend/        # FastAPI API server
-├── ui/             # Vue 3 SPA
-├── data/           # JSON data files (YYYY.json), mounted as a volume in Docker
-├── docker-compose.yml
-└── Taskfile.yml
-```
+## Tech Stack
 
-## Quick start
+| Layer        | Technology                          |
+|--------------|-------------------------------------|
+| Frontend     | Vue 3, Vite, Pinia, Tailwind CSS   |
+| Backend      | FastAPI, SQLAlchemy, Alembic        |
+| Database     | PostgreSQL 16                       |
+| Auth         | AWS Cognito (JWT)                   |
+| Runtime      | Python 3.13, Node 22+              |
+| Packaging    | uv (Python), npm (JS)              |
+| DevOps       | Docker Compose, GitHub Actions      |
 
-### Local development
+## Quick Start
 
-Requires [uv](https://github.com/astral-sh/uv) and Node 22+.
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
+- [Node.js](https://nodejs.org/) 22+
+- [Task](https://taskfile.dev/) (optional)
+
+### Local Development
 
 ```bash
-# Start both servers concurrently
+# Clone the repo
+git clone https://github.com/<owner>/the-yields.git
+cd the-yields
+
+# Copy environment files
+cp backend/.env.example backend/.env
+cp ui/.env.example ui/.env
+
+# Start database, backend, and frontend
 task dev
 ```
 
-| Service  | URL                      |
-|----------|--------------------------|
-| Frontend | http://localhost:5173    |
-| Backend  | http://localhost:9002    |
+| Service  | URL                       |
+|----------|---------------------------|
+| Frontend | http://localhost:5173     |
+| Backend  | http://localhost:9002     |
 | API docs | http://localhost:9002/docs |
 
 ### Docker
 
 ```bash
-# Copy and fill in the UI env file first
+cp backend/.env.example backend/.env
 cp ui/.env.example ui/.env
 
 docker compose up --build
@@ -44,50 +66,83 @@ docker compose up --build
 
 | Service  | URL                   |
 |----------|-----------------------|
-| Frontend | http://localhost      |
+| Frontend | http://localhost:3000 |
 | Backend  | http://localhost:8000 |
 
-## Frontend ↔ Backend communication
-
-### Local development
-
-In dev mode, Vite's built-in proxy handles `/api/*` requests:
-
-```md
-Browser → Vite dev server (:5173) → FastAPI (:9002)
-```
-
-`vite.config.js` proxies any `/api/` request to `http://localhost:9002`, so the browser never needs to know the backend port.
-
-### Production (Docker)
-
-In production the frontend is compiled into static files and served by nginx inside the `ui` container. API calls use **relative paths** (e.g. `/api/years`), which the browser sends back to the same origin that served the page. nginx inside the container catches them:
+## Project Structure
 
 ```
-Browser → nginx in ui container (:80)
-            ├── /         → serve static files
-            └── /api/*    → proxy_pass http://backend:8000 (Docker internal DNS)
-                                └── backend container (:8000)
+the-yields/
+├── backend/            # FastAPI API server
+│   ├── app/
+│   │   ├── api/        # Route handlers (finance, users, depots, feedback)
+│   │   ├── core/       # Configuration, enums, logging
+│   │   ├── db/         # SQLAlchemy models and sessions
+│   │   └── middleware/  # Request logging
+│   ├── tests/          # Unit and integration tests
+│   └── alembic/        # Database migrations
+├── ui/                 # Vue 3 SPA
+│   ├── src/
+│   │   ├── views/      # Page-level components
+│   │   ├── components/ # Reusable UI components
+│   │   ├── stores/     # Pinia state management
+│   │   ├── composables/# Reusable logic
+│   │   └── locales/    # i18n (en, de)
+│   └── nginx.conf      # Production proxy config
+├── infrastructure/     # Terraform and deployment configs
+├── docker-compose.yml
+└── Taskfile.yml        # Task runner commands
 ```
 
-`backend` in `proxy_pass` resolves via Docker Compose's internal DNS to the `backend` service - not the container name (`the-yields-backend-1`). The backend port is bound to `127.0.0.1:8000` on the host and is not directly reachable from the internet; only nginx can reach it through the Docker network.
+## API Endpoints
 
-### `VITE_API_BASE` and why it must be empty in production
+| Method   | Path                              | Description                         |
+|----------|-----------------------------------|-------------------------------------|
+| `GET`    | `/api/years`                      | List years with data                |
+| `GET`    | `/api/data/{year}`                | Get dividend/yield data for a year  |
+| `PUT`    | `/api/data/{year}`                | Save dividend/yield data            |
+| `DELETE` | `/api/data`                       | Delete all data for the user        |
+| `DELETE` | `/api/data/{year}/{section}/{key}`| Delete a single entry               |
+| `GET`    | `/api/settings`                   | Get user settings                   |
+| `PUT`    | `/api/settings`                   | Save user settings                  |
+| `POST`   | `/api/feedback`                   | Submit feedback (rate limited)      |
+| `GET`    | `/monitoring/health`              | Health check                        |
 
-`ui/src/config.js` exports `API_BASE = import.meta.env.VITE_API_BASE`. All fetch/axios calls prepend this to their paths:
+Interactive API docs are available at `/docs` when running locally.
 
-```js
-axios.get(`${API_BASE}/api/years`)
-```
+## Configuration
 
-- **Dev**: set to `http://localhost:9002` so calls go directly to FastAPI
-- **Production**: must be `""` (empty string) so calls become relative (e.g. `/api/years`) and are caught by nginx
+### Backend (`backend/.env`)
 
-Any `VITE_*` variable is compiled into the JS bundle at build time and is readable by anyone in DevTools - never put secrets there. `VITE_COGNITO_CLIENT_ID` is safe because the Cognito Client ID is a public identifier by design.
+| Variable             | Description                                | Default                 |
+|----------------------|--------------------------------------------|-------------------------|
+| `ENVIRONMENT`        | Deployment environment (`local`, `prod`)   | `local`                 |
+| `DATABASE_URL`       | PostgreSQL connection string               | `postgresql+psycopg://postgres:postgres@localhost:5432/the_yields` |
+| `COGNITO_REGION`     | AWS Cognito region (empty = dev mode)      | `eu-central-1`          |
+| `COGNITO_USER_POOL_ID` | Cognito User Pool ID                    | —                       |
+| `CORS_ORIGINS`       | Comma-separated allowed origins            | `http://localhost:5173` |
+| `FEEDBACK_FROM_EMAIL`| SES verified sender for feedback           | —                       |
+| `FEEDBACK_TO_EMAIL`  | Recipient for feedback submissions         | —                       |
 
-## Data format
+### Frontend (`ui/.env`)
 
-Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3://{bucket}/{prefix}/{user_email}/YYYY.json` (S3):
+| Variable                    | Description                        | Default                  |
+|-----------------------------|------------------------------------|--------------------------|
+| `VITE_API_BASE`             | Backend URL for dev                | `http://localhost:8000`  |
+| `VITE_COGNITO_CLIENT_ID`   | Cognito app client ID              | —                        |
+| `VITE_REGISTRATION_ENABLED`| Enable new user registration       | `true`                   |
+
+> **Note:** `VITE_*` variables are compiled into the JS bundle at build time and are visible in the browser. Never put secrets in frontend env vars.
+
+## Authentication
+
+**Production:** Requests must include `Authorization: Bearer <access_token>`. The backend verifies tokens locally via Cognito's JWKS endpoint.
+
+**Dev mode** (`COGNITO_REGION` unset): The `X-User-Email` header is trusted directly — no token required.
+
+## Data Format
+
+Year data is stored per user in PostgreSQL and follows this structure:
 
 ```json
 {
@@ -100,126 +155,22 @@ Year data is stored per user under `data/{user_email}/YYYY.json` (local) or `s3:
 }
 ```
 
-## Authentication
+## Task Commands
 
-**Production**: requests must include `Authorization: Bearer <access_token>`. The backend verifies tokens locally via Cognito's JWKS endpoint (no AWS call on the hot path). The `is_premium` flag is cached per user for 5 minutes.
+| Task           | Description                            |
+|----------------|----------------------------------------|
+| `task dev`     | Start database, UI, and API            |
+| `task ui`      | Start the Vite dev server              |
+| `task api`     | Start the FastAPI server               |
+| `task db`      | Start the PostgreSQL container         |
+| `task test`    | Run backend tests                      |
+| `task format`  | Run Ruff + Prettier via pre-commit     |
+| `task build`   | Build both UI and backend              |
 
-**Dev mode** (`COGNITO_REGION` unset): the `X-User-Email` header is trusted directly; `is_premium` is always `false`.
+## Contributing
 
-## API endpoints
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/years` | List years with data (free: current year only) |
-| `GET` | `/api/data/{year}` | Get dividend/yield data for a year |
-| `PUT` | `/api/data/{year}` | Save dividend/yield data |
-| `DELETE` | `/api/data` | Delete **all** data for the user (account deletion) |
-| `DELETE` | `/api/data/{year}/{section}/{key}` | Delete a single entry |
-| `GET` | `/api/settings` | Get user settings |
-| `PUT` | `/api/settings` | Save user settings |
-| `POST` | `/api/feedback` | Submit feedback via SES (5/hour limit) |
-| `POST` | `/api/subscription/checkout` | Create Stripe Checkout session |
-| `POST` | `/api/subscription/portal` | Create Stripe Billing Portal session |
-| `POST` | `/api/subscription/webhook` | Stripe webhook receiver |
-| `GET` | `/monitoring/health` | Health check |
+## License
 
-Interactive docs available at `http://localhost:9002/docs`.
-
-## Stripe setup
-
-### 1. Create products & prices
-
-1. Go to **dashboard.stripe.com → Products → Add product**
-2. Create a product called e.g. **"The Yields Premium"**
-3. Under **Pricing**, add two recurring prices:
-   - **Monthly**: e.g. €4.99/month → copy the `price_...` ID
-   - **Yearly**: e.g. €39.99/year → copy the `price_...` ID
-
-> **Important**: Use the `price_...` IDs, not the `prod_...` product IDs.
-
-### 2. Create a webhook endpoint
-
-1. Go to **Developers → Webhooks → Add endpoint**
-2. Set the endpoint URL to `https://<your-domain>/api/subscription/webhook`
-3. Select these events:
-   - `checkout.session.completed`
-   - `customer.subscription.deleted`
-   - `customer.subscription.paused`
-   - `invoice.payment_failed`
-4. Save and copy the **Signing secret** (`whsec_...`)
-
-### 3. Configure environment variables
-
-Add to `backend/.env`:
-
-```env
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_ID_MONTHLY=price_...
-STRIPE_PRICE_ID_YEARLY=price_...
-APP_URL=https://your-domain.com
-```
-
-Add to `ui/.env`:
-
-```env
-VITE_STRIPE_ENABLED=true
-```
-
-### 4. Test webhooks locally
-
-Install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and forward events to your local backend:
-
-```bash
-brew install stripe/stripe-cli/stripe
-stripe login
-stripe listen --forward-to localhost:9002/api/subscription/webhook
-```
-
-The CLI prints a local `whsec_...` secret — use that as `STRIPE_WEBHOOK_SECRET` when developing locally (it differs from the dashboard webhook secret).
-
-### 5. Subscription lifecycle
-
-| Event | When it fires | Effect |
-| --- | --- | --- |
-| `checkout.session.completed` | User completes payment | `is_premium = True` |
-| `customer.subscription.deleted` | Paid period expires | `is_premium = False` |
-| `customer.subscription.paused` | Subscription paused | `is_premium = False` |
-| `invoice.payment_failed` | Payment fails | Logged only (no action) |
-
-**Cancellation behaviour**: when a user cancels via the billing portal, Stripe sets `cancel_at_period_end: true` but the subscription stays active — no webhook fires immediately. The user keeps premium access until the end of the paid period, at which point `customer.subscription.deleted` fires and `is_premium` is set to `False`.
-
-> **Production note**: the `customer.subscription.deleted` event is delivered by Stripe on the period end date — make sure your production webhook endpoint is live and reachable, otherwise access will not be revoked on time.
-
-## Account deletion
-
-When a user deletes their account the frontend:
-
-1. Calls `DELETE /api/data` to wipe all their data from the backend
-2. Calls Cognito `DeleteUser` to remove the auth account
-3. Clears local tokens and redirects to `/login`
-
-## Deployment (Ansible)
-
-Before running Ansible for the first time, copy your SSH key to the server:
-
-```bash
-ssh-copy-id -i ~/.ssh/id_ed25519.pub root@0.0.0.0
-```
-
-Then provision and deploy:
-
-```bash
-cd ansible
-ansible-playbook playbooks/setup.yml   # first time only
-ansible-playbook playbooks/deploy.yml  # subsequent deploys
-```
-
-## Taskfile commands
-
-| Task            | Description                              |
-|-----------------|------------------------------------------|
-| `task dev`      | Start both UI and API concurrently       |
-| `task ui`       | Start the Vite dev server on :5173       |
-| `task api`      | Start the FastAPI server on :9002        |
-| `task format`   | Run Ruff + Prettier via pre-commit       |
+[MIT](LICENSE)

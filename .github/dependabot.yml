@@ -8,8 +8,6 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    assignees:
-      - "kirol25"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -26,8 +24,6 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    assignees:
-      - "kirol25"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -39,8 +35,6 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    assignees:
-      - "kirol25"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -52,8 +46,6 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 3
-    assignees:
-      - "kirol25"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
