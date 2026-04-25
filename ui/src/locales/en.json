@@ -3,7 +3,6 @@
     "dashboard": "Dashboard",
     "dividends": "Dividends",
     "yields": "Yields",
-    "subscriptions": "Subscription",
     "features": "Features",
     "howItWorks": "How it works"
   },
@@ -80,17 +79,7 @@
     "confirmDelete": "Are you sure? This cannot be undone.",
     "confirmDeleteBtn": "Yes, delete my account",
     "deleting": "Deleting\u2026",
-    "accountDeletedSuccess": "Your account has been deleted.",
-    "planFree": "Free plan",
-    "planPremium": "Premium",
-    "upgrade": "Upgrade",
-    "manageSubscription": "Manage subscription",
-    "reactivate": "Don't cancel",
-    "reactivated": "Subscription reactivated.",
-    "cancelsOn": "cancels {date}",
-    "cancelScheduled": "Your subscription is set to cancel on {date}. You'll keep access until then.",
-    "cancelConfirm": "Your subscription will be cancelled at the end of the billing period. You keep access until then.",
-    "subscriptionActive": "Your subscription is active and renews automatically."
+    "accountDeletedSuccess": "Your account has been deleted."
   },
   "settings": {
     "title": "Settings",
@@ -119,9 +108,6 @@
     "steuerfreibetragDesc": "Your personal tax-free savings allowance (max. €2,000). Once your dividends exceed this, the chart turns amber.",
     "steuerfreibetragPlaceholder": "e.g. 1000",
     "steuerfreibetragMax": "Maximum value is €2,000.",
-    "exportLocked": "CSV export is a Monthly/Yearly feature",
-    "exportLockedDesc": "Upgrade to export your data as CSV.",
-    "upgradeBtn": "Upgrade",
     "depots": "Depots",
     "depotsDesc": "Depots let you track dividends and yields across multiple brokers or accounts separately.",
     "addDepot": "Add depot",
@@ -129,8 +115,7 @@
     "renameDepot": "Rename depot",
     "deleteDepot": "Delete depot",
     "deleteDepotConfirm": "Delete depot \"{name}\" and all its data? This cannot be undone.",
-    "deleting": "Deleting…",
-    "depotsLocked": "Multiple depots are a Premium feature."
+    "deleting": "Deleting…"
   },
   "blade": {
     "account": "Account",
@@ -155,8 +140,7 @@
     "searchTicker": "Search ticker or name…",
     "alreadyTracked": "Already tracked",
     "noTickersFound": "No tickers found",
-    "year": "Year",
-    "yearPastLocked": "Past years require Premium"
+    "year": "Year"
   },
   "months": {
     "01": { "short": "Jan", "label": "January" },
@@ -225,79 +209,6 @@
     "disclaimerText": "This app is for personal finance tracking only. Nothing here constitutes financial or investment advice.",
     "privacyFirst": "Privacy-first",
     "selfHosted": "Self-hostable"
-  },
-  "subscriptions": {
-    "title": "Simple, transparent subscription plans",
-    "badge": "Subscription",
-    "free": {
-      "name": "Free",
-      "price": "€0",
-      "period": "forever",
-      "features": [
-        "Dividend & yield tracking",
-        "Current year only",
-        "Up to 5 tickers & 5 accounts",
-        "1 broker depot",
-        "Monthly chart"
-      ]
-    },
-    "monthly": {
-      "name": "Monthly",
-      "price": "€4",
-      "period": "month",
-      "features": [
-        "Unlimited tickers & accounts",
-        "All years of data",
-        "Unlimited broker depots",
-        "Quarterly, yearly & cumulative charts",
-        "Portfolio breakdown & income heatmap",
-        "Export as CSV"
-      ]
-    },
-    "yearly": {
-      "name": "Yearly",
-      "price": "€39",
-      "period": "year",
-      "badge": "Best value",
-      "features": [
-        "Everything in Monthly",
-        "Priority support",
-        "2 months free vs monthly",
-        "Early access to new features"
-      ]
-    },
-    "cta": "Get started",
-    "ctaFree": "Get started for free",
-    "ctaPaid": "Order now",
-    "currentPlan": "Current plan",
-    "redirecting": "Redirecting…",
-    "checkoutError": "Something went wrong. Please try again.",
-    "manageSubscription": "Manage or cancel subscription",
-    "cancelSubscription": "Cancel subscription",
-    "cancelConfirm": "Are you sure? You'll keep access until the end of your billing period.",
-    "cancelConfirmBtn": "Yes, cancel",
-    "cancelAbort": "Keep subscription",
-    "cancelling": "Cancelling…",
-    "cancelledUntil": "Subscription cancelled. Access until {date}.",
-    "cancelError": "Failed to cancel. Please try again.",
-    "cancelledGeneric": "Subscription cancelled successfully.",
-    "details": {
-      "title": "Subscription details",
-      "startedOn": "Started on",
-      "billingInterval": "Billing interval",
-      "periodStart": "Current period started",
-      "nextRenewal": "Next renewal",
-      "accessUntil": "Access until",
-      "interval_month": "Monthly",
-      "interval_year": "Yearly",
-      "cancelNotice": "Your subscription is scheduled to cancel at the end of the current period.",
-      "unavailable": "Subscription details are not available right now."
-    },
-    "successTitle": "You're now Premium!",
-    "successSub": "Your subscription is active. All premium features are unlocked.",
-    "successCta": "Go to Dashboard",
-    "disclaimer": "The subscription renews automatically. You can cancel at any time without notice in your account settings or by email. Our",
-    "disclaimerAgb": "Terms and Conditions"
   },
   "landing": {
     "badge": "Personal Finance Tracker",
@@ -382,14 +293,6 @@
     "successSub": "We read every message and will get back to you if needed.",
     "sendAnother": "Send another"
   },
-  "upsell": {
-    "tickerLimitTitle": "Free plan limit reached ({n} tickers / accounts)",
-    "tickerLimitDesc": "Upgrade to add unlimited tickers and savings accounts.",
-    "analyticsTitle": "Visual analytics are a Premium feature",
-    "analyticsDesc": "Upgrade to unlock quarterly, yearly, cumulative charts and portfolio breakdown.",
-    "upgrade": "Upgrade to Premium",
-    "limitReached": "limit reached"
-  },
   "terms": {
     "title": "Terms of Service",
     "acceptanceTitle": "Acceptance of Terms",
@@ -408,7 +311,7 @@
   },
   "legalMeta": {
     "completeBeforeLaunch": "Complete before the Germany launch:",
-    "updateIn": "Update these details centrally in ui/src/legal.js.",
+    "updateIn": "Update these details in the relevant view files.",
     "lastUpdated": "Last updated: {date}"
   },
   "legalNoticePage": {
@@ -436,32 +339,25 @@
     "accountBody2": "To provide the app, we also process the financial entries, goals and settings you enter, including dividend data, yield data, yearly records and user preferences.",
     "accountBody3": "This processing is required to perform the user contract and to operate the service securely under Art. 6(1)(b) and Art. 6(1)(f) GDPR.",
     "accountBody4": "Amazon Cognito, provided by Amazon Web Services (AWS), acts as our processor for registration and authentication. Cognito stores your name, email address and the date and time of registration. This data is held in the eu-central-1 (Frankfurt) region under a Data Processing Agreement with AWS.",
-    "subscriptionTitle": "4. Subscriptions and payments",
-    "subscriptionBody1": "We use Stripe for paid subscriptions. In that context, we process your email address, the selected plan, and technical identifiers such as Stripe customer and subscription IDs. Payment details are collected directly by Stripe during checkout.",
-    "subscriptionBody2": "This processing is required to perform the subscription contract under Art. 6(1)(b) GDPR. Stripe may also process data under its own responsibility for legal compliance, fraud prevention and similar obligations.",
-    "subscriptionBody3": "More information is available at",
-    "subscriptionBody4": "Stripe processes payment method details (e.g. card number, expiry date, CVC), billing name and address, transaction amounts, currency and subscription status. For regulatory compliance, fraud prevention and financial reporting, Stripe acts as an independent controller for its own obligations. Stripe may transfer data to the United States on the basis of Standard Contractual Clauses.",
-    "feedbackTitle": "5. Contact and feedback",
+    "feedbackTitle": "4. Contact and feedback",
     "feedbackBody1": "If you contact us through the feedback form, we process your message and, if provided, your email or reply-to address. Delivery is handled through Amazon SES.",
     "feedbackBody2": "The legal basis is Art. 6(1)(b) or Art. 6(1)(f) GDPR, depending on the nature of the request.",
-    "processorsTitle": "6. Recipients and processors",
+    "processorsTitle": "5. Recipients and processors",
     "processorIonos": "IONOS SE for hosting the application server in Germany.",
     "processorAws": "Amazon Web Services for Amazon Cognito, Amazon S3 and Amazon SES, configured in this app for region eu-central-1.",
-    "processorStripe": "Stripe for checkout, subscription management and payment processing.",
-    "transfersTitle": "7. International transfers",
-    "transfersBody": "The IONOS server is located in Germany. AWS and Stripe may process personal data outside the EU or EEA. Where such transfers occur, they are based on an adequacy decision or appropriate safeguards, in particular Standard Contractual Clauses.",
-    "retentionTitle": "8. Retention periods",
+    "transfersTitle": "6. International transfers",
+    "transfersBody": "The IONOS server is located in Germany. AWS may process personal data outside the EU or EEA. Where such transfers occur, they are based on an adequacy decision or appropriate safeguards, in particular Standard Contractual Clauses.",
+    "retentionTitle": "7. Retention periods",
     "retention1": "Account and app data are stored until the account is deleted or the relevant content is removed by the user.",
     "retention2": "Server logs are stored only as long as necessary for operation, security and abuse prevention.",
     "retention3": "Feedback messages are retained until the request has been handled and no further retention duty applies.",
-    "retention4": "Billing and payment data are primarily processed by Stripe under its own retention periods.",
     "retention5": "Browser-side storage remains until you delete it or your browser clears it.",
-    "storageTitle": "9. Cookies, localStorage and sessionStorage",
+    "storageTitle": "8. Cookies, localStorage and sessionStorage",
     "storageBody1": "This application does not use analytics, marketing or tracking cookies. It uses only storage technologies that are technically required for the requested service.",
     "storageItem1": "sessionStorage for access_token, id_token, refresh_token and pending_email.",
     "storageItem2": "localStorage for yield-settings, last_year and a dismissal flag for the storage notice.",
     "storageBody2": "To the extent Section 25 TDDDG applies, these storage operations are based on Section 25(2) No. 2 TDDDG because they are strictly necessary to provide the expressly requested telemedia service.",
-    "rightsTitle": "10. Your rights",
+    "rightsTitle": "9. Your rights",
     "rights1": "Access under Art. 15 GDPR",
     "rights2": "Rectification under Art. 16 GDPR",
     "rights3": "Erasure under Art. 17 GDPR",
@@ -470,34 +366,31 @@
     "rights6": "Objection under Art. 21 GDPR",
     "rights7": "Complaint to a supervisory authority under Art. 77 GDPR",
     "rightsBody": "To exercise these rights, send an informal request to",
-    "objectionTitle": "11. Right to object",
+    "objectionTitle": "10. Right to object",
     "objectionBody": "Where we process data based on Art. 6(1)(f) GDPR, you may object on grounds relating to your particular situation."
   },
   "termsPage": {
     "title": "Terms of Service",
     "scopeTitle": "1. Provider and scope",
-    "scopeBody": "{appName} is provided by {operatorName}. These terms apply to the website, the web app and related features such as registration, authentication, data storage and paid subscriptions.",
+    "scopeBody": "{appName} is provided by {operatorName}. These terms apply to the website, the web app and related features such as registration, authentication and data storage.",
     "accountTitle": "2. Registration and account",
     "accountBody": "A user account is required for protected areas of the service. You must provide accurate information when registering and keep your credentials confidential. You are responsible for activities carried out through your account to the extent you are accountable for them.",
     "serviceTitle": "3. Service description",
-    "serviceBody": "{appName} provides tools to record, analyse and visualise dividend, yield and goal data for personal use. The exact scope of features depends on the current service description on the website and on the selected Free or Premium plan.",
-    "subscriptionTitle": "4. Paid subscriptions",
-    "subscriptionBody1": "Paid plans are processed through Stripe. Binding prices, billing intervals and included features are shown before you complete checkout.",
-    "subscriptionBody2": "Unless stated otherwise during checkout, Premium plans are recurring subscriptions that renew automatically at the end of the booked term. You can cancel through the provided Stripe customer portal, with cancellation taking effect at the end of the current billing period.",
-    "permittedTitle": "5. Permitted use",
+    "serviceBody": "{appName} provides tools to record, analyse and visualise dividend, yield and goal data for personal use. The exact scope of features depends on the current service description on the website.",
+    "permittedTitle": "4. Permitted use",
     "permittedBody": "You may use the service only in compliance with applicable law and these terms. In particular, you may not abuse the service, circumvent technical protection measures, interfere with operations, perform automated mass access without permission, or upload unlawful content.",
-    "noAdviceTitle": "6. No financial, tax or legal advice",
+    "noAdviceTitle": "5. No financial, tax or legal advice",
     "noAdviceBody": "{appName} provides technical tools for personal finance tracking only. Content, figures, charts and summaries do not constitute financial, investment, tax or legal advice and do not replace professional advice.",
-    "availabilityTitle": "7. Availability and changes",
+    "availabilityTitle": "6. Availability and changes",
     "availabilityBody": "We aim to keep the service available without disruption, but do not guarantee uninterrupted availability at all times. We may further develop, adjust or modify the service for legitimate reasons, provided this does not unreasonably interfere with essential contractual obligations toward consumers.",
-    "liabilityTitle": "8. Liability",
+    "liabilityTitle": "7. Liability",
     "liabilityBody": "We are liable without limitation for intent, gross negligence and injury to life, body or health. In cases of slight negligence, we are liable only for breach of essential contractual obligations and only for the foreseeable damage typical for the contract. Mandatory statutory liability remains unaffected.",
-    "terminationTitle": "9. Term and termination",
+    "terminationTitle": "8. Term and termination",
     "terminationBody": "You may delete your account at any time. We may suspend or terminate accounts for good cause, in particular in the event of material breaches of these terms or unlawful use. Any accrued payment claims remain unaffected.",
-    "privacyTitle": "10. Privacy",
+    "privacyTitle": "9. Privacy",
     "privacyBody": "Information about the processing of personal data is available in the",
     "privacyLink": "Privacy Policy",
-    "lawTitle": "11. Governing law",
+    "lawTitle": "10. Governing law",
     "lawBody": "The laws of the Federal Republic of Germany apply, excluding the UN Convention on Contracts for the International Sale of Goods. If you are a consumer, this choice of law applies only to the extent that it does not deprive you of mandatory protection granted by the law of your habitual residence."
   }
 }

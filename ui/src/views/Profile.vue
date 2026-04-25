@@ -17,61 +17,6 @@
         </div>
       </div>
 
-      <!-- Plan section -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <template v-if="isPremium">
-              <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              <span class="text-sm font-medium text-amber-400">{{ t('profile.planPremium') }}</span>
-              <RouterLink v-if="subscriptionPlan" to="/subscriptions" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">·
-                {{ subscriptionPlan === 'monthly' ? t('subscriptions.details.interval_month') : t('subscriptions.details.interval_year') }}
-              </RouterLink>
-            </template>
-            <template v-else>
-              <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/>
-              </svg>
-              <span class="text-sm text-gray-500">{{ t('profile.planFree') }}</span>
-            </template>
-          </div>
-          <RouterLink
-            v-if="!isPremium"
-            to="/subscriptions"
-            class="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            {{ t('profile.upgrade') }} →
-          </RouterLink>
-          <button
-            v-else
-            @click="subModalOpen = true"
-            class="text-xs font-medium text-gray-400 hover:text-gray-200 transition-colors"
-          >
-            {{ t('profile.manageSubscription') }}
-          </button>
-        </div>
-
-        <!-- Subscription detail rows (premium only) -->
-        <dl v-if="isPremium && subStatus.active" class="grid grid-cols-2 gap-x-4 gap-y-2 bg-gray-800/50 rounded-lg px-4 py-3">
-          <div>
-            <dt class="text-xs text-gray-500">{{ t('subscriptions.details.startedOn') }}</dt>
-            <dd class="text-xs text-gray-300 mt-0.5">{{ fmtDate(subStatus.started_at) }}</dd>
-          </div>
-          <div>
-            <dt class="text-xs text-gray-500">{{ subStatus.cancel_at_period_end ? t('subscriptions.details.accessUntil') : t('subscriptions.details.nextRenewal') }}</dt>
-            <dd class="text-xs mt-0.5" :class="subStatus.cancel_at_period_end ? 'text-amber-400' : 'text-gray-300'">{{ fmtDate(subStatus.current_period_end) }}</dd>
-          </div>
-          <div v-if="subStatus.cancel_at_period_end" class="col-span-2">
-            <p class="text-xs text-amber-400/80">{{ t('subscriptions.details.cancelNotice') }}</p>
-          </div>
-        </dl>
-      </div>
-
-      <hr class="border-gray-800" />
-
       <!-- Name -->
       <div>
         <label class="block text-xs text-gray-400 mb-1.5">{{ t('profile.name') }}</label>
@@ -161,80 +106,6 @@
       </div>
     </div>
 
-    <!-- Subscription management modal -->
-    <Teleport to="body">
-      <div
-        v-if="subModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-        @click.self="closeSubModal"
-      >
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-sm space-y-4">
-          <h2 class="text-base font-semibold text-gray-100">{{ t('profile.manageSubscription') }}</h2>
-
-          <!-- Pending cancellation state -->
-          <template v-if="subStatus.cancel_at_period_end">
-            <p class="text-sm text-gray-400">
-              {{ t('profile.cancelScheduled', { date: subStatus.ends_at ? new Date(subStatus.ends_at * 1000).toLocaleDateString() : '—' }) }}
-            </p>
-            <div class="flex gap-2 pt-1">
-              <button
-                @click="reactivate"
-                :disabled="subLoading"
-                class="flex-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-sm font-medium rounded-lg transition-colors"
-              >
-                {{ subLoading ? '…' : t('profile.reactivate') }}
-              </button>
-              <button
-                @click="closeSubModal"
-                class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-sm text-gray-300 font-medium rounded-lg transition-colors"
-              >
-                {{ t('common.cancel') }}
-              </button>
-            </div>
-          </template>
-
-          <!-- Active subscription — confirm cancel -->
-          <template v-else-if="subCancelConfirm">
-            <p class="text-sm text-gray-400">{{ t('profile.cancelConfirm') }}</p>
-            <div class="flex gap-2 pt-1">
-              <button
-                @click="cancelSubscription"
-                :disabled="subLoading"
-                class="flex-1 px-3 py-2 bg-red-700 hover:bg-red-600 disabled:opacity-50 text-sm font-medium rounded-lg transition-colors"
-              >
-                {{ subLoading ? '…' : t('subscriptions.cancelConfirmBtn') }}
-              </button>
-              <button
-                @click="subCancelConfirm = false"
-                class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-sm text-gray-300 font-medium rounded-lg transition-colors"
-              >
-                {{ t('subscriptions.cancelAbort') }}
-              </button>
-            </div>
-          </template>
-
-          <!-- Active subscription — default -->
-          <template v-else>
-            <p class="text-sm text-gray-400">{{ t('profile.subscriptionActive') }}</p>
-            <div class="flex gap-2 pt-1">
-              <button
-                @click="subCancelConfirm = true"
-                class="flex-1 px-3 py-2 border border-red-700 text-red-400 hover:bg-red-900/30 text-sm font-medium rounded-lg transition-colors"
-              >
-                {{ t('subscriptions.cancelSubscription') }}
-              </button>
-              <button
-                @click="closeSubModal"
-                class="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-sm text-gray-300 font-medium rounded-lg transition-colors"
-              >
-                {{ t('common.cancel') }}
-              </button>
-            </div>
-          </template>
-        </div>
-      </div>
-    </Teleport>
-
     <!-- Danger Zone -->
     <div class="border border-red-900/60 rounded-xl p-6 space-y-4">
       <h2 class="text-xs uppercase tracking-wider text-red-500 font-medium">{{ t('profile.dangerZone') }}</h2>
@@ -278,14 +149,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useAuthStore } from '../stores/authStore.js'
 import { useToastStore } from '../stores/toastStore.js'
-import { useSubscription } from '../composables/useSubscription.js'
-import { useSubscriptionStatus } from '../composables/useSubscriptionStatus.js'
 import client from '../api/client.js'
 
 const { t } = useI18n()
@@ -293,52 +162,6 @@ const settings = useSettingsStore()
 const auth = useAuthStore()
 const toast = useToastStore()
 const router = useRouter()
-
-const { isPremium, subscriptionPlan } = useSubscription()
-const { subStatus, fetchStatus, markCancelled, markReactivated } = useSubscriptionStatus()
-
-function fmtDate(ts) {
-  return ts ? new Date(ts * 1000).toLocaleDateString() : '—'
-}
-
-const subLoading = ref(false)
-const subModalOpen = ref(false)
-const subCancelConfirm = ref(false)
-
-onMounted(() => { if (isPremium.value) fetchStatus() })
-
-function closeSubModal() {
-  subModalOpen.value = false
-  subCancelConfirm.value = false
-}
-
-async function reactivate() {
-  subLoading.value = true
-  try {
-    await client.post('/api/subscription/reactivate')
-    markReactivated()
-    toast.add(t('profile.reactivated'), 'success')
-    closeSubModal()
-  } catch {
-    toast.add(t('subscriptions.cancelError'), 'error')
-  } finally {
-    subLoading.value = false
-  }
-}
-
-async function cancelSubscription() {
-  subLoading.value = true
-  try {
-    const { data } = await client.post('/api/subscription/cancel')
-    markCancelled(data.ends_at)
-    toast.add(t('subscriptions.cancelledGeneric'), 'success')
-    closeSubModal()
-  } catch {
-    toast.add(t('subscriptions.cancelError'), 'error')
-  } finally {
-    subLoading.value = false
-  }
-}
 
 const nameInput = ref(settings.profile.name)
 const savedName = ref(settings.profile.name)

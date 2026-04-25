@@ -18,12 +18,6 @@
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('termsPage.subscriptionTitle') }}</h2>
-      <p>{{ t('termsPage.subscriptionBody1') }}</p>
-      <p>{{ t('termsPage.subscriptionBody2') }}</p>
-    </section>
-
-    <section class="space-y-3">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('termsPage.permittedTitle') }}</h2>
       <p>{{ t('termsPage.permittedBody') }}</p>
     </section>
@@ -72,7 +66,14 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LEGAL } from '../legal.js'
+import { APP_NAME } from '../config.js'
+
+const LEGAL = {
+  appName: APP_NAME,
+  operatorName: '[Your Name]',
+  lastUpdatedDe: '[Datum]',
+  lastUpdatedEn: '[Date]',
+}
 
 const { t, locale } = useI18n()
 const lastUpdated = computed(() => (locale.value === 'de' ? LEGAL.lastUpdatedDe : LEGAL.lastUpdatedEn))

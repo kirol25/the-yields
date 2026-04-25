@@ -58,7 +58,44 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LEGAL, getLegalAddress, getMissingLegalFields } from '../legal.js'
+import { APP_NAME } from '../config.js'
+
+const LEGAL = {
+  appName: APP_NAME,
+  operatorName: '[Your Name]',
+  street: '[Street]',
+  postalCode: '[Postal Code]',
+  city: '[City]',
+  country: 'Deutschland',
+  email: '[your-email@example.com]',
+  phone: '',
+  vatId: '',
+  commercialRegister: '',
+  responsibleForContent: '[Your Name]',
+  lastUpdatedDe: '[Datum]',
+  lastUpdatedEn: '[Date]',
+}
+
+function getLegalAddress(locale) {
+  const de = locale === 'de'
+  return {
+    street: LEGAL.street || (de ? '[Strasse und Hausnummer]' : '[Street and house number]'),
+    cityLine: LEGAL.postalCode && LEGAL.city ? `${LEGAL.postalCode} ${LEGAL.city}` : (de ? '[PLZ] [Ort]' : '[Postal code] [City]'),
+    country: LEGAL.country || (de ? 'Deutschland' : 'Germany'),
+  }
+}
+
+function getMissingLegalFields(locale) {
+  const de = locale === 'de'
+  const fields = [
+    { key: 'street', labelDe: 'Strasse und Hausnummer', labelEn: 'Street and house number' },
+    { key: 'postalCode', labelDe: 'Postleitzahl', labelEn: 'Postal code' },
+    { key: 'city', labelDe: 'Ort', labelEn: 'City' },
+  ]
+  return fields
+    .filter(({ key }) => !String(LEGAL[key] || '').trim() || LEGAL[key].startsWith('['))
+    .map(({ labelDe, labelEn }) => (de ? labelDe : labelEn))
+}
 
 const { t, locale } = useI18n()
 const address = computed(() => getLegalAddress(locale.value))

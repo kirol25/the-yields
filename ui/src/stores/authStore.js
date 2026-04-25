@@ -15,7 +15,6 @@ function parseIdToken(token) {
       name: payload.preferred_username || payload.email || '',
       email: payload.email || '',
       sub: payload.sub || '',
-      isPremium: payload['custom:is_premium'] === 'true',
     }
   } catch {
     return null

@@ -129,50 +129,36 @@
       </div>
 
       <!-- Add depot -->
-      <template v-if="isPremium">
-        <div v-if="!addingDepot">
-          <button
-            @click="addingDepot = true"
-            class="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            + {{ t('settings.addDepot') }}
-          </button>
-        </div>
-        <div v-else class="flex gap-2">
-          <input
-            v-model="newDepotName"
-            :placeholder="t('settings.depotNamePlaceholder')"
-            @keydown.enter="createDepot"
-            @keydown.escape="addingDepot = false; newDepotName = ''"
-            class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-          <button
-            @click="createDepot"
-            :disabled="!newDepotName.trim() || creatingDepot"
-            class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-sm font-medium rounded-md transition-colors"
-          >
-            {{ t('common.save') }}
-          </button>
-          <button
-            @click="addingDepot = false; newDepotName = ''"
-            class="shrink-0 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
-          >
-            {{ t('common.cancel') }}
-          </button>
-        </div>
-      </template>
-      <template v-else>
-        <div class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          {{ t('settings.depotsLocked') }}
-          <RouterLink to="/subscriptions" class="text-emerald-400 hover:text-emerald-300 transition-colors">
-            {{ t('settings.upgradeBtn') }} →
-          </RouterLink>
-        </div>
-      </template>
+      <div v-if="!addingDepot">
+        <button
+          @click="addingDepot = true"
+          class="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+        >
+          + {{ t('settings.addDepot') }}
+        </button>
+      </div>
+      <div v-else class="flex gap-2">
+        <input
+          v-model="newDepotName"
+          :placeholder="t('settings.depotNamePlaceholder')"
+          @keydown.enter="createDepot"
+          @keydown.escape="addingDepot = false; newDepotName = ''"
+          class="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        />
+        <button
+          @click="createDepot"
+          :disabled="!newDepotName.trim() || creatingDepot"
+          class="shrink-0 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-sm font-medium rounded-md transition-colors"
+        >
+          {{ t('common.save') }}
+        </button>
+        <button
+          @click="addingDepot = false; newDepotName = ''"
+          class="shrink-0 px-3 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          {{ t('common.cancel') }}
+        </button>
+      </div>
     </div>
 
     <!-- Goals -->
@@ -270,9 +256,7 @@
           <p class="text-sm font-medium text-gray-200">{{ t('settings.exportCsv') }}</p>
           <p class="text-xs text-gray-500 mt-0.5">{{ t('settings.exportCsvDesc') }}</p>
         </div>
-        <!-- Premium: show export button -->
         <button
-          v-if="isPremium"
           @click="exportCsv"
           :disabled="exporting || !hasData"
           class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-700 text-sm text-gray-200 font-medium rounded-md transition-colors"
@@ -282,22 +266,6 @@
           </svg>
           {{ exporting ? t('settings.exporting') : t('settings.exportCsv') }}
         </button>
-        <!-- Free: show locked state -->
-        <div v-else class="shrink-0 flex flex-col items-end gap-1.5">
-          <div class="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-            {{ t('settings.exportLocked') }}
-          </div>
-          <RouterLink
-            to="/subscriptions"
-            class="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
-          >
-            {{ t('settings.upgradeBtn') }} →
-          </RouterLink>
-        </div>
       </div>
     </div>
   </div>
@@ -309,13 +277,11 @@ import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settingsStore.js'
 import { useDataStore } from '../stores/dataStore.js'
 import { useDepotStore } from '../stores/depotStore.js'
-import { useSubscription } from '../composables/useSubscription.js'
 
 const { t } = useI18n()
 const settings = useSettingsStore()
 const store = useDataStore()
 const depotStore = useDepotStore()
-const { isPremium } = useSubscription()
 
 // ── Depot management ───────────────────────────────────────────────────────────
 const addingDepot = ref(false)
