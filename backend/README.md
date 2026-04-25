@@ -6,11 +6,11 @@ FastAPI service that stores and serves per-user dividend and yield data.
 
 - **Python 3.13**
 - **FastAPI** + **Uvicorn**
+- **PostgreSQL** via **SQLAlchemy** + **Alembic**
 - **uv** for dependency management
 - **Ruff** for linting and formatting
 - **PyJWT[crypto]** for local RS256 JWT verification (Cognito JWKS)
 - **slowapi** for per-user rate limiting
-- Storage: local JSON files or **AWS S3** (configurable)
 
 ## Project layout
 
@@ -21,19 +21,28 @@ backend/
 │   │   ├── finance/        # Dividend & yield CRUD routes
 │   │   │   ├── router.py
 │   │   │   ├── service.py
-│   │   │   ├── repository.py       # Local file storage
-│   │   │   ├── s3_repository.py    # S3 storage
+│   │   │   ├── repository.py
 │   │   │   └── dependencies.py     # Auth context + repo injection
-│   │   ├── subscription/   # Stripe checkout, portal, webhook
+│   │   ├── users/          # User profile routes
+│   │   ├── depots/         # Portfolio management
+│   │   ├── tickers/        # Ticker management
 │   │   ├── feedback/       # SES feedback email
 │   │   └── monitoring/     # Health check route
-│   ├── auth.py             # JWKS-based JWT verification + is_premium cache
-│   ├── limiter.py          # slowapi rate limiter (per-user key)
-│   ├── config.py           # Pydantic settings
-│   ├── main.py             # App factory, CORS + rate-limit middleware
-│   └── version.py
-├── scripts/
-│   └── entrypoint.sh
+│   ├── core/
+│   │   ├── config.py       # Pydantic settings
+│   │   ├── logging_config.py
+│   │   ├── limiter.py      # slowapi rate limiter (per-user key)
+│   │   └── enums.py
+│   ├── db/
+│   │   ├── models.py       # SQLAlchemy models
+│   │   └── session.py      # Database session
+│   ├── middleware/
+│   │   └── logging.py      # Request logging
+│   └── main.py             # App factory, CORS + rate-limit middleware
+├── tests/
+│   ├── unit/
+│   └── integration/
+├── alembic/                # Database migrations
 ├── Dockerfile
 └── pyproject.toml
 ```
@@ -55,9 +64,11 @@ API docs available at `http://localhost:9002/docs`.
 
 ## Authentication
 
-Every request must include an `Authorization: Bearer <id_token>` header. The ID token is verified locally via Cognito's JWKS endpoint - no AWS call on the hot path. The `is_premium` flag is resolved from the user's S3 settings with a 5-minute TTL cache.
+Every request must include an `Authorization: Bearer <id_token>` header. The ID token is verified locally via Cognito's JWKS endpoint — no AWS call on the hot path.
 
 Returns **503** if `COGNITO_USER_POOL_ID` is not configured, **401** if the token is missing or invalid.
+
+In dev mode (`COGNITO_REGION` unset), the `X-User-Email` header is trusted directly.
 
 ## Rate limiting
 
@@ -69,8 +80,6 @@ Write endpoints are rate-limited per user (keyed by `sub` from the ID token, or 
 | `PUT /api/settings` | 20/min |
 | `DELETE /api/data/{year}/{section}/{key}` | 60/min |
 | `POST /api/feedback` | 5/hour |
-| `POST /api/subscription/checkout` | 10/min |
-| `POST /api/subscription/portal` | 10/min |
 
 Exceeded limits return HTTP 429.
 
@@ -78,7 +87,7 @@ Exceeded limits return HTTP 429.
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/api/years` | required | List years with data (free: current year only) |
+| `GET` | `/api/years` | required | List years with data |
 | `GET` | `/api/data/{year}` | required | Get dividend/yield data for a year |
 | `PUT` | `/api/data/{year}` | required | Save dividend/yield data |
 | `DELETE` | `/api/data` | required | Delete all user data (account deletion) |
@@ -86,9 +95,6 @@ Exceeded limits return HTTP 429.
 | `GET` | `/api/settings` | required | Get user settings |
 | `PUT` | `/api/settings` | required | Save user settings |
 | `POST` | `/api/feedback` | optional | Submit feedback via SES |
-| `POST` | `/api/subscription/checkout` | required | Create Stripe Checkout session |
-| `POST` | `/api/subscription/portal` | required | Create Stripe Billing Portal session |
-| `POST` | `/api/subscription/webhook` | Stripe sig | Stripe event receiver |
 | `GET` | `/monitoring/health` | none | Health check |
 
 `section` must be `dividends` or `yields`.
@@ -99,26 +105,22 @@ All settings are loaded from environment variables and also from `backend/.env` 
 
 | Variable | Default | Description |
 |---|---|---|
-| `ENVIRONMENT` | `local` | `local` or `prod` - controls doc exposure and storage backend |
-| `S3_BUCKET` | `the-yields-data` | S3 bucket name (required when `ENVIRONMENT=prod`) |
+| `ENVIRONMENT` | `local` | `local` or `prod` — controls doc exposure |
+| `DATABASE_URL` | (see .env.example) | PostgreSQL connection string |
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
 | `COGNITO_REGION` | `eu-central-1` | AWS region for Cognito JWKS verification |
-| `COGNITO_USER_POOL_ID` | `` | Cognito User Pool ID - required for auth to function |
-| `STRIPE_SECRET_KEY` | `` | Stripe secret key (`sk_live_...` or `sk_test_...`) |
-| `STRIPE_WEBHOOK_SECRET` | `` | Stripe webhook signing secret (`whsec_...`) |
-| `STRIPE_PRICE_ID_MONTHLY` | `` | Stripe Price ID for monthly plan |
-| `STRIPE_PRICE_ID_YEARLY` | `` | Stripe Price ID for yearly plan |
-| `APP_URL` | `http://localhost:5173` | Public frontend URL (for Stripe redirects) |
+| `COGNITO_USER_POOL_ID` | — | Cognito User Pool ID |
+| `APP_URL` | `http://localhost:5173` | Public frontend URL |
 | `AWS_REGION` | `eu-central-1` | AWS region for SES |
-| `FEEDBACK_TO_EMAIL` | `contact@the-yields.com` | SES recipient for feedback |
-| `FEEDBACK_FROM_EMAIL` | `noreply@the-yields.com` | SES sender for feedback |
-| `FREE_TIER_LIMIT` | `5` | Max tickers/accounts per section for free users |
+| `FEEDBACK_TO_EMAIL` | — | SES recipient for feedback |
+| `FEEDBACK_FROM_EMAIL` | — | SES sender for feedback |
 
 ## Docker
 
 ```bash
 docker build -t the-yields-backend .
-docker run -p 8000:8000 -v $(pwd)/../data:/data \
+docker run -p 8000:8000 \
+  -e DATABASE_URL=postgresql+psycopg://postgres:postgres@host:5432/the_yields \
   -e COGNITO_REGION=eu-central-1 \
   -e COGNITO_USER_POOL_ID=eu-central-1_xxx \
   the-yields-backend

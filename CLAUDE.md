@@ -52,7 +52,7 @@
 ## 8. Feature Branch & PR Required
 
 - **ALWAYS** create a feature branch for new features - never commit directly to `main`
-- Branch naming: `feat/<short-description>` (e.g. `feat/stripe-subscriptions`)
+- Branch naming: `feat/<short-description>` (e.g. `feat/csv-export`)
 - Open a PR from the feature branch into `main` when the feature is complete
 - Bug fixes and chores on `main` are acceptable; new features are not
 
