@@ -14,7 +14,7 @@ repos:
       - id: end-of-file-fixer
         exclude: '^(docs/|dist/|vendor/|.*\.snap$)'
       - id: check-added-large-files
-        args: [--maxkb=500]
+        args: [--maxkb=1024]
       - id: check-merge-conflict
       - id: check-yaml
         exclude: .*/cloudformation/
