@@ -166,23 +166,6 @@
             </ul>
           </div>
 
-          <!-- Service -->
-          <div class="space-y-3 justify-self-center">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.service') }}</h3>
-            <ul class="space-y-2">
-              <li><RouterLink to="/feedback" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.contact') }}</RouterLink></li>
-            </ul>
-          </div>
-
-          <!-- Legal -->
-          <div class="space-y-3 justify-self-center">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.legal') }}</h3>
-            <ul class="space-y-2">
-              <li><RouterLink to="/impressum" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.impressum') }}</RouterLink></li>
-              <li><RouterLink to="/datenschutz" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.datenschutz') }}</RouterLink></li>
-              <li><RouterLink to="/terms" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.terms') }}</RouterLink></li>
-            </ul>
-          </div>
 
         </div>
 
