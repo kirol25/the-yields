@@ -36,8 +36,6 @@ const routes = [
   withLocaleAliases('/yields', () => import('../views/Yields.vue')),
   withLocaleAliases('/profile', () => import('../views/Profile.vue')),
   withLocaleAliases('/settings', () => import('../views/Settings.vue')),
-  withLocaleAliases('/subscriptions', () => import('../views/Subscriptions.vue'), { public: true }),
-  withLocaleAliases('/subscription/success', () => import('../views/SubscriptionSuccess.vue'), { public: true }),
   withLocaleAliases('/impressum', () => import('../views/Impressum.vue'), { public: true }, ['/legal-notice']),
   withLocaleAliases('/datenschutz', () => import('../views/Datenschutz.vue'), { public: true }, ['/privacy-policy']),
 

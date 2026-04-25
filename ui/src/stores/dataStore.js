@@ -12,9 +12,6 @@ export const useDataStore = defineStore('data', () => {
   const allYearsData = ref({})
   const loading = ref(false)
   const initializing = ref(true)
-  const freeTierLimit = ref(5) // fallback until /api/me is fetched
-  const isPremium = ref(false)  // source of truth — read from DB via /api/me
-  const subscriptionPlan = ref(null) // 'monthly' | 'yearly' | null
   let _meFetched = false
 
   function toastError(message, error) {
@@ -30,9 +27,6 @@ export const useDataStore = defineStore('data', () => {
     if (_meFetched) return
     try {
       const { data } = await client.get('/api/me')
-      freeTierLimit.value = data.free_tier_limit
-      isPremium.value = data.is_premium
-      subscriptionPlan.value = data.subscription_plan ?? null
       _meFetched = true
     } catch (e) {
       toastError('Failed to load user context.', e)
@@ -145,9 +139,6 @@ export const useDataStore = defineStore('data', () => {
 
   function initFromData({ me, years: initYears, year_data, current_year, depot_id }) {
     if (me) {
-      freeTierLimit.value = me.free_tier_limit
-      isPremium.value = me.is_premium
-      subscriptionPlan.value = me.subscription_plan ?? null
       _meFetched = true
     }
     const THIS_YEAR = new Date().getFullYear()
@@ -164,5 +155,5 @@ export const useDataStore = defineStore('data', () => {
     initializing.value = false
   }
 
-  return { currentYear, years, yearData, allYearsData, loading, initializing, freeTierLimit, isPremium, subscriptionPlan, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, saveEntryToYear, deleteEntries, initFromData }
+  return { currentYear, years, yearData, allYearsData, loading, initializing, fetchMe, fetchYears, loadYear, loadAllYears, clearYearCache, saveData, saveEntryToYear, deleteEntries, initFromData }
 })

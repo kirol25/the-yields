@@ -40,19 +40,6 @@
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('privacyPage.subscriptionTitle') }}</h2>
-      <p>{{ t('privacyPage.subscriptionBody1') }}</p>
-      <p>{{ t('privacyPage.subscriptionBody2') }}</p>
-      <p>
-        {{ t('privacyPage.subscriptionBody3') }}
-        <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300">
-          stripe.com/privacy
-        </a>.
-      </p>
-      <p>{{ t('privacyPage.subscriptionBody4') }}</p>
-    </section>
-
-    <section class="space-y-3">
       <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium">{{ t('privacyPage.feedbackTitle') }}</h2>
       <p>{{ t('privacyPage.feedbackBody1') }}</p>
       <p>{{ t('privacyPage.feedbackBody2') }}</p>
@@ -63,7 +50,6 @@
       <ul class="space-y-2">
         <li class="flex gap-2"><span class="text-emerald-400 shrink-0">→</span><span>{{ t('privacyPage.processorIonos') }}</span></li>
         <li class="flex gap-2"><span class="text-emerald-400 shrink-0">→</span><span>{{ t('privacyPage.processorAws') }}</span></li>
-        <li class="flex gap-2"><span class="text-emerald-400 shrink-0">→</span><span>{{ t('privacyPage.processorStripe') }}</span></li>
       </ul>
     </section>
 
@@ -78,7 +64,6 @@
         <li><span class="text-gray-300">{{ t('privacyPage.retention1') }}</span></li>
         <li><span class="text-gray-300">{{ t('privacyPage.retention2') }}</span></li>
         <li><span class="text-gray-300">{{ t('privacyPage.retention3') }}</span></li>
-        <li><span class="text-gray-300">{{ t('privacyPage.retention4') }}</span></li>
         <li><span class="text-gray-300">{{ t('privacyPage.retention5') }}</span></li>
       </ul>
     </section>
@@ -126,7 +111,40 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LEGAL, getLegalAddress, getMissingLegalFields } from '../legal.js'
+import { APP_NAME } from '../config.js'
+
+const LEGAL = {
+  appName: APP_NAME,
+  operatorName: '[Your Name]',
+  street: '[Street]',
+  postalCode: '[Postal Code]',
+  city: '[City]',
+  country: 'Deutschland',
+  email: '[your-email@example.com]',
+  lastUpdatedDe: '[Datum]',
+  lastUpdatedEn: '[Date]',
+}
+
+function getLegalAddress(locale) {
+  const de = locale === 'de'
+  return {
+    street: LEGAL.street || (de ? '[Strasse und Hausnummer]' : '[Street and house number]'),
+    cityLine: LEGAL.postalCode && LEGAL.city ? `${LEGAL.postalCode} ${LEGAL.city}` : (de ? '[PLZ] [Ort]' : '[Postal code] [City]'),
+    country: LEGAL.country || (de ? 'Deutschland' : 'Germany'),
+  }
+}
+
+function getMissingLegalFields(locale) {
+  const de = locale === 'de'
+  const fields = [
+    { key: 'street', labelDe: 'Strasse und Hausnummer', labelEn: 'Street and house number' },
+    { key: 'postalCode', labelDe: 'Postleitzahl', labelEn: 'Postal code' },
+    { key: 'city', labelDe: 'Ort', labelEn: 'City' },
+  ]
+  return fields
+    .filter(({ key }) => !String(LEGAL[key] || '').trim() || LEGAL[key].startsWith('['))
+    .map(({ labelDe, labelEn }) => (de ? labelDe : labelEn))
+}
 
 const { t, locale } = useI18n()
 const address = computed(() => getLegalAddress(locale.value))

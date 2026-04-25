@@ -3,7 +3,6 @@
     "dashboard": "Dashboard",
     "dividends": "Dividenden",
     "yields": "Zinsen",
-    "subscriptions": "Abonnement",
     "features": "Features",
     "howItWorks": "So funktioniert's"
   },
@@ -80,17 +79,7 @@
     "confirmDelete": "Sind Sie sicher? Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
     "confirmDeleteBtn": "Ja, Konto l\u00f6schen",
     "deleting": "Wird gel\u00f6scht\u2026",
-    "accountDeletedSuccess": "Ihr Konto wurde gel\u00f6scht.",
-    "planFree": "Kostenlos",
-    "planPremium": "Premium",
-    "upgrade": "Upgraden",
-    "manageSubscription": "Abo verwalten",
-    "reactivate": "Nicht kündigen",
-    "reactivated": "Abo wurde reaktiviert.",
-    "cancelsOn": "endet {date}",
-    "cancelScheduled": "Dein Abo wird am {date} gekündigt. Du behältst bis dahin deinen Zugang.",
-    "cancelConfirm": "Das Abo wird zum Ende der Abrechnungsperiode gekündigt. Du behältst bis dahin deinen Zugang.",
-    "subscriptionActive": "Dein Abo ist aktiv und verlängert sich automatisch."
+    "accountDeletedSuccess": "Ihr Konto wurde gel\u00f6scht."
   },
   "settings": {
     "title": "Einstellungen",
@@ -119,9 +108,6 @@
     "steuerfreibetragDesc": "Dein pers\u00f6nlicher Sparerpauschbetrag (max. 2.000\u202f\u20ac). Sobald deine Dividenden diesen \u00fcberschreiten, wechselt das Diagramm auf Bernstein.",
     "steuerfreibetragPlaceholder": "z.\u202fB. 1000",
     "steuerfreibetragMax": "Der Maximalwert betr\u00e4gt 2.000\u202f\u20ac.",
-    "exportLocked": "CSV-Export ist eine Monats-/Jahresfunktion",
-    "exportLockedDesc": "Upgraden Sie, um Ihre Daten als CSV zu exportieren.",
-    "upgradeBtn": "Upgraden",
     "depots": "Depots",
     "depotsDesc": "Mit Depots kannst du Dividenden und Zinsen für verschiedene Broker oder Konten separat verfolgen.",
     "addDepot": "Depot hinzufügen",
@@ -129,8 +115,7 @@
     "renameDepot": "Depot umbenennen",
     "deleteDepot": "Depot löschen",
     "deleteDepotConfirm": "Depot \"{name}\" und alle zugehörigen Daten löschen? Das kann nicht rückgängig gemacht werden.",
-    "deleting": "Wird gelöscht\u2026",
-    "depotsLocked": "Mehrere Depots sind eine Premium-Funktion."
+    "deleting": "Wird gelöscht\u2026"
   },
   "blade": {
     "account": "Konto",
@@ -155,8 +140,7 @@
     "searchTicker": "Ticker oder Name suchen…",
     "alreadyTracked": "Bereits erfasst",
     "noTickersFound": "Keine Ticker gefunden",
-    "year": "Jahr",
-    "yearPastLocked": "Vergangene Jahre erfordern Premium"
+    "year": "Jahr"
   },
   "months": {
     "01": { "short": "Jan", "label": "Januar" },
@@ -225,79 +209,6 @@
     "disclaimerText": "Diese App dient ausschließlich der persönlichen Finanzverfolgung. Nichts hier stellt eine Finanz- oder Anlageberatung dar.",
     "privacyFirst": "Datenschutzkonform",
     "selfHosted": "Self-hostbar"
-  },
-  "subscriptions": {
-    "title": "Einfaches, transparentes Abonnement",
-    "badge": "Abonnement",
-    "free": {
-      "name": "Kostenlos",
-      "price": "€0",
-      "period": "für immer",
-      "features": [
-        "Dividenden- & Zins-Tracking",
-        "Nur aktuelles Jahr",
-        "Bis zu 5 Ticker & 5 Konten",
-        "Monatliches Diagramm",
-        "1 Broker-Depot"
-      ]
-    },
-    "monthly": {
-      "name": "Monatlich",
-      "price": "€4",
-      "period": "Monat",
-      "features": [
-        "Unbegrenzte Ticker & Konten",
-        "Alle Jahre gespeichert",
-        "Unbegrenzte Broker-Depots",
-        "Quartals-, Jahres- & kumulative Diagramme",
-        "Portfolio-Aufschlüsselung & Heatmap",
-        "Export als CSV"
-      ]
-    },
-    "yearly": {
-      "name": "Jährlich",
-      "price": "€39",
-      "period": "Jahr",
-      "badge": "Bestes Angebot",
-      "features": [
-        "Alles aus Monatlich",
-        "Prioritäts-Support",
-        "2 Monate gratis ggü. monatlich",
-        "Früher Zugang zu neuen Funktionen"
-      ]
-    },
-    "cta": "Loslegen",
-    "ctaFree": "Jetzt registrieren",
-    "ctaPaid": "Zahlungspflichtig bestellen",
-    "currentPlan": "Aktuelles Abo",
-    "redirecting": "Weiterleitung…",
-    "checkoutError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-    "manageSubscription": "Abo verwalten oder kündigen",
-    "cancelSubscription": "Abo kündigen",
-    "cancelConfirm": "Bist du sicher? Du behältst den Zugang bis zum Ende deiner Abrechnungsperiode.",
-    "cancelConfirmBtn": "Ja, kündigen",
-    "cancelAbort": "Abo behalten",
-    "cancelling": "Wird gekündigt…",
-    "cancelledUntil": "Abo gekündigt. Zugang bis {date}.",
-    "cancelError": "Kündigung fehlgeschlagen. Bitte erneut versuchen.",
-    "cancelledGeneric": "Abo erfolgreich gekündigt.",
-    "details": {
-      "title": "Abo-Details",
-      "startedOn": "Gestartet am",
-      "billingInterval": "Abrechnungsintervall",
-      "periodStart": "Aktuelle Periode begann",
-      "nextRenewal": "Nächste Verlängerung",
-      "accessUntil": "Zugang bis",
-      "interval_month": "Monatlich",
-      "interval_year": "Jährlich",
-      "cancelNotice": "Dein Abo wird zum Ende der aktuellen Periode gekündigt.",
-      "unavailable": "Abo-Details sind gerade nicht verfügbar."
-    },
-    "successTitle": "Du bist jetzt Premium!",
-    "successSub": "Dein Abonnement ist aktiv. Alle Premium-Funktionen sind freigeschaltet.",
-    "successCta": "Zum Dashboard",
-    "disclaimer": "Das Abonnement verlängert sich automatisch. Jederzeit ohne Kündigungsfrist in den Kontoeinstellungen oder per E-Mail kündbar. Es gelten unsere",
-    "disclaimerAgb": "Allgemeinen Geschäftsbedingungen"
   },
   "landing": {
     "badge": "Persönlicher Finanz-Tracker",
@@ -382,14 +293,6 @@
     "successSub": "Wir lesen jede Nachricht und melden uns bei Bedarf.",
     "sendAnother": "Weiteres senden"
   },
-  "upsell": {
-    "tickerLimitTitle": "Kostenloses Kontingent erreicht ({n} Ticker / Konten)",
-    "tickerLimitDesc": "Upgrade durchführen, um unbegrenzt Ticker und Sparkonten hinzuzufügen.",
-    "analyticsTitle": "Visuelle Analysen sind eine Premium-Funktion",
-    "analyticsDesc": "Upgrade durchführen, um Quartals-, Jahres- und kumulative Diagramme sowie die Portfolio-Aufschlüsselung freizuschalten.",
-    "upgrade": "Auf Premium upgraden",
-    "limitReached": "Limit erreicht"
-  },
   "terms": {
     "title": "Nutzungsbedingungen",
     "acceptanceTitle": "Akzeptanz der Bedingungen",
@@ -408,7 +311,7 @@
   },
   "legalMeta": {
     "completeBeforeLaunch": "Vor dem Deutschland-Launch noch ergaenzen:",
-    "updateIn": "Pflegen Sie diese Angaben zentral in ui/src/legal.js.",
+    "updateIn": "Pflegen Sie diese Angaben in den jeweiligen View-Dateien.",
     "lastUpdated": "Stand: {date}"
   },
   "legalNoticePage": {
@@ -436,32 +339,25 @@
     "accountBody2": "Fuer die Nutzung der App verarbeiten wir ausserdem die von Ihnen eingegebenen Finanzdaten, Ziele und Einstellungen. Dazu gehoeren insbesondere Dividenden-, Zins-, Jahres-, Ziel- und Praeferenzdaten.",
     "accountBody3": "Die Verarbeitung ist fuer die Erfuellung des Nutzungsvertrags und fuer die sichere Bereitstellung des Dienstes erforderlich und erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b und lit. f DSGVO.",
     "accountBody4": "Amazon Cognito, ein Dienst von Amazon Web Services (AWS), fungiert als unser Auftragsverarbeiter fuer Registrierung und Authentifizierung. Cognito speichert Ihren Namen, Ihre E-Mail-Adresse sowie Datum und Uhrzeit der Registrierung. Diese Daten werden gemaess einem Auftragsverarbeitungsvertrag mit AWS in der Region eu-central-1 (Frankfurt) gespeichert.",
-    "subscriptionTitle": "4. Abonnements und Zahlungen",
-    "subscriptionBody1": "Fuer kostenpflichtige Abonnements nutzen wir Stripe. Dabei verarbeiten wir Ihre E-Mail-Adresse, den gewaelten Tarif sowie technische Kennungen wie Stripe-Kunden- und Abonnement-IDs. Zahlungsdaten werden im Checkout unmittelbar von Stripe verarbeitet.",
-    "subscriptionBody2": "Die Verarbeitung erfolgt zur Vertragsdurchfuehrung und zur Verwaltung wiederkehrender Zahlungen auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO. Soweit Stripe eigene gesetzliche Pflichten, Betrugsvermeidung oder Compliance-Massnahmen erfuellt, verarbeitet Stripe Daten in eigener Verantwortung.",
-    "subscriptionBody3": "Weitere Informationen finden Sie unter",
-    "subscriptionBody4": "Stripe verarbeitet Zahlungsmitteldaten (z. B. Kartennummer, Ablaufdatum, CVC), Rechnungsname und -adresse, Transaktionsbetraege, Waehrung sowie Abonnementstatus. Fuer eigene regulatorische Pflichten, Betrugsvorsorge und Buchhaltung handelt Stripe als eigenstaendiger Verantwortlicher. Stripe kann personenbezogene Daten auf Grundlage von Standardvertragsklauseln in die USA uebermitteln.",
-    "feedbackTitle": "5. Kontaktaufnahme und Feedback",
+    "feedbackTitle": "4. Kontaktaufnahme und Feedback",
     "feedbackBody1": "Wenn Sie uns ueber das Feedback-Formular kontaktieren, verarbeiten wir Ihre Nachricht sowie optional Ihre E-Mail-Adresse bzw. Antwortadresse. Der Versand erfolgt ueber Amazon SES.",
     "feedbackBody2": "Die Verarbeitung erfolgt zur Bearbeitung Ihrer Anfrage und zur Verbesserung des Dienstes auf Grundlage von Art. 6 Abs. 1 lit. b oder lit. f DSGVO.",
-    "processorsTitle": "6. Eingesetzte Empfaenger und Auftragsverarbeiter",
+    "processorsTitle": "5. Eingesetzte Empfaenger und Auftragsverarbeiter",
     "processorIonos": "IONOS SE fuer das Hosting des Anwendungsservers in Deutschland.",
     "processorAws": "Amazon Web Services fuer Amazon Cognito, Amazon S3 und Amazon SES, in dieser Anwendung laut Konfiguration mit Region eu-central-1.",
-    "processorStripe": "Stripe fuer Checkout, Abonnementverwaltung und Zahlungsabwicklung.",
-    "transfersTitle": "7. Drittlanduebermittlungen",
-    "transfersBody": "Der IONOS-Server wird in Deutschland betrieben. AWS und Stripe koennen Daten auch ausserhalb der EU bzw. des EWR verarbeiten. Soweit dabei personenbezogene Daten in Drittlaender uebermittelt werden, erfolgt dies auf Grundlage eines Angemessenheitsbeschlusses oder geeigneter Garantien, insbesondere Standardvertragsklauseln.",
-    "retentionTitle": "8. Speicherdauer",
+    "transfersTitle": "6. Drittlanduebermittlungen",
+    "transfersBody": "Der IONOS-Server wird in Deutschland betrieben. AWS kann Daten auch ausserhalb der EU bzw. des EWR verarbeiten. Soweit dabei personenbezogene Daten in Drittlaender uebermittelt werden, erfolgt dies auf Grundlage eines Angemessenheitsbeschlusses oder geeigneter Garantien, insbesondere Standardvertragsklauseln.",
+    "retentionTitle": "7. Speicherdauer",
     "retention1": "Kontodaten und App-Daten speichern wir bis zur Loeschung Ihres Kontos bzw. bis Sie Inhalte selbst entfernen.",
     "retention2": "Server-Logdaten speichern wir nur solange, wie dies fuer den technischen Betrieb, die Sicherheit und die Missbrauchserkennung erforderlich ist.",
     "retention3": "Feedback-Nachrichten speichern wir, bis die Bearbeitung abgeschlossen ist und keine gesetzlichen Aufbewahrungspflichten mehr bestehen.",
-    "retention4": "Abrechnungs- und Zahlungsdaten werden vor allem durch Stripe nach den dortigen Aufbewahrungsfristen verarbeitet.",
     "retention5": "Lokal im Browser gespeicherte Daten bleiben gespeichert, bis Sie sie selbst loeschen oder Ihr Browser sie entfernt.",
-    "storageTitle": "9. Cookies, localStorage und sessionStorage",
+    "storageTitle": "8. Cookies, localStorage und sessionStorage",
     "storageBody1": "Diese Anwendung verwendet keine Analyse-, Marketing- oder Tracking-Cookies. Es werden nur technisch erforderliche Speichertechnologien eingesetzt.",
     "storageItem1": "sessionStorage fuer access_token, id_token, refresh_token und pending_email.",
     "storageItem2": "localStorage fuer yield-settings, last_year und einen Dismiss-Status fuer den Speicherhinweis.",
     "storageBody2": "Soweit fuer diese Speicherzugriffe eine Regelung nach § 25 TDDDG einschlaegig ist, stuetzen wir sie auf § 25 Abs. 2 Nr. 2 TDDDG, weil sie fuer die Bereitstellung des ausdruecklich gewuenschten Telemediendienstes erforderlich sind.",
-    "rightsTitle": "10. Ihre Rechte",
+    "rightsTitle": "9. Ihre Rechte",
     "rights1": "Auskunft nach Art. 15 DSGVO",
     "rights2": "Berichtigung nach Art. 16 DSGVO",
     "rights3": "Loeschung nach Art. 17 DSGVO",
@@ -470,34 +366,31 @@
     "rights6": "Widerspruch gegen Verarbeitungen nach Art. 21 DSGVO",
     "rights7": "Beschwerde bei einer Datenschutzaufsichtsbehoerde nach Art. 77 DSGVO",
     "rightsBody": "Zur Wahrnehmung Ihrer Rechte reicht eine formlose Nachricht an",
-    "objectionTitle": "11. Widerspruchsrecht",
+    "objectionTitle": "10. Widerspruchsrecht",
     "objectionBody": "Soweit wir Daten auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO verarbeiten, koennen Sie aus Gruenden, die sich aus Ihrer besonderen Situation ergeben, Widerspruch gegen diese Verarbeitung einlegen."
   },
   "termsPage": {
     "title": "Nutzungsbedingungen",
     "scopeTitle": "1. Anbieter und Geltungsbereich",
-    "scopeBody": "{appName} wird von {operatorName} angeboten. Diese Nutzungsbedingungen gelten fuer die Website, die Web-App sowie fuer damit verbundene Funktionen wie Registrierung, Authentifizierung, Datenspeicherung und kostenpflichtige Abonnements.",
+    "scopeBody": "{appName} wird von {operatorName} angeboten. Diese Nutzungsbedingungen gelten fuer die Website, die Web-App sowie fuer damit verbundene Funktionen wie Registrierung, Authentifizierung und Datenspeicherung.",
     "accountTitle": "2. Registrierung und Konto",
     "accountBody": "Fuer die Nutzung geschuetzter Bereiche ist ein Benutzerkonto erforderlich. Sie muessen bei der Registrierung wahrheitsgemaesse Angaben machen und Ihre Zugangsdaten vertraulich behandeln. Sie sind fuer alle Aktivitaeten verantwortlich, die ueber Ihr Konto erfolgen, soweit Sie diese zu vertreten haben.",
     "serviceTitle": "3. Leistungsbeschreibung",
-    "serviceBody": "{appName} dient der persoenlichen Erfassung, Auswertung und Visualisierung von Dividenden-, Zins- und Ziel-Daten. Der konkrete Funktionsumfang richtet sich nach dem jeweils auf der Website dargestellten Leistungsstand sowie nach dem gewaehlten Free- oder Premium-Tarif.",
-    "subscriptionTitle": "4. Kostenpflichtige Abonnements",
-    "subscriptionBody1": "Kostenpflichtige Plaene werden ueber Stripe abgewickelt. Die jeweils verbindlichen Preise, Abrechnungsintervalle und Leistungsmerkmale werden Ihnen vor Abschluss des Bestellvorgangs angezeigt.",
-    "subscriptionBody2": "Sofern im Checkout nicht anders angegeben, handelt es sich bei Premium-Plaenen um fortlaufende Abonnements, die sich nach Ablauf des gebuchten Zeitraums automatisch verlaengern. Sie koennen Ihr Abonnement ueber das bereitgestellte Stripe-Kundenportal kuendigen; die Beendigung wirkt zum Ende des laufenden Abrechnungszeitraums.",
-    "permittedTitle": "5. Zulaessige Nutzung",
+    "serviceBody": "{appName} dient der persoenlichen Erfassung, Auswertung und Visualisierung von Dividenden-, Zins- und Ziel-Daten. Der konkrete Funktionsumfang richtet sich nach dem jeweils auf der Website dargestellten Leistungsstand.",
+    "permittedTitle": "4. Zulaessige Nutzung",
     "permittedBody": "Sie duerfen den Dienst nur im Rahmen der geltenden Gesetze und dieser Bedingungen nutzen. Untersagt sind insbesondere missbraeuchliche Zugriffe, die Umgehung technischer Schutzmassnahmen, die Stoerung des Betriebs, automatisierte Massenzugriffe ohne Zustimmung sowie das Einstellen rechtswidriger Inhalte.",
-    "noAdviceTitle": "6. Keine Finanz-, Steuer- oder Rechtsberatung",
+    "noAdviceTitle": "5. Keine Finanz-, Steuer- oder Rechtsberatung",
     "noAdviceBody": "{appName} stellt ausschliesslich technische Werkzeuge zur persoenlichen Finanzverfolgung bereit. Inhalte, Kennzahlen, Diagramme und Auswertungen sind keine Finanz-, Anlage-, Steuer- oder Rechtsberatung und ersetzen keine professionelle Beratung.",
-    "availabilityTitle": "7. Verfuegbarkeit und Aenderungen",
+    "availabilityTitle": "6. Verfuegbarkeit und Aenderungen",
     "availabilityBody": "Wir bemuehen uns um eine moeglichst stoerungsfreie Verfuegbarkeit, schulden jedoch keine jederzeit ununterbrochene Erreichbarkeit. Wir duerfen den Dienst aus sachlichen Gruenden weiterentwickeln, anpassen oder einzelne Funktionen veraendern, sofern dadurch wesentliche Vertragspflichten gegenueber Verbrauchern nicht unzumutbar beeintraechtigt werden.",
-    "liabilityTitle": "8. Haftung",
+    "liabilityTitle": "7. Haftung",
     "liabilityBody": "Wir haften unbeschraenkt bei Vorsatz und grober Fahrlaessigkeit sowie bei Verletzung von Leben, Koerper oder Gesundheit. Bei leicht fahrlaessiger Verletzung wesentlicher Vertragspflichten haften wir nur auf den vertragstypischen, vorhersehbaren Schaden. Zwingende gesetzliche Haftungsvorschriften, insbesondere nach dem Produkthaftungsgesetz, bleiben unberuehrt.",
-    "terminationTitle": "9. Laufzeit und Beendigung",
+    "terminationTitle": "8. Laufzeit und Beendigung",
     "terminationBody": "Sie koennen Ihr Konto jederzeit loeschen. Wir duerfen Konten aus wichtigem Grund sperren oder kuendigen, insbesondere bei schwerwiegenden Verstoessen gegen diese Nutzungsbedingungen oder bei rechtswidriger Nutzung. Bereits entstandene Zahlungsansprueche bleiben hiervon unberuehrt.",
-    "privacyTitle": "10. Datenschutz",
+    "privacyTitle": "9. Datenschutz",
     "privacyBody": "Informationen zur Verarbeitung personenbezogener Daten finden Sie in der",
     "privacyLink": "Datenschutzerklaerung",
-    "lawTitle": "11. Anwendbares Recht",
+    "lawTitle": "10. Anwendbares Recht",
     "lawBody": "Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts. Gegenueber Verbrauchern gilt diese Rechtswahl nur, soweit hierdurch der Schutz zwingender Vorschriften des Staates ihres gewoehnlichen Aufenthalts nicht entzogen wird."
   }
 }

@@ -40,63 +40,43 @@
 
         <div class="border-t border-gray-800 my-1" />
 
-        <!-- Premium: inline add form -->
-        <template v-if="isPremium">
-          <div v-if="!addingDepot" class="px-4 py-1.5">
-            <button
-              @click.stop="addingDepot = true"
-              class="text-sm text-emerald-500 hover:text-emerald-400 transition-colors"
-            >
-              + {{ t('settings.addDepot') }}
-            </button>
-          </div>
-          <div v-else class="px-3 py-2 flex items-center gap-1.5" @click.stop>
-            <input
-              ref="nameInput"
-              v-model="newDepotName"
-              :placeholder="t('settings.depotNamePlaceholder')"
-              @keydown.enter="createDepot"
-              @keydown.escape="cancelAdd"
-              class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            />
-            <button
-              @click="createDepot"
-              :disabled="!newDepotName.trim() || creating"
-              class="shrink-0 text-emerald-400 hover:text-emerald-300 disabled:opacity-40 transition-colors"
-              title="Save"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            </button>
-            <button
-              @click="cancelAdd"
-              class="shrink-0 text-gray-500 hover:text-gray-300 transition-colors"
-              title="Cancel"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </template>
-
-        <!-- Free tier: locked -->
-        <template v-else>
-          <div class="px-4 py-1.5 flex items-center gap-1.5">
-            <svg class="w-3 h-3 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        <div v-if="!addingDepot" class="px-4 py-1.5">
+          <button
+            @click.stop="addingDepot = true"
+            class="text-sm text-emerald-500 hover:text-emerald-400 transition-colors"
+          >
+            + {{ t('settings.addDepot') }}
+          </button>
+        </div>
+        <div v-else class="px-3 py-2 flex items-center gap-1.5" @click.stop>
+          <input
+            ref="nameInput"
+            v-model="newDepotName"
+            :placeholder="t('settings.depotNamePlaceholder')"
+            @keydown.enter="createDepot"
+            @keydown.escape="cancelAdd"
+            class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-md px-2 py-1 text-xs text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          />
+          <button
+            @click="createDepot"
+            :disabled="!newDepotName.trim() || creating"
+            class="shrink-0 text-emerald-400 hover:text-emerald-300 disabled:opacity-40 transition-colors"
+            title="Save"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
             </svg>
-            <RouterLink
-              to="/subscriptions"
-              @click="close"
-              class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              {{ t('settings.upgradeBtn') }} →
-            </RouterLink>
-          </div>
-        </template>
+          </button>
+          <button
+            @click="cancelAdd"
+            class="shrink-0 text-gray-500 hover:text-gray-300 transition-colors"
+            title="Cancel"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </Teleport>
   </div>
@@ -107,12 +87,10 @@ import { ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDepotStore } from '../stores/depotStore.js'
 import { useDataStore } from '../stores/dataStore.js'
-import { useSubscription } from '../composables/useSubscription.js'
 
 const { t } = useI18n()
 const depotStore = useDepotStore()
 const dataStore = useDataStore()
-const { isPremium } = useSubscription()
 
 const open = ref(false)
 const container = ref(null)

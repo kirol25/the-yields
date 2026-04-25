@@ -26,7 +26,7 @@
           <!-- Year picker -->
           <div>
             <label class="block text-xs font-medium text-gray-400 mb-1.5">{{ t('modal.year') }}</label>
-            <div v-if="isPremium" class="relative">
+            <div class="relative">
               <select
                 v-model.number="selectedYear"
                 class="w-full appearance-none bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-100 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
@@ -36,26 +36,6 @@
               <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <polyline points="6 9 12 15 18 9"/>
               </svg>
-            </div>
-            <div v-else class="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5">
-              <span class="text-sm text-gray-100">{{ THIS_YEAR }}</span>
-              <RouterLink to="/subscriptions" @click="$emit('close')" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
-                {{ t('modal.yearPastLocked') }} →
-              </RouterLink>
-            </div>
-          </div>
-
-          <!-- Free-tier limit banner (yields only — dividends have no "add new" concept) -->
-          <div v-if="props.type === 'yield' && atLimit && selectedKey === '__new__'" class="flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
-            <svg class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-            </svg>
-            <div class="min-w-0">
-              <p class="text-xs font-medium text-amber-400">{{ t('upsell.tickerLimitTitle', { n: store.freeTierLimit }) }}</p>
-              <p class="text-xs text-amber-300/70 mt-0.5">{{ t('upsell.tickerLimitDesc') }}</p>
-              <RouterLink to="/subscriptions" @click="$emit('close')" class="inline-block mt-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
-                {{ t('upsell.upgrade') }} →
-              </RouterLink>
             </div>
           </div>
 
@@ -169,14 +149,13 @@
                 <div v-if="resolvedExistingKeys.length" class="border-t border-gray-800 my-1" />
                 <button
                   type="button"
-                  :disabled="atLimit"
-                  @click="!atLimit && (selectedKey = '__new__', keyOpen = false)"
+                  @click="selectedKey = '__new__'; keyOpen = false"
                   :class="[
                     'w-full px-3 py-2 text-sm text-left transition-colors',
-                    atLimit ? 'text-gray-600 cursor-not-allowed' : selectedKey === '__new__' ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-500 hover:bg-gray-800',
+                    selectedKey === '__new__' ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-500 hover:bg-gray-800',
                   ]"
                 >
-                  {{ t('modal.addNew') }}{{ atLimit ? ` (${t('upsell.limitReached')})` : '' }}
+                  {{ t('modal.addNew') }}
                 </button>
               </div>
             </div>
@@ -256,12 +235,10 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDataStore } from '../stores/dataStore.js'
 import { useMonths } from '../composables/useMonths.js'
-import { useSubscription } from '../composables/useSubscription.js'
 import client from '../api/client.js'
 
 const { t } = useI18n()
 const { months } = useMonths()
-const { isPremium } = useSubscription()
 
 const props = defineProps({
   type: { type: String, required: true }, // 'dividend' | 'yield'
@@ -287,10 +264,6 @@ const resolvedExistingKeys = computed(() => {
   return Object.keys(data[props.type === 'dividend' ? 'dividends' : 'yields'] || {})
 })
 
-// Free users cannot add more accounts than the server-defined limit (yields only)
-const atLimit = computed(
-  () => !isPremium.value && resolvedExistingKeys.value.length >= store.freeTierLimit,
-)
 
 // Tickers reference list (dividends only)
 const allTickers = ref([])
@@ -329,7 +302,7 @@ function tickerName(symbol) {
 const selectedKey = ref(
   props.type === 'dividend'
     ? (resolvedExistingKeys.value[0] ?? '')
-    : (atLimit.value ? '__new__' : (resolvedExistingKeys.value[0] ?? '__new__')),
+    : (resolvedExistingKeys.value[0] ?? '__new__'),
 )
 const keyOpen = ref(false)
 const newKey = ref('') // yield "Add New" account name only
@@ -342,18 +315,11 @@ const resolvedKey = computed(() =>
     : selectedKey.value,
 )
 
-const isAddingNew = computed(() =>
-  props.type === 'yield'
-    ? selectedKey.value === '__new__'
-    : !props.existingKeys.includes(selectedKey.value),
-)
-
 const canSubmit = computed(
   () =>
     resolvedKey.value &&
     amount.value != null &&
-    amount.value >= 0 &&
-    !(props.type === 'yield' && atLimit.value && isAddingNew.value),
+    amount.value >= 0,
 )
 
 async function submit() {

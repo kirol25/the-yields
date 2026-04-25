@@ -134,98 +134,6 @@
       </div>
     </section>
 
-    <!-- ── Subscription plans ────────────────────────────────────────────────── -->
-    <section id="subscription" class="py-24 bg-gray-900/40 border-y border-gray-800">
-      <div class="max-w-5xl mx-auto px-6">
-        <div class="text-center mb-12">
-          <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 rounded-full mb-4">
-            {{ t('subscriptions.badge') }}
-          </span>
-          <h2 class="text-2xl font-bold text-gray-100">{{ t('subscriptions.title') }}</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Free -->
-          <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col transition-all duration-300 hover:border-gray-600 hover:shadow-[0_0_24px_rgba(156,163,175,0.12)]">
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold text-gray-100 mb-1">{{ t('subscriptions.free.name') }}</h3>
-              <div class="flex items-baseline gap-1">
-                <span class="text-3xl font-bold text-gray-100">{{ t('subscriptions.free.price') }}</span>
-                <span class="text-sm text-gray-500">/ {{ t('subscriptions.free.period') }}</span>
-              </div>
-            </div>
-            <ul class="space-y-3 flex-1 mb-8">
-              <li v-for="feature in tm('subscriptions.free.features')" :key="feature" class="flex items-start gap-2 text-sm text-gray-400">
-                <span class="text-emerald-500 mt-0.5 shrink-0">✓</span>
-                {{ feature }}
-              </li>
-            </ul>
-            <RouterLink
-              to="/register"
-              class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block"
-            >
-              {{ t('subscriptions.ctaFree') }}
-            </RouterLink>
-          </div>
-
-          <!-- Monthly -->
-          <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_28px_rgba(52,211,153,0.12)]">
-            <div class="mb-6">
-              <h3 class="text-lg font-semibold text-gray-100 mb-1">{{ t('subscriptions.monthly.name') }}</h3>
-              <div class="flex items-baseline gap-1">
-                <span class="text-3xl font-bold text-gray-100">{{ t('subscriptions.monthly.price') }}</span>
-                <span class="text-sm text-gray-500">/ {{ t('subscriptions.monthly.period') }}</span>
-              </div>
-            </div>
-            <ul class="space-y-3 flex-1 mb-8">
-              <li v-for="feature in tm('subscriptions.monthly.features')" :key="feature" class="flex items-start gap-2 text-sm text-gray-400">
-                <span class="text-emerald-500 mt-0.5 shrink-0">✓</span>
-                {{ feature }}
-              </li>
-            </ul>
-            <RouterLink
-              to="/register"
-              class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block"
-            >
-              {{ t('subscriptions.ctaPaid') }}
-            </RouterLink>
-          </div>
-
-          <!-- Yearly (highlighted) -->
-          <div class="bg-gray-900 border-2 border-emerald-500/50 rounded-xl p-6 flex flex-col transition-all duration-300 hover:border-emerald-400/80 hover:shadow-[0_0_36px_rgba(52,211,153,0.22)]">
-            <div class="mb-6">
-              <div class="flex items-center justify-between mb-1">
-                <h3 class="text-lg font-semibold text-gray-100">{{ t('subscriptions.yearly.name') }}</h3>
-                <span class="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-400/10 rounded-full">
-                  {{ t('subscriptions.yearly.badge') }}
-                </span>
-              </div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-3xl font-bold text-gray-100">{{ t('subscriptions.yearly.price') }}</span>
-                <span class="text-sm text-gray-500">/ {{ t('subscriptions.yearly.period') }}</span>
-              </div>
-            </div>
-            <ul class="space-y-3 flex-1 mb-8">
-              <li v-for="feature in tm('subscriptions.yearly.features')" :key="feature" class="flex items-start gap-2 text-sm text-gray-400">
-                <span class="text-emerald-500 mt-0.5 shrink-0">✓</span>
-                {{ feature }}
-              </li>
-            </ul>
-            <RouterLink
-              to="/register"
-              class="w-full py-2.5 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors text-center block border border-transparent"
-            >
-              {{ t('subscriptions.ctaPaid') }}
-            </RouterLink>
-          </div>
-        </div>
-        <p class="mt-8 pt-6 border-t border-gray-800 text-center text-xs text-gray-500">
-          {{ t('subscriptions.disclaimer') }}
-          <RouterLink to="/terms" class="underline underline-offset-2 hover:text-gray-300 transition-colors">{{ t('subscriptions.disclaimerAgb') }}</RouterLink>.
-        </p>
-      </div>
-    </section>
-
     <!-- ── CTA ───────────────────────────────────────────────────────────────── -->
     <section class="py-24 border-t border-gray-800">
       <div class="max-w-xl mx-auto px-6 text-center space-y-6">
@@ -251,7 +159,7 @@ import { computed } from 'vue'
 const currentYear = new Date().getFullYear()
 import { useI18n } from 'vue-i18n'
 
-const { t, tm } = useI18n()
+const { t } = useI18n()
 
 const mockBars = [
   { month: 'Jan', div: 12, yield: 20 },

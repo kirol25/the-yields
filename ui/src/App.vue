@@ -30,14 +30,6 @@
           >
             {{ t('nav.yields') }}
           </RouterLink>
-          <RouterLink
-            v-if="!isPremium"
-            to="/subscriptions"
-            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors hover:bg-gray-800 hover:text-emerald-400"
-            :class="normalizedPath === '/subscriptions' ? 'text-emerald-400' : 'text-gray-400'"
-          >
-            {{ t('nav.subscriptions') }}
-          </RouterLink>
           <button
             @click="bladeOpen = true"
             class="w-8 h-8 rounded-full bg-emerald-600/20 border border-emerald-500/50 flex items-center justify-center text-xs font-bold text-emerald-400 hover:bg-emerald-600/30 transition-colors select-none"
@@ -60,12 +52,6 @@
             class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
           >
             {{ t('nav.howItWorks') }}
-          </button>
-          <button
-            @click="scrollToSection('subscription')"
-            class="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-gray-100 hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            {{ t('nav.subscriptions') }}
           </button>
           <RouterLink
             to="/login"
@@ -119,7 +105,6 @@
                 { to: '/dashboard', label: t('nav.dashboard') },
                 { to: '/dividends', label: t('nav.dividends') },
                 { to: '/yields', label: t('nav.yields') },
-                ...(!isPremium ? [{ to: '/subscriptions', label: t('nav.subscriptions') }] : []),
               ]"
               :key="link.to"
               :to="link.to"
@@ -143,14 +128,6 @@
             >
               {{ t('nav.howItWorks') }}
             </button>
-            <RouterLink
-              to="/subscriptions"
-              @click="closeMobileMenu"
-              class="block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
-              :class="normalizedPath === '/subscriptions' ? 'bg-gray-800 text-emerald-400' : 'text-gray-400 hover:bg-gray-800 hover:text-gray-100'"
-            >
-              {{ t('nav.subscriptions') }}
-            </RouterLink>
             <RouterLink
               to="/login"
               @click="closeMobileMenu"
@@ -194,7 +171,6 @@
             <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ t('footer.service') }}</h3>
             <ul class="space-y-2">
               <li><RouterLink to="/feedback" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('footer.contact') }}</RouterLink></li>
-              <li><RouterLink to="/subscriptions" class="text-sm text-gray-400 hover:text-gray-200 transition-colors">{{ t('nav.subscriptions') }}</RouterLink></li>
             </ul>
           </div>
 
@@ -256,7 +232,6 @@ import { useDataStore } from './stores/dataStore.js'
 import { useDepotStore } from './stores/depotStore.js'
 import { useSettingsStore } from './stores/settingsStore.js'
 import { useAuthStore } from './stores/authStore.js'
-import { useSubscription } from './composables/useSubscription.js'
 import client from './api/client.js'
 import ProfileBlade from './components/ProfileBlade.vue'
 import ToastContainer from './components/ToastContainer.vue'
@@ -269,7 +244,6 @@ const store = useDataStore()
 const depotStore = useDepotStore()
 const settings = useSettingsStore()
 const auth = useAuthStore()
-const { isPremium } = useSubscription()
 const bladeOpen = ref(false)
 const mobileMenuOpen = ref(false)
 
