@@ -1,5 +1,8 @@
 # The Yields
 
+[![CI](https://github.com/kirol25/the-yields/actions/workflows/ci.yml/badge.svg)](https://github.com/kirol25/the-yields/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A self-hosted personal finance tracker for dividends and investment yields. Track your dividend income, monitor yields across accounts, and visualize your portfolio performance over time.
 
 ![The Yields Dashboard](docs/the-yields.png)
