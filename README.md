@@ -2,6 +2,8 @@
 
 A self-hosted personal finance tracker for dividends and investment yields. Track your dividend income, monitor yields across accounts, and visualize your portfolio performance over time.
 
+![The Yields Dashboard](docs/the-yields.png)
+
 ## Features
 
 - **Dividend tracking** — log dividend payments per ticker, per month
