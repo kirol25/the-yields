@@ -4,9 +4,24 @@ import { i18n } from '../i18n.js'
 import { useToastStore } from './toastStore.js'
 import { useSettingsStore } from './settingsStore.js'
 import client from '../api/client.js'
-import { REGION } from '../config.js'
+import { REGION, IS_LOCAL_AUTH } from '../config.js'
 
 const CLIENT_ID = import.meta.env.VITE_COGNITO_CLIENT_ID
+
+// Build an unsigned JWT for local-dev auth bypass. The backend, when
+// AUTH_MODE=local, ignores the token entirely, so the signature is irrelevant.
+function makeLocalToken() {
+  const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }))
+  const payload = btoa(
+    JSON.stringify({
+      sub: 'local-dev-user',
+      email: 'dev@example.com',
+      preferred_username: 'Local Dev',
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 365,
+    }),
+  )
+  return `${header}.${payload}.`
+}
 
 function parseIdToken(token) {
   try {
@@ -68,6 +83,14 @@ export const useAuthStore = defineStore('auth', () => {
   const idToken = ref(sessionStorage.getItem('id_token'))
   const refreshToken = ref(sessionStorage.getItem('refresh_token'))
   const pendingEmail = ref(sessionStorage.getItem('pending_email') ?? '')
+
+  if (IS_LOCAL_AUTH && !accessToken.value) {
+    const fake = makeLocalToken()
+    accessToken.value = fake
+    idToken.value = fake
+    sessionStorage.setItem('access_token', fake)
+    sessionStorage.setItem('id_token', fake)
+  }
 
   let _refreshTimer = null
 
@@ -282,6 +305,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
+    if (IS_LOCAL_AUTH) {
+      // No real session to revoke; keep the user signed in as the local dev user.
+      return
+    }
     try {
       if (accessToken.value) {
         await cognitoRequest('GlobalSignOut', { AccessToken: accessToken.value })

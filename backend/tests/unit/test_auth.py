@@ -7,6 +7,7 @@ from fastapi import HTTPException  # noqa: F401
 
 from app.api.finance.dependencies import get_auth_context
 from app.core.config import BACKEND_ROOT
+from app.core.enums import AuthMode
 
 # ---------------------------------------------------------------------------
 # Config
@@ -23,9 +24,17 @@ def test_backend_root_points_to_backend_dir():
 # ---------------------------------------------------------------------------
 
 
-def _settings(cognito_user_pool_id: str = "eu-central-1_TestPool"):
+def _settings(
+    cognito_user_pool_id: str = "eu-central-1_TestPool",
+    auth_mode: AuthMode = AuthMode.COGNITO,
+    local_auth_sub: str = "local-dev-user",
+    local_auth_email: str = "dev@example.com",
+):
     s = MagicMock()
     s.COGNITO_USER_POOL_ID = cognito_user_pool_id
+    s.AUTH_MODE = auth_mode
+    s.LOCAL_AUTH_SUB = local_auth_sub
+    s.LOCAL_AUTH_EMAIL = local_auth_email
     return s
 
 
@@ -44,6 +53,47 @@ class TestUnconfigured:
         with pytest.raises(HTTPException) as exc:
             _call_auth(settings_obj=_settings(cognito_user_pool_id=""))
         assert exc.value.status_code == 503
+
+
+# ---------------------------------------------------------------------------
+# AUTH_MODE=local -> returns a fixed dev user, ignores token
+# ---------------------------------------------------------------------------
+
+
+class TestLocalAuthMode:
+    def test_local_mode_returns_dev_user_without_token(self):
+        ctx = _call_auth(
+            authorization=None,
+            settings_obj=_settings(auth_mode=AuthMode.LOCAL),
+        )
+        assert ctx == {"sub": "local-dev-user", "email": "dev@example.com"}
+
+    def test_local_mode_ignores_provided_token(self):
+        ctx = _call_auth(
+            authorization="Bearer junk.not.a.real.token",
+            settings_obj=_settings(auth_mode=AuthMode.LOCAL),
+        )
+        assert ctx == {"sub": "local-dev-user", "email": "dev@example.com"}
+
+    def test_local_mode_uses_configured_identity(self):
+        ctx = _call_auth(
+            settings_obj=_settings(
+                auth_mode=AuthMode.LOCAL,
+                local_auth_sub="custom-sub",
+                local_auth_email="custom@example.com",
+            ),
+        )
+        assert ctx == {"sub": "custom-sub", "email": "custom@example.com"}
+
+    def test_local_mode_does_not_require_cognito_config(self):
+        # Empty COGNITO_USER_POOL_ID would 503 in cognito mode; local mode bypasses.
+        ctx = _call_auth(
+            settings_obj=_settings(
+                cognito_user_pool_id="",
+                auth_mode=AuthMode.LOCAL,
+            ),
+        )
+        assert ctx["sub"] == "local-dev-user"
 
 
 # ---------------------------------------------------------------------------

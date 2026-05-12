@@ -1,5 +1,7 @@
 // ── Backend ────────────────────────────────────────────────────────────
-export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
+// Use `||` (not `??`) so that an empty-string build arg falls through to the
+// default — Vite's `define` substitution turns missing values into "".
+export const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
 export const APP_NAME = 'the-yields'
 
 // The AWS region for Cognito authentication
@@ -7,6 +9,11 @@ export const REGION='eu-central-1'
 
 // ── Feature flags ────────────────────────────────────────────────────────────
 export const REGISTRATION_ENABLED = import.meta.env.VITE_REGISTRATION_ENABLED === 'true'
+
+// 'local' bypasses Cognito and auto-logs-in with a fake user — must match
+// AUTH_MODE on the backend. Use only for local development.
+export const AUTH_MODE = (import.meta.env.VITE_AUTH_MODE ?? 'cognito').toLowerCase()
+export const IS_LOCAL_AUTH = AUTH_MODE === 'local'
 
 // ── Brand colours ────────────────────────────────────────────────────────────
 // These are the Tailwind CSS custom property values used across the app.

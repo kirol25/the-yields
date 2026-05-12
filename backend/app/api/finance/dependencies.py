@@ -9,6 +9,7 @@ from app.api.auth import verify_token
 from app.api.finance.repository import YieldRepository
 from app.api.finance.service import YieldService
 from app.core import settings
+from app.core.enums import AuthMode
 from app.db.session import get_db
 
 
@@ -17,8 +18,13 @@ def get_auth_context(
 ) -> dict:
     """Verify the ID token and return context with email and sub.
 
-    Raises 503 if Cognito is not configured, 401 if the token is missing or invalid.
+    When ``AUTH_MODE=local`` the token is ignored and a fixed dev user is
+    returned, so new contributors can `docker compose up` without setting up
+    Cognito. Otherwise raises 503 if Cognito is not configured, 401 if the
+    token is missing or invalid.
     """
+    if settings.AUTH_MODE == AuthMode.LOCAL:
+        return {"sub": settings.LOCAL_AUTH_SUB, "email": settings.LOCAL_AUTH_EMAIL}
     if not settings.COGNITO_USER_POOL_ID:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

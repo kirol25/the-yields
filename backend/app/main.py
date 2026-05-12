@@ -11,6 +11,7 @@ from slowapi.errors import RateLimitExceeded
 from app.api import router
 from app.core import settings
 from app.core.config import description
+from app.core.enums import AuthMode
 from app.core.limiter import limiter
 from app.core.logging_config import configure_logging
 from app.middleware.logging import RequestLoggingMiddleware
@@ -22,18 +23,22 @@ configure_logging()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from app.core.logging_config import logger
+
+    if settings.AUTH_MODE == AuthMode.LOCAL:
+        logger.warning("auth_mode_local", message="JWT verification disabled")
+        yield
+        return
+
     # Pre-warm the Cognito JWKS client so the first real request
     # doesn't pay the network round-trip cost of fetching signing keys.
     try:
         from app.api.auth import _get_jwks_client
-        from app.core.logging_config import logger
 
         client = _get_jwks_client()
         client.fetch_data()
         logger.info("jwks_prewarm_ok")
     except Exception as exc:
-        from app.core.logging_config import logger
-
         logger.warning("jwks_prewarm_failed", error=str(exc))
     yield
 

@@ -4,7 +4,7 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.core.enums import Environment
+from app.core.enums import AuthMode, Environment
 
 BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
@@ -30,6 +30,24 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = Field(
         "http://localhost:5173",
         description="Comma-separated list of allowed CORS origins",
+    )
+
+    # --- Auth ---
+    AUTH_MODE: AuthMode = Field(
+        AuthMode.COGNITO,
+        description="Auth mode. 'cognito' verifies JWTs against AWS Cognito; "
+        "'local' skips verification and injects a fixed dev user (use only "
+        "for local development).",
+    )
+    LOCAL_AUTH_SUB: str = Field(
+        "local-dev-user",
+        description="User `sub` injected when AUTH_MODE=local.",
+    )
+    LOCAL_AUTH_EMAIL: str = Field(
+        "dev@example.com",
+        description="User email injected when AUTH_MODE=local. Must be a "
+        "valid email — pydantic's email validator rejects reserved TLDs "
+        "like .local / .localhost / .test.",
     )
 
     # --- Auth (Cognito) ---
